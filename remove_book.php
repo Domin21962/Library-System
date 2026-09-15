@@ -39,7 +39,7 @@ include __DIR__ . '/includes/header.php';
             <?php if ($success): ?><div class="success"><?= htmlspecialchars($success) ?></div><?php endif; ?>
             <button type="submit" class="danger" style="width:100%;">Remove</button>
         </form>
-        <p class="footer-link"><a href="main.php">← Back to Main</a></p>
+        <p class="footer-link"><a href="admin.php">← Back to Admin Panel</a></p>
     </div>
 </div>
 <?php include __DIR__ . '/includes/footer.php'; ?>

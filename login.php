@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['username'] = $username;
             $_SESSION['role'] = getUserRole($username);
 
-            redirect('main.php');
+            redirect($_SESSION['role'] === 'Admin' ? 'admin.php' : 'main.php');
         } else {
             $error = "Invalid username or password!";
         }
