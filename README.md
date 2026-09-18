@@ -1,4 +1,4 @@
-# Library System (PHP port)
+# Doms Library (PHP port)
 
 A PHP + MySQL port of the original Java Swing/NetBeans library system, built to run in **Laragon** and edited in **VSCode**.
 

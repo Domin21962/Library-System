@@ -45,7 +45,7 @@ $pageTitle = $book['title'];
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="topbar">
-    <div class="brand">📚 Library System <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars($role) ?></span></div>
+    <div class="brand">📚 Doms Library <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars($role) ?></span></div>
     <nav>
         <a href="main.php">Catalog</a>
         <a href="borrow_return.php">Borrow &amp; Return</a>

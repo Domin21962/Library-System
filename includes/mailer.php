@@ -30,7 +30,7 @@ function smtpSend(array $config, string $to, string $subject, string $body, bool
     $username = $config['username'];
     $password = $config['password'];
     $fromEmail = $config['from_email'];
-    $fromName = $config['from_name'] ?? 'Library System';
+    $fromName = $config['from_name'] ?? 'Doms Library';
 
     $transport = ($encryption === 'ssl') ? 'ssl://' : '';
     $socket = @stream_socket_client(
@@ -149,7 +149,7 @@ function buildReceiptEmail(string $type, array $data): string {
              style="background:#ffffff;border:1px solid #e2e5ea;border-radius:10px;overflow:hidden;">
         <tr>
           <td style="background:#111827;color:#ffffff;padding:20px 24px;">
-            <div style="font-size:13px;letter-spacing:1px;opacity:0.7;">LIBRARY SYSTEM</div>
+            <div style="font-size:13px;letter-spacing:1px;opacity:0.7;">DOMS LIBRARY</div>
             <div style="font-size:20px;font-weight:bold;margin-top:4px;">' . htmlspecialchars($heading) . '</div>
           </td>
         </tr>
@@ -172,7 +172,7 @@ function buildReceiptEmail(string $type, array $data): string {
         <tr>
           <td style="padding:16px 24px;background:#f9fafb;border-top:1px dashed #d7dbe2;
                      font-size:12px;color:#6b7280;text-align:center;">
-            This is an automated receipt from the Library System.<br>Please keep it for your records.
+            This is an automated receipt from the Doms Library.<br>Please keep it for your records.
           </td>
         </tr>
       </table>

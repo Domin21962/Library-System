@@ -12,7 +12,7 @@ $success = '';
 
 // Always load the real record from the database (fixes the old bug where
 // email never made it into the session - now we just read it straight from users)
-$stmt = $pdo->prepare("SELECT email, password FROM users WHERE username = ?");
+$stmt = $pdo->prepare("SELECT id, email, password FROM users WHERE username = ?");
 $stmt->execute([$username]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -48,7 +48,7 @@ $pageTitle = "My Info";
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="topbar">
-    <div class="brand">📚 Library System <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars($role) ?></span></div>
+    <div class="brand">📚 Doms Library <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars($role) ?></span></div>
     <nav>
         <a href="main.php">Catalog</a>
         <a href="borrow_return.php">Borrow &amp; Return</a>
@@ -62,7 +62,8 @@ include __DIR__ . '/includes/header.php';
     <div class="card" style="max-width:none;text-align:center;">
         <div class="profile-avatar"><?= strtoupper(substr($username, 3, 1) ?: 'U') ?></div>
         <h2 style="margin-bottom:2px;"><?= htmlspecialchars($username) ?></h2>
-        <div class="subtitle" style="margin-bottom:24px;"><?= htmlspecialchars($role) ?> account</div>
+        <div class="subtitle" style="margin-bottom:4px;"><?= htmlspecialchars($role) ?> account</div>
+        <div style="color:var(--muted);font-family:monospace;font-size:12px;margin-bottom:24px;">USR-<?= str_pad((string)$user['id'], 5, '0', STR_PAD_LEFT) ?></div>
 
         <form method="post" style="text-align:left;">
             <label>Email</label>

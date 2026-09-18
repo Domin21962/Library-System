@@ -7,6 +7,11 @@ requireLogin();
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 
+// Teachers monitor students instead of browsing/searching the catalog
+if ($role === 'Teacher') {
+    redirect('teacher.php');
+}
+
 // Every book query includes a live availability flag (currently borrowed = no return_date yet)
 $availabilitySelect = "b.book_id, b.title, b.author, b.year, b.genre, b.publisher, b.book_content,
     (SELECT br.username FROM borrow_return br WHERE br.book_id = b.book_id AND br.return_date IS NULL LIMIT 1) AS borrowed_by";
@@ -48,14 +53,16 @@ $borrowedNow = $pdo->query("SELECT COUNT(*) FROM borrow_return WHERE return_date
 $availableNow = $totalBooks - $borrowedNow;
 $genres = $pdo->query("SELECT DISTINCT genre FROM book ORDER BY genre")->fetchAll(PDO::FETCH_COLUMN);
 
-$pageTitle = "Library System - Main";
+$pageTitle = "Doms Library - Main";
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="topbar">
-    <div class="brand">📚 Library System <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars($role) ?></span></div>
+    <div class="brand">📚 Doms Library <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars($role) ?></span></div>
     <nav>
         <?php if ($role === 'Admin'): ?>
             <a href="admin.php">⚙️ Admin Panel</a>
+        <?php elseif ($role === 'Teacher'): ?>
+            <a href="teacher.php">🧑‍🏫 Monitor Students</a>
         <?php endif; ?>
         <a href="student_info.php">Information</a>
         <a href="borrow_return.php">Borrow &amp; Return</a>

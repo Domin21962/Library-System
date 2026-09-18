@@ -61,12 +61,12 @@ foreach ($rows as $row) {
         $body = "Hi {$row['username']},\n\n"
               . "\"{$row['title']}\" was due back on $dueDateFormatted and is now overdue.\n"
               . "Please return it as soon as you can.\n\n"
-              . "- Library System";
+              . "- Doms Library";
     } else {
         $subject = "Reminder: \"{$row['title']}\" is due soon";
         $body = "Hi {$row['username']},\n\n"
               . "Just a reminder that \"{$row['title']}\" is due back on $dueDateFormatted.\n\n"
-              . "- Library System";
+              . "- Doms Library";
     }
 
     $ok = sendLibraryEmail($row['email'], $subject, $body);

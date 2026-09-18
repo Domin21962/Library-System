@@ -31,6 +31,13 @@ function requireAdmin() {
     }
 }
 
+function requireTeacher() {
+    requireLogin();
+    if (($_SESSION['role'] ?? '') !== 'Teacher') {
+        redirect('main.php');
+    }
+}
+
 // Small touches to make the catalog feel less flat - a genre -> icon/color mapping.
 function genreIcon($genre) {
     $map = [

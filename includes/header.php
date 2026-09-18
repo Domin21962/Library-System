@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?= $pageTitle ?? 'Library System' ?></title>
+<title><?= $pageTitle ?? 'Doms Library' ?></title>
 <style>
     :root {
         --bg: #0f1420;
@@ -38,6 +38,65 @@
         align-items: center;
         justify-content: center;
         padding: 24px;
+    }
+
+    /* Split-screen layout used by login/register: illustration + form side by side */
+    .auth-split {
+        min-height: 100vh;
+        display: flex;
+    }
+    .auth-illustration-panel {
+        flex: 1.1;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+        background:
+            radial-gradient(600px 400px at 20% 10%, rgba(91,140,255,0.18), transparent 60%),
+            radial-gradient(500px 500px at 90% 90%, rgba(124,107,255,0.15), transparent 60%),
+            linear-gradient(160deg, #131826 0%, #0c1019 100%);
+        border-right: 1px solid var(--border);
+        overflow: hidden;
+    }
+    .auth-illustration-panel svg { width: 100%; max-width: 420px; height: auto; }
+    .auth-brand-lockup {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 32px;
+        font-size: 20px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.01em;
+    }
+    .auth-brand-lockup .logo-mark {
+        width: 38px; height: 38px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        display: flex; align-items: center; justify-content: center;
+        font-size: 19px;
+        box-shadow: 0 6px 18px rgba(91,140,255,0.35);
+    }
+    .auth-tagline {
+        margin-top: 28px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        max-width: 340px;
+        line-height: 1.6;
+    }
+    .auth-form-panel {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+    @media (max-width: 860px) {
+        .auth-illustration-panel { display: none; }
+        .auth-split { display: block; }
     }
     .card {
         background: var(--panel);
@@ -357,6 +416,112 @@
         padding: 60px 20px;
         color: var(--muted);
     }
+
+    /* Admin section - distinct accent so it's visually separate from the student view */
+    :root { --admin-accent: #f59e0b; --admin-accent-2: #f97316; }
+    .admin-topbar { background: #1a1512; border-bottom: 1px solid #3a2a17; }
+    .admin-topbar .brand { color: #ffd9a0; }
+    .admin-topbar .badge { background: #2a1f14; border-color: #4a3620; color: #f0b968; }
+    .admin-topbar nav a:hover { color: var(--admin-accent); }
+    .admin-btn { background: linear-gradient(135deg, var(--admin-accent), var(--admin-accent-2)) !important; }
+    .admin-stat { border-top: 3px solid var(--admin-accent) !important; }
+    .admin-section {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+    .admin-section h2 { margin: 0 0 4px; font-size: 16px; }
+    .admin-section .sub { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+    .role-pill {
+        display: inline-block; padding: 2px 8px; border-radius: 999px;
+        font-size: 11px; font-weight: 700; letter-spacing: 0.02em;
+    }
+    .role-admin { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+    .role-teacher { background: rgba(91,140,255,0.15); color: #7ba3ff; border: 1px solid rgba(91,140,255,0.3); }
+    .role-student { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+    .row-btn {
+        padding: 5px 10px; font-size: 12px; margin-top: 0;
+        background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px;
+        color: var(--text); cursor: pointer;
+    }
+    .row-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* Admin dashboard nav cards */
+    .dash-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+    .dash-card {
+        display: block;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .dash-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 30px rgba(0,0,0,0.35);
+        border-color: var(--admin-accent);
+    }
+    .dash-card .dash-icon { font-size: 30px; margin-bottom: 12px; }
+    .dash-card h3 { margin: 0 0 4px; font-size: 17px; }
+    .dash-card .dash-sub { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+    .dash-card .dash-count { font-size: 13px; font-weight: 700; color: var(--admin-accent); }
+    .dash-card .dash-count.danger { color: var(--danger); }
+
+    /* Custom confirm modal (replaces the plain browser confirm() popup) */
+    .confirm-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(8,10,16,0.72);
+        backdrop-filter: blur(2px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 20px;
+    }
+    .confirm-overlay.open { display: flex; }
+    .confirm-box {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 28px;
+        max-width: 360px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+        animation: confirmPop 0.15s ease;
+    }
+    @keyframes confirmPop {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    .confirm-icon {
+        font-size: 30px;
+        width: 56px; height: 56px;
+        margin: 0 auto 14px;
+        border-radius: 50%;
+        background: rgba(248,113,113,0.12);
+        border: 1px solid rgba(248,113,113,0.3);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .confirm-box h3 { margin: 0 0 8px; font-size: 17px; }
+    .confirm-box p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .confirm-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 22px;
+    }
+    .confirm-actions .btn { flex: 1; margin-top: 0; text-align: center; }
+
     .page-title { font-size: 20px; margin: 0 0 20px; }
 
     /* Book detail / reader page */

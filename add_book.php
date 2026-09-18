@@ -54,7 +54,7 @@ include __DIR__ . '/includes/header.php';
             <?php if ($success): ?><div class="success"><?= htmlspecialchars($success) ?></div><?php endif; ?>
             <button type="submit" style="width:100%;">Add Book</button>
         </form>
-        <p class="footer-link"><a href="admin.php">← Back to Admin Panel</a></p>
+        <p class="footer-link"><a href="admin_books.php">← Back to Manage Books</a></p>
     </div>
 </div>
 <?php include __DIR__ . '/includes/footer.php'; ?>
