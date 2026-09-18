@@ -15,11 +15,12 @@ $recentCount = (int)$pdo->query("SELECT COUNT(*) FROM borrow_return")->fetchColu
 $pageTitle = "Admin Panel - Doms Library";
 include __DIR__ . '/includes/header.php';
 ?>
-<div class="topbar admin-topbar">
+<div class="topbar admin-topbar" data-admin-dashboard="1">
     <div class="brand">⚙️ Doms Library <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
     <nav>
         <a href="main.php">📚 View Catalog</a>
         <a href="student_info.php">Information</a>
+        <a href="qr_login.php">QR Login</a>
         <a href="logout.php">Logout</a>
     </nav>
 </div>
