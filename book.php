@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
 requireLogin();
@@ -49,6 +49,7 @@ include __DIR__ . '/includes/header.php';
     <nav>
         <a href="main.php">Catalog</a>
         <a href="borrow_return.php">Borrow &amp; Return</a>
+        <a href="profile.php">Profile</a>
         <a href="logout.php">Logout</a>
     </nav>
 </div>

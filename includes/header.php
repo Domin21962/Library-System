@@ -1,4 +1,4 @@
-<?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
+<?php require_once __DIR__ . '/security.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -196,6 +196,20 @@
         font-weight: 700;
         color: #fff;
         background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    .profile-avatar-image {
+        object-fit: cover;
+        border: 2px solid var(--border);
+    }
+    input[type=file] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--panel-2);
+        color: var(--muted);
+        font-size: 13px;
     }
     .profile-divider {
         margin: 22px 0 4px;

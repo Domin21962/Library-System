@@ -1,6 +1,6 @@
 <?php
 // JSON-only polling endpoint. Never redirect here: fetch() must receive JSON.
-session_start();
+require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
 

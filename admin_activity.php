@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
 requireAdmin();
@@ -20,6 +20,7 @@ include __DIR__ . '/includes/header.php';
     <nav>
         <a href="admin.php">← Dashboard</a>
         <a href="main.php">📚 View Catalog</a>
+        <a href="profile.php">Profile</a>
         <a href="logout.php">Logout</a>
     </nav>
 </div>

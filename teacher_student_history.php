@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
 requireTeacher();
@@ -8,7 +8,7 @@ $teacherUsername = $_SESSION['username'];
 $targetUsername = $_GET['username'] ?? '';
 
 // Only allow viewing accounts that are actually students - no email/password ever selected
-$userStmt = $pdo->prepare("SELECT username FROM users WHERE username = ? AND username LIKE 'SD.%'");
+$userStmt = $pdo->prepare("SELECT username FROM users WHERE username = ? AND role = 'Student'");
 $userStmt->execute([$targetUsername]);
 $targetUser = $userStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -44,6 +44,7 @@ include __DIR__ . '/includes/header.php';
     <div class="brand">📚 Doms Library <span class="badge"><?= htmlspecialchars($teacherUsername) ?> · Teacher</span></div>
     <nav>
         <a href="teacher.php">← Monitor Students</a>
+        <a href="profile.php">Profile</a>
         <a href="logout.php">Logout</a>
     </nav>
 </div>

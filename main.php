@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
 requireLogin();
@@ -64,9 +64,9 @@ include __DIR__ . '/includes/header.php';
         <?php elseif ($role === 'Teacher'): ?>
             <a href="teacher.php">🧑‍🏫 Monitor Students</a>
         <?php endif; ?>
-        <a href="student_info.php">Information</a>
         <a href="qr_login.php">QR Login</a>
         <a href="borrow_return.php">Borrow &amp; Return</a>
+        <a href="profile.php">Profile</a>
         <a href="logout.php">Logout</a>
     </nav>
 </div>
@@ -90,6 +90,7 @@ include __DIR__ . '/includes/header.php';
     </div>
 
     <form method="get" class="search-bar">
+                <?= csrf_field() ?>
         <input type="text" name="keyword" placeholder="Search by title, author, or genre..." value="<?= htmlspecialchars($keyword) ?>">
         <button type="submit">Search</button>
     </form>

@@ -37,7 +37,7 @@ function smtpSend(array $config, string $to, string $subject, string $body, bool
         "$transport$host:$port",
         $errno, $errstr, 15,
         STREAM_CLIENT_CONNECT,
-        stream_context_create(['ssl' => ['verify_peer' => false, 'verify_peer_name' => false]])
+        stream_context_create(['ssl' => ['verify_peer' => true, 'verify_peer_name' => true, 'allow_self_signed' => false]])
     );
 
     if (!$socket) {
@@ -238,4 +238,24 @@ function buildPasswordCodeEmail(string $username, string $code, int $expiresInMi
   </table>
 </body>
 </html>';
+}
+
+
+function buildLoginConfirmationEmail(string $username, string $code, int $expiresInMinutes): string {
+    $safeUser = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
+    $safeCode = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
+    return "<!doctype html><html><body style=\"font-family:Arial,sans-serif;background:#f4f6fb;padding:24px\"><div style=\"max-width:480px;margin:auto;background:#fff;padding:28px;border-radius:12px\"><h2>Doms Library login confirmation</h2><p>Hi {$safeUser},</p><p>Someone just tried to sign in to your account. <strong>Is this you?</strong></p><p>If it was you, enter this one-time code:</p><div style=\"font-size:32px;font-weight:700;letter-spacing:8px;text-align:center;padding:18px;background:#eef2ff;border-radius:8px\">{$safeCode}</div><p>This code expires in {$expiresInMinutes} minutes and can only be used once.</p><p>If you did not try to sign in, change your password and contact a library administrator.</p></div></body></html>";
+}
+
+
+function buildUsernameRecoveryEmail(array $usernames): string {
+    $items = '';
+    foreach ($usernames as $username) {
+        $items .= '<li style="margin:6px 0;">' . htmlspecialchars((string)$username, ENT_QUOTES, 'UTF-8') . '</li>';
+    }
+    return '<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f2f4f7;padding:24px;"><div style="max-width:420px;margin:auto;background:#fff;padding:24px;border-radius:10px;"><h2>Doms Library username reminder</h2><p>We received a request to find the username(s) connected to this email address.</p><ul>' . $items . '</ul><p>If you did not request this, you can ignore this email.</p></div></body></html>';
+}
+
+function buildPasswordResetEmail(string $username, string $resetUrl, int $expiresMinutes = 15): string {
+    return '<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f2f4f7;padding:24px;"><div style="max-width:420px;margin:auto;background:#fff;padding:24px;border-radius:10px;"><h2>Reset your Doms Library password</h2><p>Hello <strong>' . htmlspecialchars($username, ENT_QUOTES, 'UTF-8') . '</strong>,</p><p>Click the button below to create a new password. This link expires in ' . (int)$expiresMinutes . ' minutes.</p><p><a href="' . htmlspecialchars($resetUrl, ENT_QUOTES, 'UTF-8') . '" style="display:inline-block;padding:12px 18px;background:#5b8cff;color:#fff;text-decoration:none;border-radius:8px;">Reset password</a></p><p>If you did not request this, ignore this email.</p></div></body></html>';
 }

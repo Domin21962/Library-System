@@ -1,17 +1,19 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
+enforceCsrfOnPost();
 require_once __DIR__ . '/includes/mailer.php';
 requireLogin();
 
 $message = '';
 // Pre-filled from session, like BorrowReturn.java's emailField.setText(Session.getCurrentUsername())
-$username = $_POST['username'] ?? $_SESSION['username'];
+$username = (string)$_SESSION['username'];
 $bookIdRaw = $_POST['book_id'] ?? '';
 
 // Pre-fill email from the users table (real value, unlike Session's blank email bug)
-$email = $_POST['email'] ?? '';
+$email = '';
+
 if ($email === '') {
     $lookup = $pdo->prepare("SELECT email FROM users WHERE username = ?");
     $lookup->execute([$username]);
@@ -29,8 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "Enter a valid email address.";
     } else {
         $bookId = (int)$bookIdRaw;
-
-        if ($action === 'borrow') {
+        $bookExists = $pdo->prepare('SELECT title FROM book WHERE book_id = ?');
+        $bookExists->execute([$bookId]);
+        if (!$bookExists->fetchColumn()) {
+            $message = 'Book not found.';
+        } elseif ($action === 'borrow') {
             // Equivalent of BorrowReturn.borrowBook()
             $check = $pdo->prepare("SELECT * FROM borrow_return WHERE book_id = ? AND return_date IS NULL");
             $check->execute([$bookId]);
@@ -126,8 +131,8 @@ include __DIR__ . '/includes/header.php';
     <div class="brand">📚 Doms Library</div>
     <nav>
         <a href="main.php">Main</a>
-        <a href="student_info.php">Information</a>
         <a href="qr_login.php">QR Login</a>
+        <a href="profile.php">Profile</a>
         <a href="logout.php">Logout</a>
     </nav>
 </div>
@@ -137,6 +142,7 @@ include __DIR__ . '/includes/header.php';
 
     <div class="card" style="max-width:none;padding:24px;">
         <form method="post">
+                <?= csrf_field() ?>
             <label>Book ID</label>
             <input type="number" name="book_id" value="<?= htmlspecialchars($bookIdRaw) ?>" required>
             <label>Username</label>

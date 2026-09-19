@@ -1,7 +1,8 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
+enforceCsrfOnPost();
 requireAdmin();
 
 $username = $_SESSION['username'];
@@ -20,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
 }
 
 // Admin accounts are excluded from this list entirely
-$users = $pdo->query("SELECT id, username, email FROM users WHERE username NOT LIKE 'AM.%' ORDER BY username")->fetchAll(PDO::FETCH_ASSOC);
+$users = $pdo->query("SELECT id, username, email FROM users ORDER BY username")->fetchAll(PDO::FETCH_ASSOC);
 
 $pageTitle = "Manage Users - Doms Library";
 include __DIR__ . '/includes/header.php';
@@ -30,6 +31,7 @@ include __DIR__ . '/includes/header.php';
     <nav>
         <a href="admin.php">← Dashboard</a>
         <a href="main.php">📚 View Catalog</a>
+        <a href="profile.php">Profile</a>
         <a href="logout.php">Logout</a>
     </nav>
 </div>
@@ -44,7 +46,7 @@ include __DIR__ . '/includes/header.php';
     <?php if ($error): ?><div class="error" style="margin-bottom:16px;"><?= htmlspecialchars($error) ?></div><?php endif; ?>
 
     <div class="admin-section">
-        <div class="sub">Everyone registered in Doms Library. Role is determined by the username prefix.</div>
+        <div class="sub">Everyone registered in Doms Library. Legacy prefixes are supported; new accounts default to Student.</div>
         <table>
             <tr><th>User ID</th><th>Username</th><th>Email</th><th>Role</th><th></th></tr>
             <?php foreach ($users as $u): ?>
@@ -63,6 +65,7 @@ include __DIR__ . '/includes/header.php';
                 <td>
                     <?php if ($u['username'] !== $username): ?>
                     <form method="post" class="confirm-delete" data-message="Delete the account &quot;<?= htmlspecialchars(addslashes($u['username'])) ?>&quot;? This can't be undone." style="display:inline;">
+                        <?= csrf_field() ?>
                         <input type="hidden" name="action" value="delete_user">
                         <input type="hidden" name="target_username" value="<?= htmlspecialchars($u['username']) ?>">
                         <button type="submit" class="row-btn">Delete</button>

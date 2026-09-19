@@ -1,7 +1,8 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
+enforceCsrfOnPost();
 
 $error = '';
 $success = '';
@@ -13,7 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirmPassword = $_POST['confirm_password'] ?? '';
 
     if (!isValidUsername($username)) {
-        $error = "Username must follow the format: TC.Name, SD.Name, AM.Name";
+        $error = "Username must be 3-100 characters and may contain letters, numbers, spaces, dots, underscores, or hyphens.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 190) {
+        $error = "Please enter a valid email address.";
+    } elseif (strlen($username) > 100 || strlen($password) > 255) {
+        $error = "Input is too long.";
+    } elseif ($password === '') {
+        $error = "Password cannot be empty.";
     } elseif ($password !== $confirmPassword) {
         $error = "Passwords do not match!";
     } else {
@@ -25,7 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = "Username already exists!";
         } else {
             $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-            $stmt->execute([$username, $email, $password]);
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+            $stmt->execute([$username, $email, $passwordHash]);
+            auditLog($pdo, 'account_registered', $username);
             $success = "Registration successful! You can now log in.";
         }
     }
@@ -47,10 +56,11 @@ include __DIR__ . '/includes/header.php';
     <div class="auth-form-panel">
         <div class="card">
             <h2>Create an account</h2>
-            <div class="subtitle">Username must start with SD. / TC. / AM.</div>
+            <div class="subtitle">Choose any unique username. New accounts are registered as Student accounts. Account roles are assigned by an administrator.</div>
             <form method="post">
+                <?= csrf_field() ?>
                 <label>Username</label>
-                <input type="text" name="username" placeholder="SD.Name / TC.Name / AM.Name" required value="<?= htmlspecialchars($_POST['username'] ?? '') ?>">
+                <input type="text" name="username" placeholder="Enter your username" required value="<?= htmlspecialchars($_POST['username'] ?? '') ?>">
                 <label>Email</label>
                 <input type="text" name="email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
                 <label>Password</label>

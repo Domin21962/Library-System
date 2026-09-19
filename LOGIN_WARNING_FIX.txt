@@ -1,0 +1,12 @@
+Login warning fix
+=================
+
+The login handler now safely handles a missing password key in the fetched user row.
+It fails closed instead of reading $_POST['password'] or $user['password'] when absent.
+
+If login still fails, verify that the users table has a column named `password`:
+
+DESCRIBE users;
+
+The application expects the password column to contain either a password_hash() value
+or (temporarily) a legacy plaintext value that will be migrated at successful login.

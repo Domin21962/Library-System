@@ -1,7 +1,8 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
+enforceCsrfOnPost();
 requireAdmin();
 
 $error = '';
@@ -15,7 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $publisher = $_POST['publisher'] ?? '';
     $content = $_POST['content'] ?? '';
 
-    if (!ctype_digit($yearRaw)) {
+    if ($title === '' || strlen($title) > 255 || $author === '' || strlen($author) > 255 || strlen($genre) > 100 || strlen($publisher) > 255 || strlen($content) > 100000) {
+        $error = 'Please check the length and contents of the book fields.';
+    } elseif (!ctype_digit($yearRaw) || (int)$yearRaw < 0 || (int)$yearRaw > ((int)date('Y') + 1)) {
         $error = "Please enter a valid year.";
     } else {
         // Equivalent of BookController.addBook()
@@ -38,6 +41,7 @@ include __DIR__ . '/includes/header.php';
         <h2>Add a book</h2>
         <div class="subtitle">Admin only</div>
         <form method="post">
+                <?= csrf_field() ?>
             <label>Title</label>
             <input type="text" name="title" required>
             <label>Author</label>

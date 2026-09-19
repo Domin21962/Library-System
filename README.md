@@ -85,6 +85,13 @@ web pages can't run on a timer by themselves). Two ways to trigger it:
 
 It emails anyone whose book is due within 2 days or already overdue.
 
+
+### Login when SMTP is not configured
+
+For local Laragon development, `config/mail.php` defaults to `enabled => false`. Teacher and student login confirmation is still enforced, so those accounts remain blocked until SMTP is enabled and configured. Admin accounts bypass email confirmation by design. Once SMTP is enabled in `config/local.php`, login sends a one-time confirmation code and blocks login if sending fails.
+
+To enable confirmation emails, copy `config/local.php.example` to `config/local.php`, add your SMTP credentials (use a Gmail App Password rather than your normal Gmail password), and set `mail_enabled` to `true`.
+
 ## Password change confirmation (Teacher / Student)
 
 Teacher and Student accounts can no longer change their password in one step from
@@ -197,3 +204,15 @@ The admin dashboard now receives borrow and return events in real time using Ser
 For manual database setup, run `sql/add_admin_notifications.sql` in the `library_db` database.
 
 For desktop notifications, click **Enable desktop notifications** in the admin notification bell. Browser system notifications require a secure context such as HTTPS (or localhost).
+
+
+## Laragon database defaults
+
+The included `config/local.php` uses the common Laragon MySQL setup:
+
+- Host: `127.0.0.1`
+- Database: `library_db`
+- Username: `root`
+- Password: empty
+
+If your MySQL root account uses a password, update `config/local.php`.

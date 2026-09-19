@@ -1,7 +1,8 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
+enforceCsrfOnPost();
 requireAdmin();
 
 $username = $_SESSION['username'];
@@ -28,6 +29,7 @@ include __DIR__ . '/includes/header.php';
     <nav>
         <a href="admin.php">← Dashboard</a>
         <a href="main.php">📚 View Catalog</a>
+        <a href="profile.php">Profile</a>
         <a href="logout.php">Logout</a>
     </nav>
 </div>
@@ -61,6 +63,7 @@ include __DIR__ . '/includes/header.php';
                 </td>
                 <td>
                     <form method="post" class="confirm-delete" data-message="Remove &quot;<?= htmlspecialchars(addslashes($b['title'])) ?>&quot; from the catalog?" style="display:inline;">
+                        <?= csrf_field() ?>
                         <input type="hidden" name="action" value="delete_book">
                         <input type="hidden" name="book_id" value="<?= (int)$b['book_id'] ?>">
                         <button type="submit" class="row-btn">Delete</button>

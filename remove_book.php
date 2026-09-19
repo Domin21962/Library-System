@@ -1,7 +1,8 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
+enforceCsrfOnPost();
 requireAdmin();
 
 $error = '';
@@ -33,6 +34,7 @@ include __DIR__ . '/includes/header.php';
         <h2>Remove a book</h2>
         <div class="subtitle">Admin only — enter the book ID to delete</div>
         <form method="post">
+                <?= csrf_field() ?>
             <label>Book ID</label>
             <input type="number" name="book_id" required>
             <?php if ($error): ?><div class="error"><?= htmlspecialchars($error) ?></div><?php endif; ?>

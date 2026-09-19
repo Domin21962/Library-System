@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
 requireTeacher();
@@ -20,8 +20,8 @@ include __DIR__ . '/includes/header.php';
 <div class="topbar">
     <div class="brand">📚 Doms Library <span class="badge"><?= htmlspecialchars($username) ?> · Teacher</span></div>
     <nav>
-        <a href="student_info.php">Information</a>
         <a href="qr_login.php">QR Login</a>
+        <a href="profile.php">Profile</a>
         <a href="logout.php">Logout</a>
     </nav>
 </div>

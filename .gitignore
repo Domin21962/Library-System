@@ -1,0 +1,6 @@
+config/local.php
+.env
+*.log
+
+/uploads/profiles/*
+!/uploads/profiles/.htaccess

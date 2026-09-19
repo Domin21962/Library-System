@@ -1,7 +1,8 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
+enforceCsrfOnPost();
 
 // QR login uses a short-lived, one-time token. Live camera scanning in a
 // browser requires a secure context (HTTPS) on phones. A native camera/photo
@@ -70,6 +71,7 @@ if (isset($_GET['token']) && $error === '') {
                     $error = 'This QR login code is no longer valid. Generate a new one.';
                 } else {
                     session_regenerate_id(true);
+                    auditLog($pdo, 'qr_login_success', $qr['username']);
                     $_SESSION['username'] = $qr['username'];
                     $_SESSION['role'] = getUserRole($qr['username']);
 
@@ -124,7 +126,7 @@ include __DIR__ . '/includes/header.php';
     <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="qrNav">☰</button>
     <nav id="qrNav">
         <a href="main.php">Catalog</a>
-        <a href="student_info.php">Information</a>
+        <a href="profile.php">Profile</a>
         <a href="logout.php">Logout</a>
     </nav>
 </div>
@@ -155,6 +157,7 @@ include __DIR__ . '/includes/header.php';
             <?php endif; ?>
 
             <form method="post">
+                <?= csrf_field() ?>
                 <input type="hidden" name="form" value="generate">
                 <button type="submit" style="width:100%;"><?= $tokenUrl ? 'Generate New QR Code' : 'Generate QR Code' ?></button>
             </form>

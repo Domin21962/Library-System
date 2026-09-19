@@ -1,0 +1,6 @@
+LOGIN CONFIRMATION POLICY
+
+- Admin accounts: password login goes directly to admin.php; no email confirmation.
+- Teacher and Student accounts: email confirmation is required before login.
+- If SMTP is disabled or fails, Teacher/Student login is blocked until SMTP is configured.
+- Configure SMTP in config/local.php using the example in config/local.php.example.
