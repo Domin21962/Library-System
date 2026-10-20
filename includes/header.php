@@ -255,26 +255,71 @@
         padding: 2px 8px;
         border-radius: 999px;
     }
-    .topbar nav a {
-        color: var(--text);
-        margin-left: 18px;
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 500;
+    /* Burger navigation used across the dashboard at all screen sizes. */
+    .topbar { position:relative; z-index:50; }
+    .topbar .brand { min-width:0; flex:1; }
+    .topbar nav {
+        position:absolute;
+        top:calc(100% + 8px);
+        right:24px;
+        width:240px;
+        display:flex;
+        flex-direction:column;
+        gap:4px;
+        padding:8px;
+        background:var(--panel);
+        border:1px solid var(--border);
+        border-radius:12px;
+        box-shadow:0 18px 40px rgba(0,0,0,0.35);
+        opacity:0;
+        visibility:hidden;
+        pointer-events:none;
+        transform:translateY(-10px);
+        transition:opacity .18s ease, transform .18s ease, visibility .18s ease;
     }
-    .topbar nav a:hover { color: var(--accent); }
+    .topbar.nav-open nav {
+        opacity:1;
+        visibility:visible;
+        pointer-events:auto;
+        transform:translateY(0);
+    }
+    .topbar nav a {
+        color:var(--text);
+        margin:0;
+        padding:11px 12px;
+        border-radius:8px;
+        text-decoration:none;
+        font-size:14px;
+        font-weight:500;
+        background:transparent;
+    }
+    .topbar nav a:hover { color:var(--accent); background:var(--panel-2); }
 
-    /* Responsive burger navigation */
-    .menu-toggle { display:none; width:42px; height:42px; border:1px solid var(--border); border-radius:10px; background:var(--panel-2); color:var(--text); font-size:22px; cursor:pointer; align-items:center; justify-content:center; flex-shrink:0; }
+    .menu-toggle {
+        display:inline-flex;
+        width:42px;
+        height:42px;
+        border:1px solid var(--border);
+        border-radius:10px;
+        background:var(--panel-2);
+        color:var(--text);
+        font-size:22px;
+        cursor:pointer;
+        align-items:center;
+        justify-content:center;
+        flex-shrink:0;
+        margin-top:0;
+    }
     .menu-toggle:hover { border-color:var(--accent); }
     @media (max-width:760px) {
-        .topbar { position:relative; padding:12px 16px; flex-wrap:wrap; }
+        .topbar { padding:12px 16px; flex-wrap:wrap; }
         .topbar .brand { min-width:0; flex:1; overflow:hidden; }
         .topbar .brand .badge { max-width:42vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .menu-toggle { display:inline-flex; }
-        .topbar nav { display:none; width:100%; flex-direction:column; gap:4px; padding:10px 0 2px; order:3; }
-        .topbar.nav-open nav { display:flex; }
-        .topbar nav a { margin-left:0; padding:11px 12px; border-radius:8px; background:var(--panel-2); }
+        .topbar nav {
+            left:16px;
+            right:16px;
+            width:auto;
+        }
         .content { padding:22px 16px 24px; }
         .stats-row { grid-template-columns:repeat(2,minmax(0,1fr)); }
         .book-grid { grid-template-columns:1fr; }
