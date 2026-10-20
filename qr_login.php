@@ -37,11 +37,11 @@ if (isset($_GET['token']) && $error === '') {
         $stmt = $pdo->prepare(
             "SELECT id, username, token, expires_at, used
              FROM qr_login_tokens
-             WHERE token = ? OR token = ?
+             WHERE token = ? 
              ORDER BY id DESC
              LIMIT 1"
         );
-        $stmt->execute([$hashToken, $rawToken]);
+        $stmt->execute([$hashToken]);
         $qr = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$qr) {
@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form'] ?? '') === 'generat
         );
         $insert->execute([$username, $hashToken, $expiresAt]);
 
-        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $scheme = isHttps() ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
         $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
         $tokenUrl = $scheme . '://' . $host . $basePath . '/qr_login.php?token=' . rawurlencode($rawToken);
