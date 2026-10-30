@@ -526,7 +526,7 @@
     }
     .role-admin { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
     .role-teacher { background: rgba(91,140,255,0.15); color: #7ba3ff; border: 1px solid rgba(91,140,255,0.3); }
-    .role-student { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+    .role-user { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
     .row-btn {
         padding: 5px 10px; font-size: 12px; margin-top: 0;
         background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px;

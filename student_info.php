@@ -10,9 +10,9 @@ requireLogin();
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 
-// Only Teacher and Student accounts go through the email-confirmation flow
+// Only Teacher and User accounts go through the email-confirmation flow
 // for password changes. (Admin keeps the old immediate-change behavior.)
-$requiresCodeConfirm = in_array($role, ['Teacher', 'Student'], true);
+$requiresCodeConfirm = in_array($role, ['Teacher', 'User'], true);
 
 $CODE_EXPIRY_MINUTES = 10;
 $MAX_CODE_ATTEMPTS = 5;

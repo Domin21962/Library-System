@@ -1,12 +1,12 @@
 USE library_db;
 
 -- Add persistent roles so Teacher/Admin usernames do not need a prefix.
-ALTER TABLE users ADD COLUMN role ENUM('Admin','Teacher','Student') NOT NULL DEFAULT 'Student' AFTER email;
+ALTER TABLE users ADD COLUMN role ENUM('Admin','Teacher','User') NOT NULL DEFAULT 'User' AFTER email;
 
 -- Preserve the legacy role mapping for existing accounts.
 UPDATE users SET role = 'Admin' WHERE username LIKE 'AM.%';
 UPDATE users SET role = 'Teacher' WHERE username LIKE 'TC.%';
-UPDATE users SET role = 'Student' WHERE username LIKE 'SD.%' OR role IS NULL;
+UPDATE users SET role = 'User' WHERE username LIKE 'SD.%' OR role IS NULL;
 
 CREATE TABLE IF NOT EXISTS login_confirmations (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

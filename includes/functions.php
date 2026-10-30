@@ -7,14 +7,14 @@ function getUserRole($username, ?PDO $pdo = null) {
             $stmt = $pdo->prepare("SELECT role FROM users WHERE username = ? LIMIT 1");
             $stmt->execute([$username]);
             $role = $stmt->fetchColumn();
-            if (in_array($role, ['Admin', 'Teacher', 'Student'], true)) return $role;
+            if (in_array($role, ['Admin', 'Teacher', 'User'], true)) return $role;
         } catch (Throwable $e) {
             // Older installations may not have the role column yet; use legacy prefixes below.
         }
     }
-    // Fail closed: if the role column/migration is unavailable, users are treated as Student.
+    // Fail closed: if the role column/migration is unavailable, users are treated as User.
     // Never infer Admin or Teacher privileges from a username prefix.
-    return "Student";
+    return "User";
 }
 // Usernames no longer need an AM./TC./SD. prefix.
 // Role elevation must be handled by a protected administrator workflow, never by user input.

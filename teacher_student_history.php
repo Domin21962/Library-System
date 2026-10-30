@@ -8,7 +8,7 @@ $teacherUsername = $_SESSION['username'];
 $targetUsername = $_GET['username'] ?? '';
 
 // Only allow viewing accounts that are actually students - no email/password ever selected
-$userStmt = $pdo->prepare("SELECT username FROM users WHERE username = ? AND role = 'Student'");
+$userStmt = $pdo->prepare("SELECT username FROM users WHERE username = ? AND role = 'User'");
 $userStmt->execute([$targetUsername]);
 $targetUser = $userStmt->fetch(PDO::FETCH_ASSOC);
 
