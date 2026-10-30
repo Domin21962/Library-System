@@ -7,19 +7,19 @@
 <title><?= $pageTitle ?? 'Doms Library' ?></title>
 <style>
     :root {
-        --bg: #0f1420;
-        --panel: #171d2b;
-        --panel-2: #1e2536;
-        --border: #2a3245;
-        --text: #e7ebf3;
-        --muted: #9aa4b8;
-        --accent: #5b8cff;
-        --accent-2: #7c6bff;
-        --success: #34d399;
-        --danger: #f87171;
-        --admin-accent: #f59e0b;
-        --admin-accent-2: #ea580c;
-        --radius: 12px;
+        --bg: #12161f;
+        --panel: #181e2a;
+        --panel-2: #1f2735;
+        --border: #2b3447;
+        --text: #d8dee9;
+        --muted: #8f9bb0;
+        --accent: #5a7fb8;
+        --accent-2: #7468b5;
+        --success: #6fbf9f;
+        --danger: #d98a8a;
+        --admin-accent: #a8703f;
+        --admin-accent-2: #8f5a34;
+        --radius: 14px;
     }
     * { box-sizing: border-box; }
     body {
@@ -77,7 +77,7 @@
         background: linear-gradient(135deg, var(--accent), var(--accent-2));
         display: flex; align-items: center; justify-content: center;
         font-size: 19px;
-        box-shadow: 0 6px 18px rgba(91,140,255,0.35);
+        box-shadow: 0 6px 18px rgba(90,127,184,0.3);
     }
     .auth-tagline {
         margin-top: 28px;
@@ -504,7 +504,7 @@
     }
 
     /* Admin section - distinct accent so it's visually separate from the student view */
-    :root { --admin-accent: #f59e0b; --admin-accent-2: #f97316; }
+    :root { --admin-accent: #a8703f; --admin-accent-2: #8f5a34; }
     .admin-topbar { background: #1a1512; border-bottom: 1px solid #3a2a17; }
     .admin-topbar .brand { color: #ffd9a0; }
     .admin-topbar .badge { background: #2a1f14; border-color: #4a3620; color: #f0b968; }
