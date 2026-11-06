@@ -132,8 +132,10 @@ include __DIR__ . '/includes/header.php';
 </div>
 <?php endif; ?>
 
+
 <div class="auth-wrapper">
     <div class="card qr-login-card max-460 text-center">
+        
         <div class="qr-icon" aria-hidden="true">▣</div>
         <h2><?= !empty($_SESSION['username']) ? 'Generate Login QR' : 'Login with QR Code' ?></h2>
         <div class="subtitle">

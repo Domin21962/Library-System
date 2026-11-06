@@ -140,7 +140,7 @@ include __DIR__ . '/includes/header.php';
 
 <div class="content wrap-700">
     <h1 class="page-title">Borrow &amp; Return</h1>
-
+    <p class="m-0-0-16"><a href="main.php">← Back to catalog</a></p>
     <div class="card card-wide">
         <form method="post">
                 <?= csrf_field() ?>
