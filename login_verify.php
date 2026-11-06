@@ -69,52 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pageTitle = 'Confirm Login - WebShelf';
 include __DIR__ . '/includes/header.php';
 ?>
-<style>
-    .login-confirm-profile {
-        text-align: center;
-        margin: 22px 0 20px;
-        padding: 18px 14px;
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        background: var(--panel-2);
-    }
-    .login-confirm-avatar {
-        width: 82px;
-        height: 82px;
-        margin: 0 auto 12px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        color: #fff;
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        border: 2px solid var(--border);
-        font-size: 30px;
-        font-weight: 700;
-    }
-    .login-confirm-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    .login-confirm-name {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 700;
-        overflow-wrap: anywhere;
-    }
-    .login-confirm-email {
-        margin: 5px 0 0;
-        color: var(--muted);
-        font-size: 13px;
-        overflow-wrap: anywhere;
-    }
-    .login-confirm-question {
-        margin: 0 0 8px;
-        font-weight: 700;
-    }
-</style>
 <div class="auth-split">
     <div class="auth-illustration-panel">
         <div class="auth-brand-lockup"><span class="logo-mark">📚</span> WebShelf</div>
@@ -145,7 +99,7 @@ include __DIR__ . '/includes/header.php';
                 <label>Email confirmation code</label>
                 <input type="text" name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required autofocus>
                 <?php if ($error): ?><div class="error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
-                <button type="submit" style="width:100%;">Confirm and Login</button>
+                <button class="w-full" type="submit">Confirm and Login</button>
             </form>
             <p class="footer-link"><a href="logout.php">Cancel and return to login</a></p>
         </div>

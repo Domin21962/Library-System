@@ -43,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($check->fetch()) {
                 $message = "This book is already borrowed.";
             } else {
-                $insert = $pdo->prepare("INSERT INTO borrow_return (username, email, book_id, borrow_date, due_date) VALUES (?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY))");
-                $insert->execute([$username, $email, $bookId]);
+                $insert = $pdo->prepare("INSERT INTO borrow_return (username, book_id, borrow_date, due_date) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY))");
+                $insert->execute([$username, $bookId]);
                 $transactionId = $pdo->lastInsertId();
 
                 // Send a styled HTML receipt right away (best-effort - doesn't block borrowing if it fails)
@@ -114,9 +114,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $records = [];
 if ($username !== '') {
     $stmt = $pdo->prepare(
-        "SELECT b.title, br.email, br.borrow_date, br.due_date, br.return_date
+        "SELECT b.title, u.email, br.borrow_date, br.due_date, br.return_date
          FROM borrow_return br
          JOIN book b ON br.book_id = b.book_id
+         JOIN users u ON u.username = br.username
          WHERE br.username = ?
          ORDER BY br.borrow_date DESC"
     );
@@ -137,10 +138,10 @@ include __DIR__ . '/includes/header.php';
     </nav>
 </div>
 
-<div class="content" style="max-width:700px;margin:0 auto;">
+<div class="content wrap-700">
     <h1 class="page-title">Borrow &amp; Return</h1>
 
-    <div class="card" style="max-width:none;padding:24px;">
+    <div class="card card-wide">
         <form method="post">
                 <?= csrf_field() ?>
             <label>Book ID</label>
@@ -150,14 +151,14 @@ include __DIR__ . '/includes/header.php';
             <label>Email</label>
             <input type="text" name="email" value="<?= htmlspecialchars($email) ?>" placeholder="you@example.com" required>
             <?php if ($message): ?><div class="success"><?= htmlspecialchars($message) ?></div><?php endif; ?>
-            <div style="display:flex;gap:10px;">
+            <div class="row-gap-10">
                 <button type="submit" name="action" value="borrow">Borrow</button>
                 <button type="submit" name="action" value="return" class="secondary">Return</button>
             </div>
         </form>
     </div>
 
-    <h2 class="page-title" style="margin-top:30px;font-size:16px;">Borrow History</h2>
+    <h2 class="page-title section-title-gap">Borrow History</h2>
     <?php if (empty($records)): ?>
         <div class="empty-state">No borrow history yet.</div>
     <?php else: ?>
@@ -171,7 +172,7 @@ include __DIR__ . '/includes/header.php';
             <td><?= htmlspecialchars($r['title']) ?></td>
             <td><?= htmlspecialchars($r['email'] ?? '') ?></td>
             <td><?= htmlspecialchars($r['borrow_date']) ?></td>
-            <td<?= $isOverdue ? ' style="color:var(--danger);font-weight:600;"' : '' ?>>
+            <td<?= $isOverdue ? ' class="text-overdue"' : '' ?>>
                 <?= !empty($r['due_date']) ? htmlspecialchars($r['due_date']) : '—' ?>
                 <?= $isOverdue ? ' (overdue)' : '' ?>
             </td>

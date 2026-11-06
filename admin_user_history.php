@@ -24,8 +24,9 @@ if ($targetRole === 'Admin') {
 }
 
 $history = $pdo->prepare(
-    "SELECT b.title, br.email, br.borrow_date, br.due_date, br.return_date
+    "SELECT b.title, u.email, br.borrow_date, br.due_date, br.return_date
      FROM borrow_return br JOIN book b ON br.book_id = b.book_id
+     JOIN users u ON u.username = br.username
      WHERE br.username = ?
      ORDER BY br.id DESC"
 );
@@ -56,17 +57,17 @@ include __DIR__ . '/includes/header.php';
     </nav>
 </div>
 
-<div class="content" style="max-width:1000px;margin:0 auto;">
+<div class="content wrap-1000">
     <div class="page-header">
         <h1 class="page-title">
             📜 Borrow History: <?= htmlspecialchars($targetUser['username']) ?>
-            <span class="role-pill role-<?= strtolower($targetRole) ?>" style="margin-left:8px;vertical-align:middle;"><?= htmlspecialchars($targetRole) ?></span>
-            <span style="color:var(--muted);font-family:monospace;font-size:13px;font-weight:400;margin-left:8px;">USR-<?= str_pad((string)$targetUser['id'], 5, '0', STR_PAD_LEFT) ?></span>
+            <span class="role-pill role-<?= strtolower($targetRole) ?> ml-8-middle"><?= htmlspecialchars($targetRole) ?></span>
+            <span class="mono-muted-inline">USR-<?= str_pad((string)$targetUser['id'], 5, '0', STR_PAD_LEFT) ?></span>
         </h1>
         <a href="admin_users.php" class="btn secondary">← Back to Manage Users</a>
     </div>
 
-    <div class="stats-row" style="margin-bottom:24px;">
+    <div class="stats-row mb-24">
         <div class="stat-card admin-stat">
             <div class="stat-value"><?= count($records) ?></div>
             <div class="stat-label">Total Transactions</div>
@@ -75,8 +76,8 @@ include __DIR__ . '/includes/header.php';
             <div class="stat-value"><?= $currentlyBorrowed ?></div>
             <div class="stat-label">Currently Borrowed</div>
         </div>
-        <div class="stat-card admin-stat" style="<?= $overdueCount > 0 ? 'border-top-color:var(--danger) !important;' : '' ?>">
-            <div class="stat-value" style="<?= $overdueCount > 0 ? 'color:var(--danger);' : '' ?>"><?= $overdueCount ?></div>
+        <div class="stat-card admin-stat <?= $overdueCount > 0 ? 'stat-danger' : '' ?>">
+            <div class="stat-value <?= $overdueCount > 0 ? 'text-danger' : '' ?>"><?= $overdueCount ?></div>
             <div class="stat-label">Overdue</div>
         </div>
     </div>
@@ -95,7 +96,7 @@ include __DIR__ . '/includes/header.php';
                 <td><?= htmlspecialchars($r['title']) ?></td>
                 <td><?= htmlspecialchars($r['email'] ?? '') ?></td>
                 <td><?= htmlspecialchars($r['borrow_date']) ?></td>
-                <td style="<?= $overdue ? 'color:var(--danger);font-weight:600;' : '' ?>">
+                <td class="<?= $overdue ? 'text-overdue' : '' ?>">
                     <?= !empty($r['due_date']) ? htmlspecialchars($r['due_date']) : '—' ?><?= $overdue ? ' (overdue)' : '' ?>
                 </td>
                 <td><?= $r['return_date'] ? htmlspecialchars($r['return_date']) : '<span class="badge-status badge-borrowed">Not returned</span>' ?></td>

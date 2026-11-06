@@ -37,7 +37,7 @@ $pageTitle = "Add Book";
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="auth-wrapper">
-    <div class="card" style="max-width:480px;">
+    <div class="card max-480">
         <h2>Add a book</h2>
         <div class="subtitle">Admin only</div>
         <form method="post">
@@ -56,7 +56,7 @@ include __DIR__ . '/includes/header.php';
             <textarea name="content"></textarea>
             <?php if ($error): ?><div class="error"><?= htmlspecialchars($error) ?></div><?php endif; ?>
             <?php if ($success): ?><div class="success"><?= htmlspecialchars($success) ?></div><?php endif; ?>
-            <button type="submit" style="width:100%;">Add Book</button>
+            <button class="w-full" type="submit">Add Book</button>
         </form>
         <p class="footer-link"><a href="admin_books.php">← Back to Manage Books</a></p>
     </div>

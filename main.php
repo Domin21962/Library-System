@@ -71,7 +71,7 @@ include __DIR__ . '/includes/header.php';
     </nav>
 </div>
 
-<div class="content" style="max-width:1200px;margin:0 auto;">
+<div class="content wrap-1200">
     <h1 class="page-title">Find a book</h1>
 
     <div class="stats-row">

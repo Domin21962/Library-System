@@ -133,7 +133,7 @@ include __DIR__ . '/includes/header.php';
 <?php endif; ?>
 
 <div class="auth-wrapper">
-    <div class="card qr-login-card" style="max-width:460px;text-align:center;">
+    <div class="card qr-login-card max-460 text-center">
         <div class="qr-icon" aria-hidden="true">▣</div>
         <h2><?= !empty($_SESSION['username']) ? 'Generate Login QR' : 'Login with QR Code' ?></h2>
         <div class="subtitle">
@@ -144,14 +144,14 @@ include __DIR__ . '/includes/header.php';
             <?php endif; ?>
         </div>
 
-        <?php if ($error): ?><div class="error" style="text-align:left;"><?= htmlspecialchars($error) ?></div><?php endif; ?>
-        <?php if ($success): ?><div class="success" style="text-align:left;"><?= htmlspecialchars($success) ?></div><?php endif; ?>
+        <?php if ($error): ?><div class="error text-left"><?= htmlspecialchars($error) ?></div><?php endif; ?>
+        <?php if ($success): ?><div class="success text-left"><?= htmlspecialchars($success) ?></div><?php endif; ?>
 
         <?php if (!empty($_SESSION['username'])): ?>
             <?php if ($tokenUrl): ?>
-                <div id="qr-code" style="display:flex;justify-content:center;align-items:center;background:#fff;padding:18px;border-radius:12px;margin:20px auto;width:max-content;max-width:100%;"></div>
-                <div id="qr-countdown" style="font-weight:700;color:var(--accent);margin-top:12px;">Expires in 60s</div>
-                <div style="color:var(--muted);font-size:12px;margin-top:10px;line-height:1.5;">
+                <div class="qr-code-box" id="qr-code"></div>
+                <div class="qr-countdown" id="qr-countdown">Expires in 60s</div>
+                <div class="note-small mt-10 lh-15">
                     Scan this QR with the other device. Keep this page open until the scan is complete.
                 </div>
             <?php endif; ?>
@@ -159,14 +159,14 @@ include __DIR__ . '/includes/header.php';
             <form method="post">
                 <?= csrf_field() ?>
                 <input type="hidden" name="form" value="generate">
-                <button type="submit" style="width:100%;"><?= $tokenUrl ? 'Generate New QR Code' : 'Generate QR Code' ?></button>
+                <button class="w-full" type="submit"><?= $tokenUrl ? 'Generate New QR Code' : 'Generate QR Code' ?></button>
             </form>
-            <a class="btn secondary" href="main.php" style="width:100%;margin-top:10px;text-align:center;">Back to Catalog</a>
+            <a class="btn secondary w-full text-center mt-10" href="main.php">Back to Catalog</a>
         <?php else: ?>
             <div id="secure-warning" class="error qr-warning" style="display:none;text-align:left;"></div>
 
             <div id="reader" class="qr-reader" aria-label="QR camera scanner"></div>
-            <div id="scan-status" class="subtitle qr-status" style="margin:8px 0 0;">Starting camera…</div>
+            <div id="scan-status" class="subtitle qr-status m-8-0-0">Starting camera…</div>
 
             <div class="qr-actions">
                 <button type="button" id="start-camera" class="qr-camera-btn">📷 Start Camera</button>
@@ -179,7 +179,7 @@ include __DIR__ . '/includes/header.php';
             <input id="qr-image-input" class="qr-file-input" type="file" accept="image/*" capture="environment">
             <div class="qr-help">On Android, this opens the phone camera/file picker. Take a clear photo of the QR code and WebShelf will read it.</div>
 
-            <a class="btn secondary" href="login.php" style="width:100%;margin-top:16px;text-align:center;">Use Username & Password</a>
+            <a class="btn secondary w-full text-center mt-16" href="login.php">Use Username & Password</a>
         <?php endif; ?>
     </div>
 </div>

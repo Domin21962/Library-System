@@ -25,10 +25,10 @@ include __DIR__ . '/includes/header.php';
     </nav>
 </div>
 
-<div class="content" style="max-width:1200px;margin:0 auto;">
+<div class="content wrap-1200">
     <h1 class="page-title">Dashboard</h1>
 
-    <div class="stats-row" style="margin-bottom:28px;">
+    <div class="stats-row mb-28">
         <div class="stat-card admin-stat">
             <div class="stat-value"><?= $totalBooks ?></div>
             <div class="stat-label">Total Books</div>
@@ -41,8 +41,8 @@ include __DIR__ . '/includes/header.php';
             <div class="stat-value"><?= $borrowedNow ?></div>
             <div class="stat-label">Currently Borrowed</div>
         </div>
-        <div class="stat-card admin-stat" style="<?= $overdueNow > 0 ? 'border-top-color:var(--danger) !important;' : '' ?>">
-            <div class="stat-value" style="<?= $overdueNow > 0 ? 'color:var(--danger);' : '' ?>"><?= $overdueNow ?></div>
+        <div class="stat-card admin-stat <?= $overdueNow > 0 ? 'stat-danger' : '' ?>">
+            <div class="stat-value <?= $overdueNow > 0 ? 'text-danger' : '' ?>"><?= $overdueNow ?></div>
             <div class="stat-label">Overdue</div>
         </div>
     </div>
@@ -51,7 +51,7 @@ include __DIR__ . '/includes/header.php';
         <a href="admin_books.php" class="dash-card">
             <div class="dash-icon">📖</div>
             <h3>Manage Books</h3>
-            <div class="dash-sub">Add new titles or remove ones no longer in circulation.</div>
+            <div class="dash-sub">Add, edit or remove titles in the catalog.</div>
             <div class="dash-count"><?= $totalBooks ?> book<?= $totalBooks === 1 ? '' : 's' ?> in the catalog →</div>
         </a>
 
@@ -60,6 +60,13 @@ include __DIR__ . '/includes/header.php';
             <h3>Manage Users</h3>
             <div class="dash-sub">View every registered account and remove ones you no longer need.</div>
             <div class="dash-count"><?= $totalUsers ?> registered user<?= $totalUsers === 1 ? '' : 's' ?> →</div>
+        </a>
+
+        <a href="admin_audit.php" class="dash-card">
+            <div class="dash-icon">🛡️</div>
+            <h3>Audit Logs</h3>
+            <div class="dash-sub">Sign-ins, lockouts and other security events, with filters.</div>
+            <div class="dash-count">View the log →</div>
         </a>
 
         <a href="admin_activity.php" class="dash-card">

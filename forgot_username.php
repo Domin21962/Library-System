@@ -40,7 +40,7 @@ include __DIR__ . '/includes/header.php';
         <input id="email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
         <?php if ($error): ?><div class="error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
         <?php if ($success): ?><div class="success"><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
-        <button type="submit" style="width:100%;">Send username reminder</button>
+        <button class="w-full" type="submit">Send username reminder</button>
     </form>
     <p class="footer-link"><a href="login.php">Back to login</a></p>
 </div></div>

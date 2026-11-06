@@ -55,7 +55,7 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <div class="reader-wrap">
-    <p style="margin:0 0 16px;"><a href="main.php">← Back to catalog</a></p>
+    <p class="m-0-0-16"><a href="main.php">← Back to catalog</a></p>
 
     <div class="reader-head" style="border-top:3px solid <?= genreColor($book['genre']) ?>;">
         <div class="book-card-top">
@@ -89,7 +89,7 @@ include __DIR__ . '/includes/header.php';
             once to download it:
             <br><br>
             Open a terminal in your project folder and run:<br>
-            <code style="color:var(--accent);">php tools/import_texts.php</code>
+            <code class="text-accent">php tools/import_texts.php</code>
             <br><br>
             It pulls the complete public-domain texts from Project Gutenberg straight into
             your <code>book.full_text</code> column. After it finishes, reload this page and

@@ -25,7 +25,7 @@ include __DIR__ . '/includes/header.php';
     </nav>
 </div>
 
-<div class="content" style="max-width:1200px;margin:0 auto;">
+<div class="content wrap-1200">
     <div class="page-header">
         <h1 class="page-title">🕒 Recent Activity</h1>
         <a href="admin.php" class="btn secondary">← Back to Dashboard</a>
@@ -44,7 +44,7 @@ include __DIR__ . '/includes/header.php';
                 <td><?= htmlspecialchars($a['username']) ?></td>
                 <td><?= htmlspecialchars($a['title']) ?></td>
                 <td><?= htmlspecialchars($a['borrow_date']) ?></td>
-                <td style="<?= $overdue ? 'color:var(--danger);font-weight:600;' : '' ?>">
+                <td class="<?= $overdue ? 'text-overdue' : '' ?>">
                     <?= !empty($a['due_date']) ? htmlspecialchars($a['due_date']) : '—' ?><?= $overdue ? ' (overdue)' : '' ?>
                 </td>
                 <td><?= $a['return_date'] ? htmlspecialchars($a['return_date']) : '—' ?></td>

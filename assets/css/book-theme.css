@@ -146,6 +146,12 @@ button.danger { background: linear-gradient(135deg, #b9564a, #a8453a); }
 .auth-illustration-panel svg [stroke='#3a4459'] { stroke: #4a3424; }
 .auth-illustration-panel svg [fill='#4a5468'], .auth-illustration-panel svg [stroke='#4a5468'] { fill: #6b5440; stroke: #6b5440; }
  
+/* ---------- responsive: wide tables scroll inside their own box instead of stretching the whole page ---------- */
+html, body { max-width: 100%; }
+table { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+/* the hidden file input on the QR page is wider than a phone screen; keep it inside its card */
+.qr-login-card { position: relative; overflow: hidden; }
+
 /* ---------- motion ---------- */
 @keyframes pageFade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }

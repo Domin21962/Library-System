@@ -1,0 +1,100 @@
+/* Doms Library - page-specific styles (moved out of the .php files). Loaded last by includes/header.php. */
+
+/* ---- login_verify.php ---- */
+    .login-confirm-profile {
+        text-align: center;
+        margin: 22px 0 20px;
+        padding: 18px 14px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--panel-2);
+    }
+    .login-confirm-avatar {
+        width: 82px;
+        height: 82px;
+        margin: 0 auto 12px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        color: #fff;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        border: 2px solid var(--border);
+        font-size: 30px;
+        font-weight: 700;
+    }
+    .login-confirm-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .login-confirm-name {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+    .login-confirm-email {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        overflow-wrap: anywhere;
+    }
+    .login-confirm-question {
+        margin: 0 0 8px;
+        font-weight: 700;
+    }
+
+/* ---- inline styles moved out of the .php pages (utility and component classes) ----
+   !important keeps the exact priority the old inline style="" had, so nothing shifts on any page. */
+.btn-small { margin-top:0 !important; padding:6px 14px !important; font-size:13px !important; }
+.btn-small-center { width:auto !important; margin:0 auto 8px !important; padding:8px 14px !important; font-size:13px !important; }
+.card-wide { max-width:none !important; padding:24px !important; }
+.card-wide-center { max-width:none !important; text-align:center !important; }
+.d-inline { display:inline !important; }
+.filter-row { display:flex !important; gap:10px !important; flex-wrap:wrap !important; margin:12px 0 !important; }
+.hero-card { text-align:center !important; padding:48px 24px !important; margin-bottom:28px !important; }
+.hero-text { max-width:560px !important; margin:12px auto 24px !important; }
+.hero-title { font-size:2.2rem !important; }
+.lh-15 { line-height:1.5 !important; }
+.link-btn { display:inline-block !important; text-decoration:none !important; }
+.m-0-0-16 { margin:0 0 16px !important; }
+.m-0-0-4 { margin:0 0 4px !important; }
+.m-8-0-0 { margin:8px 0 0 !important; }
+.max-460 { max-width:460px !important; }
+.max-480 { max-width:480px !important; }
+.max-520 { max-width:520px !important; }
+.mb-12 { margin-bottom:12px !important; }
+.mb-14 { margin-bottom:14px !important; }
+.mb-16 { margin-bottom:16px !important; }
+.mb-20 { margin-bottom:20px !important; }
+.mb-24 { margin-bottom:24px !important; }
+.mb-28 { margin-bottom:28px !important; }
+.mb-4 { margin-bottom:4px !important; }
+.mb-8 { margin-bottom:8px !important; }
+.ml-8-middle { margin-left:8px !important; vertical-align:middle !important; }
+.mono-muted { color:var(--muted) !important; font-family:monospace !important; }
+.mono-muted-inline { color:var(--muted) !important; font-family:monospace !important; font-size:13px !important; font-weight:400 !important; margin-left:8px !important; }
+.mt-0 { margin-top:0 !important; }
+.mt-10 { margin-top:10px !important; }
+.mt-16 { margin-top:16px !important; }
+.mt-18 { margin-top:18px !important; }
+.mt-24 { margin-top:24px !important; }
+.mt-8 { margin-top:8px !important; }
+.note-small { color:var(--muted) !important; font-size:12px !important; }
+.qr-code-box { display:flex !important; justify-content:center !important; align-items:center !important; background:#fff !important; padding:18px !important; border-radius:12px !important; margin:20px auto !important; width:max-content !important; max-width:100% !important; }
+.qr-countdown { font-weight:700 !important; color:var(--accent) !important; margin-top:12px !important; }
+.row-gap-10 { display:flex !important; gap:10px !important; }
+.section-title-gap { margin-top:30px !important; font-size:16px !important; }
+.text-accent { color:var(--accent) !important; }
+.text-center { text-align:center !important; }
+.text-left { text-align:left !important; }
+.w-full { width:100% !important; }
+.wrap-1000 { max-width:1000px !important; margin:0 auto !important; }
+.wrap-1100 { max-width:1100px !important; margin:0 auto !important; }
+.wrap-1200 { max-width:1200px !important; margin:0 auto !important; }
+.wrap-700 { max-width:700px !important; margin:0 auto !important; }
+.text-overdue { color: var(--danger) !important; font-weight: 600 !important; }
+.text-danger { color: var(--danger) !important; }
+.stat-danger { border-top-color: var(--danger) !important; }

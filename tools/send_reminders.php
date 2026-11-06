@@ -29,9 +29,10 @@ if (empty($mailConfig['enabled'])) {
 }
 
 // Books due within 2 days, or already overdue, that haven't been returned yet
-$sql = "SELECT br.id, br.username, br.email, br.due_date, b.title
+$sql = "SELECT br.id, br.username, u.email, br.due_date, b.title
         FROM borrow_return br
         JOIN book b ON br.book_id = b.book_id
+        JOIN users u ON u.username = br.username
         WHERE br.return_date IS NULL
           AND br.due_date IS NOT NULL
           AND br.due_date <= DATE_ADD(NOW(), INTERVAL 2 DAY)";

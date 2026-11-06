@@ -34,19 +34,19 @@ include __DIR__ . '/includes/header.php';
     </nav>
 </div>
 
-<div class="content" style="max-width:1200px;margin:0 auto;">
+<div class="content wrap-1200">
     <div class="page-header">
         <h1 class="page-title">📖 Manage Books</h1>
         <a href="admin.php" class="btn secondary">← Back to Dashboard</a>
     </div>
 
-    <?php if ($notice): ?><div class="success" style="margin-bottom:16px;"><?= htmlspecialchars($notice) ?></div><?php endif; ?>
+    <?php if ($notice): ?><div class="success mb-16"><?= htmlspecialchars($notice) ?></div><?php endif; ?>
 
     <div class="admin-section">
-        <div class="sub">Add new titles, or remove ones no longer in circulation.</div>
+        <div class="sub">Add new titles, edit their details, or remove ones no longer in circulation.</div>
         <a href="add_book.php" class="btn admin-btn">➕ Add a Book</a>
 
-        <table style="margin-top:18px;">
+        <table class="mt-18">
             <tr><th>ID</th><th>Title</th><th>Author</th><th>Genre</th><th>Status</th><th></th></tr>
             <?php foreach ($books as $b): ?>
             <tr>
@@ -62,12 +62,13 @@ include __DIR__ . '/includes/header.php';
                     <?php endif; ?>
                 </td>
                 <td>
-                    <form method="post" class="confirm-delete" data-message="Remove &quot;<?= htmlspecialchars(addslashes($b['title'])) ?>&quot; from the catalog?" style="display:inline;">
+                    <form method="post" class="confirm-delete d-inline" data-message="Remove &quot;<?= htmlspecialchars(addslashes($b['title'])) ?>&quot; from the catalog?">
                         <?= csrf_field() ?>
                         <input type="hidden" name="action" value="delete_book">
                         <input type="hidden" name="book_id" value="<?= (int)$b['book_id'] ?>">
                         <button type="submit" class="row-btn">Delete</button>
                     </form>
+                    <a href="edit_book.php?id=<?= (int)$b['book_id'] ?>" class="row-btn link-btn">Edit</a>
                 </td>
             </tr>
             <?php endforeach; ?>

@@ -26,7 +26,7 @@ include __DIR__ . '/includes/header.php';
     </nav>
 </div>
 
-<div class="content" style="max-width:1000px;margin:0 auto;">
+<div class="content wrap-1000">
     <h1 class="page-title">🧑‍🏫 Monitor Students</h1>
 
     <div class="admin-section">
@@ -45,7 +45,7 @@ include __DIR__ . '/includes/header.php';
                 <td><?= htmlspecialchars($s['username']) ?></td>
                 <td><?= (int)$s['total_borrows'] ?></td>
                 <td><?= (int)$s['active_borrows'] ?></td>
-                <td><a href="teacher_student_history.php?username=<?= urlencode($s['username']) ?>" class="btn secondary" style="margin-top:0;padding:6px 14px;font-size:13px;">View History →</a></td>
+                <td><a href="teacher_student_history.php?username=<?= urlencode($s['username']) ?>" class="btn secondary btn-small">View History →</a></td>
             </tr>
             <?php endforeach; ?>
         </table>

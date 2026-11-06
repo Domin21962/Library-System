@@ -69,7 +69,7 @@ include __DIR__ . '/includes/header.php';
                 <input type="password" name="confirm_password" required>
                 <?php if ($error): ?><div class="error"><?= htmlspecialchars($error) ?></div><?php endif; ?>
                 <?php if ($success): ?><div class="success"><?= htmlspecialchars($success) ?></div><?php endif; ?>
-                <button type="submit" style="width:100%;">Register</button>
+                <button class="w-full" type="submit">Register</button>
             </form>
             <p class="footer-link">
                 Already have an account? <a href="login.php">Back to Login</a>

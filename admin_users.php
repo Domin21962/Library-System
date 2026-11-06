@@ -36,14 +36,14 @@ include __DIR__ . '/includes/header.php';
     </nav>
 </div>
 
-<div class="content" style="max-width:1200px;margin:0 auto;">
+<div class="content wrap-1200">
     <div class="page-header">
         <h1 class="page-title">👥 Manage Users</h1>
         <a href="admin.php" class="btn secondary">← Back to Dashboard</a>
     </div>
 
-    <?php if ($notice): ?><div class="success" style="margin-bottom:16px;"><?= htmlspecialchars($notice) ?></div><?php endif; ?>
-    <?php if ($error): ?><div class="error" style="margin-bottom:16px;"><?= htmlspecialchars($error) ?></div><?php endif; ?>
+    <?php if ($notice): ?><div class="success mb-16"><?= htmlspecialchars($notice) ?></div><?php endif; ?>
+    <?php if ($error): ?><div class="error mb-16"><?= htmlspecialchars($error) ?></div><?php endif; ?>
 
     <div class="admin-section">
         <div class="sub">Everyone registered in WebShelf. Legacy prefixes are supported; new accounts default to Student.</div>
@@ -52,7 +52,7 @@ include __DIR__ . '/includes/header.php';
             <?php foreach ($users as $u): ?>
             <?php $r = getUserRole($u['username']); ?>
             <tr>
-                <td style="color:var(--muted);font-family:monospace;">USR-<?= str_pad((string)$u['id'], 5, '0', STR_PAD_LEFT) ?></td>
+                <td class="mono-muted">USR-<?= str_pad((string)$u['id'], 5, '0', STR_PAD_LEFT) ?></td>
                 <td>
                     <?php if ($r !== 'Admin'): ?>
                         <a href="admin_user_history.php?username=<?= urlencode($u['username']) ?>"><?= htmlspecialchars($u['username']) ?></a>
@@ -64,14 +64,14 @@ include __DIR__ . '/includes/header.php';
                 <td><span class="role-pill role-<?= strtolower($r) ?>"><?= htmlspecialchars($r) ?></span></td>
                 <td>
                     <?php if ($u['username'] !== $username): ?>
-                    <form method="post" class="confirm-delete" data-message="Delete the account &quot;<?= htmlspecialchars(addslashes($u['username'])) ?>&quot;? This can't be undone." style="display:inline;">
+                    <form method="post" class="confirm-delete d-inline" data-message="Delete the account &quot;<?= htmlspecialchars(addslashes($u['username'])) ?>&quot;? This can't be undone.">
                         <?= csrf_field() ?>
                         <input type="hidden" name="action" value="delete_user">
                         <input type="hidden" name="target_username" value="<?= htmlspecialchars($u['username']) ?>">
                         <button type="submit" class="row-btn">Delete</button>
                     </form>
                     <?php else: ?>
-                        <span style="color:var(--muted);font-size:12px;">(you)</span>
+                        <span class="note-small">(you)</span>
                     <?php endif; ?>
                 </td>
             </tr>

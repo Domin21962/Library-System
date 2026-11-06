@@ -190,11 +190,11 @@ include __DIR__ . '/includes/header.php';
     </nav>
 </div>
 
-<div class="reader-wrap" style="max-width:520px;">
-    <p style="margin:0 0 16px;"><a href="main.php">← Back to catalog</a></p>
+<div class="reader-wrap max-520">
+    <p class="m-0-0-16"><a href="main.php">← Back to catalog</a></p>
 
-    <div class="card" style="max-width:none;text-align:center;margin-bottom:20px;">
-        <h2 style="margin-bottom:4px;">My Profile & Information</h2>
+    <div class="card card-wide-center mb-20">
+        <h2 class="mb-4">My Profile & Information</h2>
         <div class="subtitle">Manage your account details and profile picture</div>
         <?php
         $picture = profilePictureUrl($user['profile_picture'] ?? null);
@@ -202,26 +202,26 @@ include __DIR__ . '/includes/header.php';
         $initial = defaultProfileInitials((string)$username);
         ?>
         <?php if ($requiresCodeConfirm && $picture): ?><img class="profile-avatar profile-avatar-image" src="<?= htmlspecialchars($picture) ?>" alt="Profile picture"><?php else: ?><div class="profile-avatar"><?= htmlspecialchars($initial) ?></div><?php endif; ?>
-        <h3 style="margin:0 0 4px;"><?= htmlspecialchars($username) ?></h3>
-        <div class="subtitle" style="margin-bottom:20px;"><?= htmlspecialchars($role) ?> account</div>
+        <h3 class="m-0-0-4"><?= htmlspecialchars($username) ?></h3>
+        <div class="subtitle mb-20"><?= htmlspecialchars($role) ?> account</div>
         <?php if ($requiresCodeConfirm): ?>
-        <form method="post" enctype="multipart/form-data" style="text-align:left;margin-bottom:12px;">
+        <form class="text-left mb-12" method="post" enctype="multipart/form-data">
             <?= csrf_field() ?><input type="hidden" name="form" value="upload_picture">
             <label for="profile_picture">Profile picture</label><input id="profile_picture" type="file" name="profile_picture" accept="image/jpeg,image/png,image/gif,image/webp" required>
-            <div style="color:var(--muted);font-size:12px;margin-top:8px;">JPG, PNG, GIF, or WEBP. Maximum 3 MB.</div>
-            <button type="submit" style="width:100%;">Upload / Change Picture</button>
+            <div class="note-small mt-8">JPG, PNG, GIF, or WEBP. Maximum 3 MB.</div>
+            <button class="w-full" type="submit">Upload / Change Picture</button>
         </form>
-        <?php if ($picture): ?><form method="post" style="margin-bottom:20px;"><?= csrf_field() ?><input type="hidden" name="form" value="remove_picture"><button type="submit" class="secondary" style="width:100%;margin-top:0;">Remove Picture</button></form><?php endif; ?>
+        <?php if ($picture): ?><form class="mb-20" method="post"><?= csrf_field() ?><input type="hidden" name="form" value="remove_picture"><button type="submit" class="secondary w-full mt-0">Remove Picture</button></form><?php endif; ?>
         <?php endif; ?>
-        <form method="post" style="text-align:left;">
+        <form class="text-left" method="post">
             <?= csrf_field() ?><input type="hidden" name="form" value="update_info"><label>Email</label><input type="text" name="email" value="<?= htmlspecialchars($user['email']) ?>" required><label>Current Password</label><input type="password" name="current_password" required placeholder="Required to save changes">
-            <?php if ($infoError): ?><div class="error"><?= htmlspecialchars($infoError) ?></div><?php endif; ?><?php if ($infoSuccess): ?><div class="success"><?= htmlspecialchars($infoSuccess) ?></div><?php endif; ?><button type="submit" style="width:100%;">Save Information</button>
+            <?php if ($infoError): ?><div class="error"><?= htmlspecialchars($infoError) ?></div><?php endif; ?><?php if ($infoSuccess): ?><div class="success"><?= htmlspecialchars($infoSuccess) ?></div><?php endif; ?><button class="w-full" type="submit">Save Information</button>
         </form>
     </div>
 
-    <div class="card" style="max-width:none;text-align:center;">
-        <button type="button" class="secondary" onclick="document.getElementById('password-panel').hidden = !document.getElementById('password-panel').hidden;" style="width:auto;margin:0 auto 8px;padding:8px 14px;font-size:13px;">🔒 Change Password</button><div id="password-panel" hidden>
-        <div class="subtitle" style="margin-bottom:20px;">
+    <div class="card card-wide-center">
+        <button type="button" class="secondary btn-small-center" onclick="document.getElementById('password-panel').hidden = !document.getElementById('password-panel').hidden;">🔒 Change Password</button><div id="password-panel" hidden>
+        <div class="subtitle mb-20">
             <?= $requiresCodeConfirm
                 ? "We'll email you a confirmation code before this takes effect."
                 : "Admin accounts change immediately, no confirmation code needed." ?>
@@ -229,7 +229,7 @@ include __DIR__ . '/includes/header.php';
 
         <?php if ($requiresCodeConfirm && $pendingCode): ?>
             <!-- Step 2: enter the code that was emailed -->
-            <form method="post" style="text-align:left;">
+            <form class="text-left" method="post">
                 <?= csrf_field() ?>
                 <input type="hidden" name="form" value="confirm_code">
                 <label>Confirmation Code</label>
@@ -238,21 +238,21 @@ include __DIR__ . '/includes/header.php';
                 <?php if ($pwError): ?><div class="error"><?= htmlspecialchars($pwError) ?></div><?php endif; ?>
                 <?php if ($pwSuccess): ?><div class="success"><?= htmlspecialchars($pwSuccess) ?></div><?php endif; ?>
 
-                <button type="submit" style="width:100%;">Confirm & Change Password</button>
+                <button class="w-full" type="submit">Confirm & Change Password</button>
             </form>
-            <form method="post" style="display:flex;gap:10px;margin-top:10px;">
+            <form class="row-gap-10 mt-10" method="post">
                 <?= csrf_field() ?>
                 <input type="hidden" name="form" value="resend_code">
-                <button type="submit" class="secondary" style="width:100%;margin-top:0;">Resend Code</button>
+                <button type="submit" class="secondary w-full mt-0">Resend Code</button>
             </form>
-            <form method="post" style="margin-top:10px;">
+            <form class="mt-10" method="post">
                 <?= csrf_field() ?>
                 <input type="hidden" name="form" value="cancel_code">
-                <button type="submit" class="secondary" style="width:100%;margin-top:0;">Cancel</button>
+                <button type="submit" class="secondary w-full mt-0">Cancel</button>
             </form>
         <?php else: ?>
             <!-- Step 1: request the change -->
-            <form method="post" style="text-align:left;">
+            <form class="text-left" method="post">
                 <?= csrf_field() ?>
                 <input type="hidden" name="form" value="change_password">
                 <label>New Password</label>
@@ -265,7 +265,7 @@ include __DIR__ . '/includes/header.php';
                 <?php if ($pwError): ?><div class="error"><?= htmlspecialchars($pwError) ?></div><?php endif; ?>
                 <?php if ($pwSuccess && !$pendingCode): ?><div class="success"><?= htmlspecialchars($pwSuccess) ?></div><?php endif; ?>
 
-                <button type="submit" style="width:100%;"><?= $requiresCodeConfirm ? 'Send Confirmation Code' : 'Change Password' ?></button>
+                <button class="w-full" type="submit"><?= $requiresCodeConfirm ? 'Send Confirmation Code' : 'Change Password' ?></button>
             </form>
         <?php endif; ?>
         </div>

@@ -39,7 +39,7 @@ include __DIR__ . '/includes/header.php';
             <input type="number" name="book_id" required>
             <?php if ($error): ?><div class="error"><?= htmlspecialchars($error) ?></div><?php endif; ?>
             <?php if ($success): ?><div class="success"><?= htmlspecialchars($success) ?></div><?php endif; ?>
-            <button type="submit" class="danger" style="width:100%;">Remove</button>
+            <button type="submit" class="danger w-full">Remove</button>
         </form>
         <p class="footer-link"><a href="admin_books.php">← Back to Manage Books</a></p>
     </div>

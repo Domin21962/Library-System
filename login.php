@@ -120,10 +120,10 @@ include __DIR__ . '/includes/header.php';
                 <label>Password</label>
                 <input type="password" name="password" required>
                 <?php if ($error): ?><div class="error"><?= htmlspecialchars($error) ?></div><?php endif; ?>
-                <button type="submit" style="width:100%;">Login</button>
+                <button class="w-full" type="submit">Login</button>
             </form>
-            <a class="btn secondary" href="qr_login.php" style="width:100%;text-align:center;margin-top:10px;">▣ Login with QR Code</a>
-            <p class="footer-link" style="margin-bottom:8px;">
+            <a class="btn secondary w-full text-center mt-10" href="qr_login.php">▣ Login with QR Code</a>
+            <p class="footer-link mb-8">
                 <a href="forgot_password.php">Forgot password?</a> · <a href="forgot_username.php">Forgot username?</a>
             </p>
             <p class="footer-link">
