@@ -12,5 +12,5 @@ return [
     'mail_username' => 'your-sending-account@example.com',
     'mail_password' => 'PASTE_A_NEW_APP_PASSWORD_HERE',
     'mail_from_email' => 'your-sending-account@example.com',
-    'mail_from_name' => 'Doms Library',
+    'mail_from_name' => 'WebShelf',
 ];

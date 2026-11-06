@@ -62,7 +62,7 @@ while (!connection_aborted()) {
         }
         flush();
     } catch (Throwable $e) {
-        error_log('Doms Library SSE error: ' . $e->getMessage());
+        error_log('WebShelf SSE error: ' . $e->getMessage());
         echo "event: error\n";
         echo 'data: ' . json_encode(['message' => 'Notification stream temporarily unavailable.']) . "\n\n";
         flush();

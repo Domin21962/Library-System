@@ -128,7 +128,7 @@ $pageTitle = "Borrow & Return";
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="topbar">
-    <div class="brand">📚 Doms Library</div>
+    <div class="brand">📚 WebShelf</div>
     <nav>
         <a href="main.php">Main</a>
         <a href="qr_login.php">QR Login</a>

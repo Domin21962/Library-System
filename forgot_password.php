@@ -25,16 +25,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare("INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE))");
                 $stmt->execute([(int)$user['id'], $tokenHash]);
                 $resetUrl = recoveryBaseUrl() . '/reset_password.php?token=' . urlencode($rawToken);
-                sendLibraryEmail($user['email'], 'Doms Library: Reset your password', buildPasswordResetEmail($user['username'], $resetUrl), true);
+                sendLibraryEmail($user['email'], 'WebShelf: Reset your password', buildPasswordResetEmail($user['username'], $resetUrl), true);
                 auditLog($pdo, 'password_recovery_requested', $user['username']);
             }
         } catch (Throwable $e) {
-            error_log('Doms Library password recovery failed: ' . $e->getMessage());
+            error_log('WebShelf password recovery failed: ' . $e->getMessage());
         }
         $success = 'If an account is registered with that email, a password reset link will be sent shortly.';
     }
 }
-$pageTitle = 'Forgot Password - Doms Library';
+$pageTitle = 'Forgot Password - WebShelf';
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="auth-wrapper"><div class="card">

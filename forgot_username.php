@@ -19,16 +19,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $usernames = array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'username');
             $mailConfig = require __DIR__ . '/config/mail.php';
             if ($usernames && !empty($mailConfig['enabled']) && !empty($mailConfig['configured'])) {
-                $sent = sendLibraryEmail($email, 'Doms Library: Username reminder', buildUsernameRecoveryEmail($usernames), true);
+                $sent = sendLibraryEmail($email, 'WebShelf: Username reminder', buildUsernameRecoveryEmail($usernames), true);
                 auditLog($pdo, 'username_recovery_email_sent', null, ['matched_accounts' => count($usernames)]);
             }
         } catch (Throwable $e) {
-            error_log('Doms Library username recovery failed: ' . $e->getMessage());
+            error_log('WebShelf username recovery failed: ' . $e->getMessage());
         }
         $success = 'If an account is registered with that email, a username reminder will be sent shortly.';
     }
 }
-$pageTitle = 'Forgot Username - Doms Library';
+$pageTitle = 'Forgot Username - WebShelf';
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="auth-wrapper"><div class="card">

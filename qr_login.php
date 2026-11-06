@@ -117,12 +117,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form'] ?? '') === 'generat
     }
 }
 
-$pageTitle = 'QR Login - Doms Library';
+$pageTitle = 'QR Login - WebShelf';
 include __DIR__ . '/includes/header.php';
 ?>
 <?php if (!empty($_SESSION['username'])): ?>
 <div class="topbar">
-    <div class="brand">📚 Doms Library <span class="badge"><?= htmlspecialchars($_SESSION['username']) ?> · <?= htmlspecialchars($_SESSION['role'] ?? '') ?></span></div>
+    <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($_SESSION['username']) ?> · <?= htmlspecialchars($_SESSION['role'] ?? '') ?></span></div>
     <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="qrNav">☰</button>
     <nav id="qrNav">
         <a href="main.php">Catalog</a>
@@ -140,7 +140,7 @@ include __DIR__ . '/includes/header.php';
             <?php if (!empty($_SESSION['username'])): ?>
                 Create a temporary QR code that can sign in to this account on another device.
             <?php else: ?>
-                Scan a QR code generated from a device that is already logged in to your Doms Library account.
+                Scan a QR code generated from a device that is already logged in to your WebShelf account.
             <?php endif; ?>
         </div>
 
@@ -177,7 +177,7 @@ include __DIR__ . '/includes/header.php';
 
             <label class="qr-file-label" for="qr-image-input">📱 Scan a QR image with your phone camera</label>
             <input id="qr-image-input" class="qr-file-input" type="file" accept="image/*" capture="environment">
-            <div class="qr-help">On Android, this opens the phone camera/file picker. Take a clear photo of the QR code and Doms Library will read it.</div>
+            <div class="qr-help">On Android, this opens the phone camera/file picker. Take a clear photo of the QR code and WebShelf will read it.</div>
 
             <a class="btn secondary" href="login.php" style="width:100%;margin-top:16px;text-align:center;">Use Username & Password</a>
         <?php endif; ?>
@@ -240,7 +240,7 @@ const timer = setInterval(() => {
         if (!decodedText || handled) return;
 
         if (!isValidDomsQr(decodedText)) {
-            setStatus('That is not a valid Doms Library login QR code.');
+            setStatus('That is not a valid WebShelf login QR code.');
             return;
         }
 
@@ -276,7 +276,7 @@ const timer = setInterval(() => {
 
         if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             warning.style.display = 'block';
-            warning.innerHTML = '<strong>Live camera scanning needs HTTPS.</strong><br>This page is currently using HTTP. Open Doms Library over <strong>HTTPS</strong> on your phone, or use the camera/photo option below.';
+            warning.innerHTML = '<strong>Live camera scanning needs HTTPS.</strong><br>This page is currently using HTTP. Open WebShelf over <strong>HTTPS</strong> on your phone, or use the camera/photo option below.';
             setStatus('Live camera is unavailable on this HTTP address.');
             return;
         }
@@ -306,7 +306,7 @@ const timer = setInterval(() => {
             running = true;
             startButton.style.display = 'none';
             switchButton.style.display = cameras.length > 1 ? 'inline-block' : 'none';
-            setStatus('Camera ready. Point it at the Doms Library QR code.');
+            setStatus('Camera ready. Point it at the WebShelf QR code.');
         } catch (e) {
             running = false;
             warning.style.display = 'block';
@@ -327,7 +327,7 @@ const timer = setInterval(() => {
                 onScanError
             );
             running = true;
-            setStatus('Camera switched. Point it at the Doms Library QR code.');
+            setStatus('Camera switched. Point it at the WebShelf QR code.');
         } catch (e) {
             setStatus('Could not switch camera.');
         }
@@ -342,7 +342,7 @@ const timer = setInterval(() => {
             const decodedText = await scanner.scanFile(file, true);
             handleDecoded(decodedText);
         } catch (e) {
-            setStatus('No readable Doms Library QR code was found in that image. Try again with the full QR visible and in focus.');
+            setStatus('No readable WebShelf QR code was found in that image. Try again with the full QR visible and in focus.');
         }
     }
 

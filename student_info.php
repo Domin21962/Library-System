@@ -60,7 +60,7 @@ function sendPasswordCode(PDO $pdo, string $username, string $email, string $new
     $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
     $code = storePasswordCode($pdo, $username, $passwordHash, $expiryMinutes);
     $html = buildPasswordCodeEmail($username, $code, $expiryMinutes);
-    sendLibraryEmail($email, "Your Doms Library password change code", $html, true);
+    sendLibraryEmail($email, "Your WebShelf password change code", $html, true);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -163,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->prepare("UPDATE password_reset_codes SET used = 1 WHERE id = ?")->execute([$pending['id']]);
             $newCode = storePasswordCode($pdo, $username, (string)$pending['new_password'], $CODE_EXPIRY_MINUTES);
             $html = buildPasswordCodeEmail($username, $newCode, $CODE_EXPIRY_MINUTES);
-            sendLibraryEmail($user['email'], "Your Doms Library password change code", $html, true);
+            sendLibraryEmail($user['email'], "Your WebShelf password change code", $html, true);
             $pwSuccess = "We sent a new code to {$user['email']}.";
         }
     }
@@ -180,7 +180,7 @@ $pageTitle = "My Info";
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="topbar">
-    <div class="brand">📚 Doms Library <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars($role) ?></span></div>
+    <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars($role) ?></span></div>
     <nav>
         <a href="main.php">Catalog</a>
         <a href="borrow_return.php">Borrow &amp; Return</a>

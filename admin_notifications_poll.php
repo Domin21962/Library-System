@@ -41,7 +41,7 @@ try {
         'items' => $stmt->fetchAll(PDO::FETCH_ASSOC)
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 } catch (Throwable $e) {
-    error_log('Doms Library notification poll error: ' . $e->getMessage());
+    error_log('WebShelf notification poll error: ' . $e->getMessage());
     http_response_code(500);
     echo json_encode(['ok' => false, 'message' => 'Notification service temporarily unavailable.']);
 }

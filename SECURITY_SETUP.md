@@ -1,4 +1,4 @@
-# Doms Library Security Setup
+# WebShelf Security Setup
 
 ## Before deployment
 1. Revoke any SMTP app password that was previously present in the project ZIP. Create a new one only after the old one is revoked.

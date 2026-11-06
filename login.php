@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 try {
                     $pending = createLoginConfirmation($pdo, $username, $email, 10);
-                    $subject = 'Doms Library: Is this you?';
+                    $subject = 'WebShelf: Is this you?';
                     $body = buildLoginConfirmationEmail($username, $pending['code'], $pending['expires_minutes']);
                     if (!sendLibraryEmail($email, $subject, $body, true)) {
                         $error = "We could not send the confirmation email. Check config/local.php SMTP settings.";
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         redirect('login_verify.php');
                     }
                 } catch (Throwable $e) {
-                    error_log('Doms Library login confirmation failed: ' . $e->getMessage());
+                    error_log('WebShelf login confirmation failed: ' . $e->getMessage());
                     $error = "Unable to start email confirmation. Please try again.";
                 }
             }
@@ -96,13 +96,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = "Login - Doms Library";
+$pageTitle = "Login - WebShelf";
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="auth-split">
     <div class="auth-illustration-panel">
         <div class="auth-brand-lockup">
-            <span class="logo-mark">📚</span> Doms Library
+            <span class="logo-mark">📚</span> WebShelf
         </div>
         <?php include __DIR__ . '/includes/library_illustration.svg'; ?>
         <div class="auth-tagline">
@@ -112,7 +112,7 @@ include __DIR__ . '/includes/header.php';
     <div class="auth-form-panel">
         <div class="card">
             <h2>Welcome back</h2>
-            <div class="subtitle">Log in to your Doms Library account</div>
+            <div class="subtitle">Log in to your WebShelf account</div>
             <form method="post">
                 <?= csrf_field() ?>
                 <label>Username</label>

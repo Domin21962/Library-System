@@ -1,4 +1,4 @@
--- Doms Library security migration (run in phpMyAdmin against library_db)
+-- WebShelf security migration (run in phpMyAdmin against library_db)
 -- 1) Create a least-privilege application user (change the password first).
 CREATE USER IF NOT EXISTS 'doms_library'@'localhost' IDENTIFIED BY 'CHANGE_THIS_STRONG_PASSWORD';
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX ON library_db.* TO 'doms_library'@'localhost';

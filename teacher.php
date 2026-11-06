@@ -14,11 +14,11 @@ $students = $pdo->query(
      FROM users WHERE username LIKE 'SD.%' ORDER BY username"
 )->fetchAll(PDO::FETCH_ASSOC);
 
-$pageTitle = "Monitor Students - Doms Library";
+$pageTitle = "Monitor Students - WebShelf";
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="topbar">
-    <div class="brand">📚 Doms Library <span class="badge"><?= htmlspecialchars($username) ?> · Teacher</span></div>
+    <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · Teacher</span></div>
     <nav>
         <a href="qr_login.php">QR Login</a>
         <a href="profile.php">Profile</a>

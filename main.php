@@ -53,11 +53,11 @@ $borrowedNow = $pdo->query("SELECT COUNT(*) FROM borrow_return WHERE return_date
 $availableNow = $totalBooks - $borrowedNow;
 $genres = $pdo->query("SELECT DISTINCT genre FROM book ORDER BY genre")->fetchAll(PDO::FETCH_COLUMN);
 
-$pageTitle = "Doms Library - Main";
+$pageTitle = "WebShelf - Main";
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="topbar">
-    <div class="brand">📚 Doms Library <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars($role) ?></span></div>
+    <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars($role) ?></span></div>
     <nav>
         <?php if ($role === 'Admin'): ?>
             <a href="admin.php">⚙️ Admin Panel</a>

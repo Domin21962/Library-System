@@ -23,11 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
 // Admin accounts are excluded from this list entirely
 $users = $pdo->query("SELECT id, username, email FROM users ORDER BY username")->fetchAll(PDO::FETCH_ASSOC);
 
-$pageTitle = "Manage Users - Doms Library";
+$pageTitle = "Manage Users - WebShelf";
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="topbar admin-topbar">
-    <div class="brand">⚙️ Doms Library <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
+    <div class="brand">⚙️ WebShelf <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
     <nav>
         <a href="admin.php">← Dashboard</a>
         <a href="main.php">📚 View Catalog</a>
@@ -46,7 +46,7 @@ include __DIR__ . '/includes/header.php';
     <?php if ($error): ?><div class="error" style="margin-bottom:16px;"><?= htmlspecialchars($error) ?></div><?php endif; ?>
 
     <div class="admin-section">
-        <div class="sub">Everyone registered in Doms Library. Legacy prefixes are supported; new accounts default to Student.</div>
+        <div class="sub">Everyone registered in WebShelf. Legacy prefixes are supported; new accounts default to Student.</div>
         <table>
             <tr><th>User ID</th><th>Username</th><th>Email</th><th>Role</th><th></th></tr>
             <?php foreach ($users as $u): ?>

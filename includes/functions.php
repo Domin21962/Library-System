@@ -100,7 +100,7 @@ function ensureUserProfileColumn(PDO $pdo): bool {
         $ready = true;
         return true;
     } catch (Throwable $e) {
-        error_log('Doms Library profile column setup failed: ' . $e->getMessage());
+        error_log('WebShelf profile column setup failed: ' . $e->getMessage());
         return false;
     }
 }
@@ -159,7 +159,7 @@ function ensureAdminNotificationsTable(PDO $pdo): bool {
         $ready = true;
         return true;
     } catch (Throwable $e) {
-        error_log('Doms Library admin notification table setup failed: ' . $e->getMessage());
+        error_log('WebShelf admin notification table setup failed: ' . $e->getMessage());
         return false;
     }
 }
@@ -173,7 +173,7 @@ function createAdminNotification(PDO $pdo, string $eventType, string $username, 
         auditLog($pdo, 'notification_created', $username, ['event_type' => $eventType, 'book_id' => $bookId]);
         return true;
     } catch (Throwable $e) {
-        error_log('Doms Library admin notification failed: ' . $e->getMessage());
+        error_log('WebShelf admin notification failed: ' . $e->getMessage());
         return false;
     }
 }

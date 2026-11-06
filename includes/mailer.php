@@ -30,7 +30,7 @@ function smtpSend(array $config, string $to, string $subject, string $body, bool
     $username = $config['username'];
     $password = $config['password'];
     $fromEmail = $config['from_email'];
-    $fromName = $config['from_name'] ?? 'Doms Library';
+    $fromName = $config['from_name'] ?? 'WebShelf';
 
     $transport = ($encryption === 'ssl') ? 'ssl://' : '';
     $socket = @stream_socket_client(
@@ -149,7 +149,7 @@ function buildReceiptEmail(string $type, array $data): string {
              style="background:#ffffff;border:1px solid #e2e5ea;border-radius:10px;overflow:hidden;">
         <tr>
           <td style="background:#111827;color:#ffffff;padding:20px 24px;">
-            <div style="font-size:13px;letter-spacing:1px;opacity:0.7;">DOMS LIBRARY</div>
+            <div style="font-size:13px;letter-spacing:1px;opacity:0.7;">WebShelf</div>
             <div style="font-size:20px;font-weight:bold;margin-top:4px;">' . htmlspecialchars($heading) . '</div>
           </td>
         </tr>
@@ -172,7 +172,7 @@ function buildReceiptEmail(string $type, array $data): string {
         <tr>
           <td style="padding:16px 24px;background:#f9fafb;border-top:1px dashed #d7dbe2;
                      font-size:12px;color:#6b7280;text-align:center;">
-            This is an automated receipt from the Doms Library.<br>Please keep it for your records.
+            This is an automated receipt from the WebShelf.<br>Please keep it for your records.
           </td>
         </tr>
       </table>
@@ -204,7 +204,7 @@ function buildPasswordCodeEmail(string $username, string $code, int $expiresInMi
              style="background:#ffffff;border:1px solid #e2e5ea;border-radius:10px;overflow:hidden;">
         <tr>
           <td style="background:#111827;color:#ffffff;padding:20px 24px;">
-            <div style="font-size:13px;letter-spacing:1px;opacity:0.7;">DOMS LIBRARY</div>
+            <div style="font-size:13px;letter-spacing:1px;opacity:0.7;">WebShelf</div>
             <div style="font-size:20px;font-weight:bold;margin-top:4px;">Confirm your password change</div>
           </td>
         </tr>
@@ -230,7 +230,7 @@ function buildPasswordCodeEmail(string $username, string $code, int $expiresInMi
         <tr>
           <td style="padding:16px 24px;background:#f9fafb;border-top:1px dashed #d7dbe2;
                      font-size:12px;color:#6b7280;text-align:center;">
-            This is an automated message from the Doms Library. Please don\'t reply to it.
+            This is an automated message from the WebShelf. Please don\'t reply to it.
           </td>
         </tr>
       </table>
@@ -244,7 +244,7 @@ function buildPasswordCodeEmail(string $username, string $code, int $expiresInMi
 function buildLoginConfirmationEmail(string $username, string $code, int $expiresInMinutes): string {
     $safeUser = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
     $safeCode = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
-    return "<!doctype html><html><body style=\"font-family:Arial,sans-serif;background:#f4f6fb;padding:24px\"><div style=\"max-width:480px;margin:auto;background:#fff;padding:28px;border-radius:12px\"><h2>Doms Library login confirmation</h2><p>Hi {$safeUser},</p><p>Someone just tried to sign in to your account. <strong>Is this you?</strong></p><p>If it was you, enter this one-time code:</p><div style=\"font-size:32px;font-weight:700;letter-spacing:8px;text-align:center;padding:18px;background:#eef2ff;border-radius:8px\">{$safeCode}</div><p>This code expires in {$expiresInMinutes} minutes and can only be used once.</p><p>If you did not try to sign in, change your password and contact a library administrator.</p></div></body></html>";
+    return "<!doctype html><html><body style=\"font-family:Arial,sans-serif;background:#f4f6fb;padding:24px\"><div style=\"max-width:480px;margin:auto;background:#fff;padding:28px;border-radius:12px\"><h2>WebShelf login confirmation</h2><p>Hi {$safeUser},</p><p>Someone just tried to sign in to your account. <strong>Is this you?</strong></p><p>If it was you, enter this one-time code:</p><div style=\"font-size:32px;font-weight:700;letter-spacing:8px;text-align:center;padding:18px;background:#eef2ff;border-radius:8px\">{$safeCode}</div><p>This code expires in {$expiresInMinutes} minutes and can only be used once.</p><p>If you did not try to sign in, change your password and contact a library administrator.</p></div></body></html>";
 }
 
 
@@ -253,9 +253,9 @@ function buildUsernameRecoveryEmail(array $usernames): string {
     foreach ($usernames as $username) {
         $items .= '<li style="margin:6px 0;">' . htmlspecialchars((string)$username, ENT_QUOTES, 'UTF-8') . '</li>';
     }
-    return '<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f2f4f7;padding:24px;"><div style="max-width:420px;margin:auto;background:#fff;padding:24px;border-radius:10px;"><h2>Doms Library username reminder</h2><p>We received a request to find the username(s) connected to this email address.</p><ul>' . $items . '</ul><p>If you did not request this, you can ignore this email.</p></div></body></html>';
+    return '<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f2f4f7;padding:24px;"><div style="max-width:420px;margin:auto;background:#fff;padding:24px;border-radius:10px;"><h2>WebShelf username reminder</h2><p>We received a request to find the username(s) connected to this email address.</p><ul>' . $items . '</ul><p>If you did not request this, you can ignore this email.</p></div></body></html>';
 }
 
 function buildPasswordResetEmail(string $username, string $resetUrl, int $expiresMinutes = 15): string {
-    return '<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f2f4f7;padding:24px;"><div style="max-width:420px;margin:auto;background:#fff;padding:24px;border-radius:10px;"><h2>Reset your Doms Library password</h2><p>Hello <strong>' . htmlspecialchars($username, ENT_QUOTES, 'UTF-8') . '</strong>,</p><p>Click the button below to create a new password. This link expires in ' . (int)$expiresMinutes . ' minutes.</p><p><a href="' . htmlspecialchars($resetUrl, ENT_QUOTES, 'UTF-8') . '" style="display:inline-block;padding:12px 18px;background:#5b8cff;color:#fff;text-decoration:none;border-radius:8px;">Reset password</a></p><p>If you did not request this, ignore this email.</p></div></body></html>';
+    return '<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f2f4f7;padding:24px;"><div style="max-width:420px;margin:auto;background:#fff;padding:24px;border-radius:10px;"><h2>Reset your WebShelf password</h2><p>Hello <strong>' . htmlspecialchars($username, ENT_QUOTES, 'UTF-8') . '</strong>,</p><p>Click the button below to create a new password. This link expires in ' . (int)$expiresMinutes . ' minutes.</p><p><a href="' . htmlspecialchars($resetUrl, ENT_QUOTES, 'UTF-8') . '" style="display:inline-block;padding:12px 18px;background:#5b8cff;color:#fff;text-decoration:none;border-radius:8px;">Reset password</a></p><p>If you did not request this, ignore this email.</p></div></body></html>';
 }

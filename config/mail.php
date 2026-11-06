@@ -11,7 +11,7 @@ $config = [
     'username' => trim((string)($local['mail_username'] ?? getenv('DOMS_MAIL_USERNAME') ?: '')),
     'password' => (string)($local['mail_password'] ?? getenv('DOMS_MAIL_PASSWORD') ?: ''),
     'from_email' => trim((string)($local['mail_from_email'] ?? getenv('DOMS_MAIL_FROM_EMAIL') ?: '')),
-    'from_name' => trim((string)($local['mail_from_name'] ?? getenv('DOMS_MAIL_FROM_NAME') ?: 'Doms Library')),
+    'from_name' => trim((string)($local['mail_from_name'] ?? getenv('DOMS_MAIL_FROM_NAME') ?: 'WebShelf')),
 ];
 
 $config['configured'] =

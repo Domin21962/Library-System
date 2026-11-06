@@ -77,7 +77,7 @@ function auditLog(?PDO $pdo, string $action, ?string $username = null, array $me
         $stmt = $pdo->prepare('INSERT INTO security_audit_logs (username, action, ip_address, user_agent, metadata) VALUES (?, ?, ?, ?, ?)');
         $stmt->execute([$username, $action, securityClientIp(), substr((string)($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 255), json_encode($metadata, JSON_UNESCAPED_SLASHES)]);
     } catch (Throwable $e) {
-        error_log('Doms Library audit log failed: ' . $e->getMessage());
+        error_log('WebShelf audit log failed: ' . $e->getMessage());
     }
 }
 

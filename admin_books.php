@@ -21,11 +21,11 @@ $books = $pdo->query(
      FROM book b ORDER BY b.title"
 )->fetchAll(PDO::FETCH_ASSOC);
 
-$pageTitle = "Manage Books - Doms Library";
+$pageTitle = "Manage Books - WebShelf";
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="topbar admin-topbar">
-    <div class="brand">⚙️ Doms Library <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
+    <div class="brand">⚙️ WebShelf <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
     <nav>
         <a href="admin.php">← Dashboard</a>
         <a href="main.php">📚 View Catalog</a>

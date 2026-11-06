@@ -12,11 +12,11 @@ $borrowedNow = (int)$pdo->query("SELECT COUNT(*) FROM borrow_return WHERE return
 $overdueNow = (int)$pdo->query("SELECT COUNT(*) FROM borrow_return WHERE return_date IS NULL AND due_date IS NOT NULL AND due_date < NOW()")->fetchColumn();
 $recentCount = (int)$pdo->query("SELECT COUNT(*) FROM borrow_return")->fetchColumn();
 
-$pageTitle = "Admin Panel - Doms Library";
+$pageTitle = "Admin Panel - WebShelf";
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="topbar admin-topbar" data-admin-dashboard="1">
-    <div class="brand">⚙️ Doms Library <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
+    <div class="brand">⚙️ WebShelf <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
     <nav>
         <a href="main.php">📚 View Catalog</a>
         <a href="qr_login.php">QR Login</a>

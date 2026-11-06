@@ -14,7 +14,7 @@ try {
         PDO::ATTR_EMULATE_PREPARES => false,
     ]);
 } catch (PDOException $e) {
-    error_log('Doms Library database connection failed: ' . $e->getMessage());
+    error_log('WebShelf database connection failed: ' . $e->getMessage());
     http_response_code(500);
     exit('Database connection failed. Check the server configuration and PHP error log.');
 }

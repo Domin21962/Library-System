@@ -1,4 +1,4 @@
-# Doms Library SMTP setup
+# WebShelf SMTP setup
 
 Teacher and student accounts require email confirmation. Admin accounts do not.
 
@@ -26,7 +26,7 @@ Use a Google App Password, not your normal Google account password.
 'mail_username' => 'your-account@gmail.com',
 'mail_password' => 'YOUR_16_CHARACTER_APP_PASSWORD',
 'mail_from_email' => 'your-account@gmail.com',
-'mail_from_name' => 'Doms Library',
+'mail_from_name' => 'WebShelf',
 ```
 
 The sending address should match the authenticated Gmail account unless your provider allows a configured alias.

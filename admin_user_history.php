@@ -43,11 +43,11 @@ foreach ($records as $r) {
     }
 }
 
-$pageTitle = "History: {$targetUser['username']} - Doms Library";
+$pageTitle = "History: {$targetUser['username']} - WebShelf";
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="topbar admin-topbar">
-    <div class="brand">⚙️ Doms Library <span class="badge">Admin · <?= htmlspecialchars($adminUsername) ?></span></div>
+    <div class="brand">⚙️ WebShelf <span class="badge">Admin · <?= htmlspecialchars($adminUsername) ?></span></div>
     <nav>
         <a href="admin_users.php">← Manage Users</a>
         <a href="admin.php">Dashboard</a>

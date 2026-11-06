@@ -31,12 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $user) {
         $user = null;
     }
 }
-$pageTitle = 'Reset Password - Doms Library';
+$pageTitle = 'Reset Password - WebShelf';
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="auth-wrapper"><div class="card">
     <h2>Reset password</h2>
-    <div class="subtitle">Create a new password for your Doms Library account.</div>
+    <div class="subtitle">Create a new password for your WebShelf account.</div>
     <?php if ($success): ?><div class="success"><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div><p class="footer-link"><a href="login.php">Return to login</a></p>
     <?php elseif ($user): ?>
     <form method="post">

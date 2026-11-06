@@ -138,7 +138,7 @@
         function maybeSystemNotification(item) {
             if (!('Notification' in window) || Notification.permission !== 'granted') return;
             try {
-                new Notification(item.event_type === 'return' ? 'Doms Library — Book Returned' : 'Doms Library — Book Borrowed', {
+                new Notification(item.event_type === 'return' ? 'WebShelf — Book Returned' : 'WebShelf — Book Borrowed', {
                     body: item.username + ' · ' + item.book_title,
                     tag: 'doms-library-' + item.id
                 });

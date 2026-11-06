@@ -1,4 +1,4 @@
--- QR login tokens for Doms Library
+-- QR login tokens for WebShelf
 USE library_db;
 
 CREATE TABLE IF NOT EXISTS qr_login_tokens (

@@ -40,13 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = "Register - Doms Library";
+$pageTitle = "Register - WebShelf";
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="auth-split">
     <div class="auth-illustration-panel">
         <div class="auth-brand-lockup">
-            <span class="logo-mark">📚</span> Doms Library
+            <span class="logo-mark">📚</span> WebShelf
         </div>
         <?php include __DIR__ . '/includes/library_illustration.svg'; ?>
         <div class="auth-tagline">

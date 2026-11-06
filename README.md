@@ -1,4 +1,4 @@
-# Doms Library (PHP port)
+# WebShelf (PHP port)
 
 A PHP + MySQL port of the original Java Swing/NetBeans library system, built to run in **Laragon** and edited in **VSCode**.
 
@@ -179,12 +179,12 @@ The login page also has a **Login with QR Code** option that can use the device 
 
 Live camera scanning from a browser requires a **secure context (HTTPS)** on modern Android/iOS browsers. If the site is opened as `http://192.168.x.x/...`, the browser can block `getUserMedia()` camera access even when the camera works normally.
 
-This version of Doms Library therefore:
+This version of WebShelf therefore:
 
 - uses the rear/environment camera when available;
 - asks for camera permission only after the user taps **Start Camera**;
 - supports switching between available cameras;
-- validates that scanned QR codes are Doms Library login URLs before navigating;
+- validates that scanned QR codes are WebShelf login URLs before navigating;
 - keeps the existing 60-second, one-time QR token security;
 - provides a native phone camera/photo fallback when live camera access is unavailable;
 - clearly tells the user when HTTPS is required.
