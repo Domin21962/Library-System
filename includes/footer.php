@@ -1,3 +1,5 @@
+<!-- Shared page footer, included at the bottom of every page. Access: include only, no inputs, no tables. -->
+<!-- Delete-confirmation modal, opened by the script below for forms marked confirm-delete -->
 <div class="confirm-overlay" id="confirmOverlay">
     <div class="confirm-box">
         <div class="confirm-icon">🗑️</div>
@@ -9,8 +11,11 @@
         </div>
     </div>
 </div>
+<!-- Behaviour script: mobile menu, delete confirmation and admin live notifications -->
 <script>
+/* Everything runs inside one function so no variables leak into the page */
 (function () {
+    /* Mobile menu: add a hamburger button to every top bar and toggle its nav open and closed */
     document.querySelectorAll('.topbar').forEach(function (bar) {
         var nav = bar.querySelector('nav');
         if (!nav || bar.querySelector('.menu-toggle')) return;
@@ -35,22 +40,26 @@
             }
         });
     });
+    /* Delete-confirmation modal elements and the form waiting for approval */
     var overlay = document.getElementById('confirmOverlay');
     var msgEl = document.getElementById('confirmMessage');
     var okBtn = document.getElementById('confirmOkBtn');
     var cancelBtn = document.getElementById('confirmCancelBtn');
     var pendingForm = null;
 
+    /* Show the modal with a message and remember which form to submit */
     function openModal(message, form) {
         msgEl.textContent = message;
         pendingForm = form;
         overlay.classList.add('open');
     }
+    /* Hide the modal and forget the pending form */
     function closeModal() {
         overlay.classList.remove('open');
         pendingForm = null;
     }
 
+    /* OK submits the remembered form; Cancel or a click on the backdrop just closes the modal */
     okBtn.addEventListener('click', function () {
         var form = pendingForm;
         closeModal();
@@ -61,6 +70,7 @@
         if (e.target === overlay) closeModal();
     });
 
+    /* Intercept submit on delete forms and ask for confirmation first */
     document.querySelectorAll('form.confirm-delete').forEach(function (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -71,8 +81,10 @@
     // Real-time admin borrow/return notifications.
     // Uses lightweight 1-second polling because it is reliable with Laragon/Apache
     // even when PHP output buffering prevents SSE from flushing immediately.
+    /* The notification bell below is only sent to logged-in Admins */
     <?php if (!empty($_SESSION['username']) && (($_SESSION['role'] ?? '') === 'Admin')): ?>
     (function () {
+        /* Admin notifications: state kept by this block (items shown, unread count, last seen id, polling timer) */
         var adminBars = document.querySelectorAll('.admin-topbar');
         if (!adminBars.length) return;
 
@@ -83,6 +95,7 @@
         var pollTimer = null;
         var stopped = false;
 
+        /* Escape text before putting it into innerHTML */
         function esc(value) {
             return String(value == null ? '' : value)
                 .replace(/&/g, '&amp;')
@@ -92,6 +105,7 @@
                 .replace(/'/g, '&#039;');
         }
 
+        /* Turn a timestamp into text like 5m ago */
         function relativeTime(dateString) {
             var d = new Date(String(dateString).replace(' ', 'T'));
             if (isNaN(d.getTime())) return dateString;
@@ -105,6 +119,7 @@
             return d.toLocaleString();
         }
 
+        /* Fill the notification panel with the latest items */
         function renderItems(panel) {
             var list = panel.querySelector('.admin-notify-list');
             if (!notifyItems.length) {
@@ -120,10 +135,12 @@
             }).join('');
         }
 
+        /* Update the status line in every admin notification panel */
         function setStatus(text) {
             document.querySelectorAll('.admin-notify-status').forEach(function (el) { el.textContent = text; });
         }
 
+        /* Pop up a short-lived toast for a new event */
         function showToast(item) {
             var old = document.querySelector('.admin-activity-toast');
             if (old) old.remove();
@@ -135,6 +152,7 @@
             setTimeout(function () { if (toast.parentNode) toast.remove(); }, 6000);
         }
 
+        /* Show a desktop notification when the browser has permission */
         function maybeSystemNotification(item) {
             if (!('Notification' in window) || Notification.permission !== 'granted') return;
             try {
@@ -145,6 +163,7 @@
             } catch (e) {}
         }
 
+        /* Handle one new event: remember it, bump the unread badge, refresh panels, show the toast */
         function receive(item) {
             var id = Number(item.id || 0);
             if (id > lastId) lastId = id;
@@ -162,6 +181,7 @@
             maybeSystemNotification(item);
         }
 
+        /* Build the bell button and dropdown panel inside each admin top bar */
         adminBars.forEach(function (bar) {
             if (bar.querySelector('.admin-notify-wrap')) return;
             var wrap = document.createElement('div');
@@ -183,6 +203,7 @@
             var count = wrap.querySelector('.admin-notify-count');
             var enable = wrap.querySelector('.admin-notify-enable');
 
+            /* Bell click: toggle the panel and clear the unread count when opened */
             btn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 var open = panel.classList.toggle('open');
@@ -195,6 +216,7 @@
                 }
             });
 
+            /* Ask the browser for desktop notification permission */
             enable.addEventListener('click', function () {
                 if (!('Notification' in window)) {
                     enable.textContent = 'Browser notifications unavailable';
@@ -207,6 +229,7 @@
                 });
             });
 
+            /* Click outside the panel closes it */
             document.addEventListener('click', function (e) {
                 if (!wrap.contains(e.target)) {
                     panel.classList.remove('open');
@@ -215,6 +238,7 @@
             });
         });
 
+        /* Ask the server for events newer than lastId, then schedule the next check one second later */
         function poll() {
             if (stopped) return;
             var url = 'admin_notifications_poll.php?since_id=' + encodeURIComponent(lastId) + '&_=' + Date.now();
@@ -237,6 +261,7 @@
         }
 
         // Establish a starting point so old notifications don't appear as new.
+        /* Fetch the newest existing id first, then start polling */
         fetch('admin_notifications_poll.php?latest=1&_=' + Date.now(), {
             cache: 'no-store', credentials: 'same-origin', headers: { 'Accept': 'application/json' }
         })
@@ -255,13 +280,16 @@
             poll();
         });
 
+        /* Stop polling when leaving the page */
         window.addEventListener('beforeunload', function () {
             stopped = true;
             if (pollTimer) clearTimeout(pollTimer);
         });
     })();
+    /* End of admin-only block */
     <?php endif; ?>
 })();
 </script>
+<!-- End of footer script -->
 </body>
 </html>

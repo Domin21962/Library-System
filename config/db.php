@@ -1,4 +1,12 @@
 <?php
+/*
+ * Database connection: builds the shared $pdo (PDO/MySQL, exceptions on, real prepared statements).
+ * Access: public include (no output unless connection fails).
+ * Inputs: config/local.php or DOMS_DB_* environment variables.
+ */
+
+// ===== Load settings =====
+
 // Configure these through environment variables or config/local.php (never commit secrets).
 $localConfig = __DIR__ . '/local.php';
 $local = is_file($localConfig) ? require $localConfig : [];
@@ -7,6 +15,9 @@ $DB_NAME = $local['name'] ?? getenv('DOMS_DB_NAME') ?: 'library_db';
 $DB_USER = $local['user'] ?? getenv('DOMS_DB_USER') ?: 'root';
 $DB_PASS = $local['pass'] ?? getenv('DOMS_DB_PASS') ?: '';
 
+
+// ===== Connect (creates the shared $pdo) =====
+
 try {
     $pdo = new PDO("mysql:host={$DB_HOST};dbname={$DB_NAME};charset=utf8mb4", $DB_USER, $DB_PASS, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -14,6 +25,7 @@ try {
         PDO::ATTR_EMULATE_PREPARES => false,
     ]);
 } catch (PDOException $e) {
+    // Log the real error server-side; show the visitor only a generic message
     error_log('WebShelf database connection failed: ' . $e->getMessage());
     http_response_code(500);
     exit('Database connection failed. Check the server configuration and PHP error log.');

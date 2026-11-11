@@ -1,9 +1,21 @@
 <?php
-// Roles are stored in the database. Username text never grants elevated privileges.
+/*
+ * Shared helpers: roles and access guards, username check, redirect, genre display,
+ * profile picture support, admin notifications and password-recovery utilities.
+ * Access: public include (no page output). Inputs: $_SESSION, global $pdo.
+ * Tables: users, admin_notifications, password_reset_tokens.
+ */
+
+
+// ===== Roles and username validation =====
+
+
+/** Look up a user's role in the database. Username text never grants elevated privileges. */
 function getUserRole($username, ?PDO $pdo = null) {
     $pdo = $pdo ?: ($GLOBALS['pdo'] ?? null);
     if ($pdo instanceof PDO) {
         try {
+            // Read the stored role for this username
             $stmt = $pdo->prepare("SELECT role FROM users WHERE username = ? LIMIT 1");
             $stmt->execute([$username]);
             $role = $stmt->fetchColumn();
@@ -16,11 +28,20 @@ function getUserRole($username, ?PDO $pdo = null) {
     // Never infer Admin or Teacher privileges from a username prefix.
     return "User";
 }
-// Usernames no longer need an AM./TC./SD. prefix.
-// Role elevation must be handled by a protected administrator workflow, never by user input.
+
+
+/**
+ * Check username format (3-100 chars, letters/digits/._- and spaces).
+ * Usernames no longer need an AM./TC./SD. prefix.
+ * Role elevation must be handled by a protected administrator workflow, never by user input.
+ */
 function isValidUsername($username) {
     return preg_match('/^[A-Za-z0-9][A-Za-z0-9._ -]{2,99}$/', $username) === 1;
 }
+
+
+// ===== Profile initials and redirects =====
+
 
 /** Build a default avatar from the user's name without showing legacy role prefixes. */
 function defaultProfileInitials(string $username): string {
@@ -35,12 +56,18 @@ function defaultProfileInitials(string $username): string {
     return $initials !== '' ? $initials : 'U';
 }
 
-// Simple flash-message style redirect (keeps pages() thin, like the JOptionPane dialogs)
+
+/** Simple flash-message style redirect (keeps pages() thin, like the JOptionPane dialogs). */
 function redirect($url) {
     header("Location: $url");
     exit;
 }
 
+
+// ===== Access control guards =====
+
+
+/** Require a valid logged-in session and re-sync the session role with the database. */
 function requireLogin() {
     if (empty($_SESSION['username']) || !isValidUsername((string)$_SESSION['username'])) {
         auditLog($GLOBALS['pdo'] ?? null, 'unauthorized_access');
@@ -48,11 +75,14 @@ function requireLogin() {
     }
     $expectedRole = getUserRole((string)$_SESSION['username']);
     if (($_SESSION['role'] ?? '') !== $expectedRole) {
+        // Role changed in the database: new session id so old privileges are not kept
         session_regenerate_id(true);
         $_SESSION['role'] = $expectedRole;
     }
 }
 
+
+/** Allow Admin only; others go back to main.php. */
 function requireAdmin() {
     requireLogin();
     if (($_SESSION['role'] ?? '') !== 'Admin') {
@@ -60,6 +90,8 @@ function requireAdmin() {
     }
 }
 
+
+/** Allow Teacher only; others go back to main.php. */
 function requireTeacher() {
     requireLogin();
     if (($_SESSION['role'] ?? '') !== 'Teacher') {
@@ -67,7 +99,11 @@ function requireTeacher() {
     }
 }
 
-// Small touches to make the catalog feel less flat - a genre -> icon/color mapping.
+
+// ===== Catalog display helpers =====
+
+
+/** Small touch to make the catalog feel less flat: map a genre to an emoji icon. */
 function genreIcon($genre) {
     $map = [
         'fantasy' => '🐉', 'science fiction' => '🚀', 'romance' => '💌',
@@ -80,6 +116,8 @@ function genreIcon($genre) {
     return $map[$key] ?? '📘';
 }
 
+
+/** Pick a stable accent color for a genre (same genre always gets the same color). */
 function genreColor($genre) {
     $palette = ['#5b8cff', '#7c6bff', '#34d399', '#f59e0b', '#f87171', '#22d3ee', '#e879f9', '#a3e635'];
     $index = crc32(strtolower(trim($genre))) % count($palette);
@@ -87,12 +125,15 @@ function genreColor($genre) {
 }
 
 
+// ===== Profile picture support =====
+
 
 /** Ensure user profile picture support exists without requiring a manual SQL import. */
 function ensureUserProfileColumn(PDO $pdo): bool {
     static $ready = false;
     if ($ready) return true;
     try {
+        // Add the profile_picture column if it is missing
         $columns = $pdo->query("SHOW COLUMNS FROM users LIKE 'profile_picture'")->fetchAll(PDO::FETCH_ASSOC);
         if (!$columns) {
             $pdo->exec("ALTER TABLE users ADD COLUMN profile_picture VARCHAR(255) NULL AFTER email");
@@ -105,18 +146,26 @@ function ensureUserProfileColumn(PDO $pdo): bool {
     }
 }
 
+
+/** Return the picture path only if it is a safe uploads/profiles/ file name, else null (blocks path tricks). */
 function profilePictureUrl(?string $path): ?string {
     $path = trim((string)$path);
     if ($path === '' || !preg_match('#^uploads/profiles/[A-Za-z0-9._-]+$#', $path)) return null;
     return $path;
 }
 
+
+/** Delete a profile picture file from disk, only if its path passes the safety check. */
 function removeProfilePictureFile(?string $path): void {
     $safePath = profilePictureUrl($path);
     if (!$safePath) return;
     $absolute = dirname(__DIR__) . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $safePath);
     if (is_file($absolute)) @unlink($absolute);
 }
+
+
+// ===== Admin notifications (borrow/return events) =====
+
 
 /** Ensure the real-time admin notification table exists and upgrade legacy schemas. */
 function ensureAdminNotificationsTable(PDO $pdo): bool {
@@ -136,6 +185,7 @@ function ensureAdminNotificationsTable(PDO $pdo): bool {
             INDEX idx_admin_notifications_created (created_at),
             INDEX idx_admin_notifications_type (event_type)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        // Upgrade older schemas: rename legacy TYPE column, then add any missing columns
         $columns = $pdo->query("SHOW COLUMNS FROM admin_notifications")->fetchAll(PDO::FETCH_COLUMN);
         if (in_array('TYPE', $columns, true) && !in_array('event_type', $columns, true)) {
             $pdo->exec("ALTER TABLE admin_notifications CHANGE COLUMN `TYPE` event_type VARCHAR(20) NOT NULL DEFAULT 'borrow'");
@@ -164,10 +214,13 @@ function ensureAdminNotificationsTable(PDO $pdo): bool {
     }
 }
 
+
+/** Save a borrow/return notice for admins and write an audit entry. */
 function createAdminNotification(PDO $pdo, string $eventType, string $username, int $bookId, string $bookTitle): bool {
     if (!ensureAdminNotificationsTable($pdo) || !in_array($eventType, ['borrow', 'return'], true)) return false;
     $message = $eventType === 'borrow' ? "$username borrowed \"$bookTitle\"." : "$username returned \"$bookTitle\".";
     try {
+        // Write the notification row
         $stmt = $pdo->prepare("INSERT INTO admin_notifications (event_type, username, book_id, book_title, message, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
         $stmt->execute([$eventType, $username, $bookId, $bookTitle, $message]);
         auditLog($pdo, 'notification_created', $username, ['event_type' => $eventType, 'book_id' => $bookId]);
@@ -179,6 +232,10 @@ function createAdminNotification(PDO $pdo, string $eventType, string $username, 
 }
 
 
+// ===== Password recovery helpers =====
+
+
+/** Create password_reset_tokens if missing (stores only token hashes, with expiry and used flag). */
 function ensureRecoveryTables(PDO $pdo): void {
     $pdo->exec("CREATE TABLE IF NOT EXISTS password_reset_tokens (
         id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -192,6 +249,8 @@ function ensureRecoveryTables(PDO $pdo): void {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 }
 
+
+/** Build this site's base URL for reset links, sanitizing the Host header. */
 function recoveryBaseUrl(): string {
     $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
     $scheme = $https ? 'https' : 'http';
@@ -199,6 +258,8 @@ function recoveryBaseUrl(): string {
     return $scheme . '://' . ($host ?: 'localhost') . rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
 }
 
+
+/** Hide most of an email (j***@example.com) for display; output is HTML-escaped. */
 function maskEmailAddress(string $email): string {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return 'your registered email';
     [$local, $domain] = explode('@', $email, 2);

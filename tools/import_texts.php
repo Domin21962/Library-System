@@ -1,4 +1,9 @@
 <?php
+/*
+ * CLI tool: downloads public-domain book texts from Project Gutenberg into book.full_text.
+ * Access: command line only (run by an admin on the server). Input: optional --force flag.
+ * Tables: book (reads gutenberg_id/full_text, adds columns if missing, updates full_text).
+ */
 /**
  * import_texts.php
  *
@@ -15,12 +20,24 @@
  *     php tools/import_texts.php --force
  */
 
+
+// ===== Requires =====
+
 require_once __DIR__ . '/../config/db.php';
 
+
+// ===== Options =====
+
+// --force re-downloads books that already have text
 $force = in_array('--force', $argv ?? [], true);
 
-// Make sure the columns exist (safe to run repeatedly)
+
+// ===== Schema helper =====
+
+
+/** Add a column to a table only if information_schema says it is missing (safe to repeat). */
 function ensureColumn(PDO $pdo, string $table, string $column, string $definition): void {
+    // Does the column already exist in this database?
     $stmt = $pdo->prepare(
         "SELECT COUNT(*) FROM information_schema.COLUMNS
          WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?"
@@ -32,9 +49,16 @@ function ensureColumn(PDO $pdo, string $table, string $column, string $definitio
     }
 }
 
+
+// ===== Schema check (adds gutenberg_id and full_text to book) =====
+
 echo "Checking schema...\n";
 ensureColumn($pdo, 'book', 'gutenberg_id', 'INT NULL');
 ensureColumn($pdo, 'book', 'full_text', 'LONGTEXT NULL');
+
+
+// ===== Download helper =====
+
 
 /**
  * Fetch a Gutenberg plain-text file. Gutenberg stores files under a few different
@@ -49,6 +73,7 @@ function fetchGutenbergText(int $id): ?string {
     ];
 
     foreach ($candidates as $url) {
+        // HTTP GET with redirects, 120s timeout
         $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
@@ -60,12 +85,17 @@ function fetchGutenbergText(int $id): ?string {
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
+        // Accept only a real book (HTTP 200 and more than 5000 bytes)
         if ($body !== false && $code === 200 && strlen($body) > 5000) {
             return $body;
         }
     }
     return null;
 }
+
+
+// ===== Text cleaning helper =====
+
 
 /**
  * Strip Gutenberg's license header/footer so only the actual book text remains.
@@ -104,6 +134,9 @@ function stripGutenbergBoilerplate(string $text): string {
     return trim($text);
 }
 
+
+// ===== Load books to import (reads book) =====
+
 // Books that have a Gutenberg ID recorded
 $sql = "SELECT book_id, title, gutenberg_id, full_text FROM book
         WHERE gutenberg_id IS NOT NULL ORDER BY title";
@@ -115,6 +148,10 @@ if (!$books) {
     exit(1);
 }
 
+
+// ===== Import loop (writes book.full_text) =====
+
+// Prepared update: store the cleaned text
 $update = $pdo->prepare("UPDATE book SET full_text = ? WHERE book_id = ?");
 
 $done = 0;
@@ -126,6 +163,7 @@ echo "\nImporting " . count($books) . " books...\n\n";
 foreach ($books as $b) {
     $title = $b['title'];
 
+    // Skip books that already have text unless --force
     if (!$force && trim((string)$b['full_text']) !== '') {
         echo "  = $title (already imported)\n";
         $skipped++;
@@ -155,6 +193,9 @@ foreach ($books as $b) {
     // Be polite to Gutenberg's servers
     sleep(1);
 }
+
+
+// ===== Summary =====
 
 echo "\n----------------------------------------\n";
 echo "Imported: $done\n";

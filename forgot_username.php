@@ -1,10 +1,22 @@
 <?php
+/**
+ * Forgot username: emails the usernames linked to an address.
+ * Who: public.
+ * Input: POST email, csrf token.
+ * Tables: users (read), audit log via helper.
+ */
+
+
+// ===== Requires & CSRF check =====
 require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/mailer.php';
+// Reject any POST with an invalid CSRF token
 enforceCsrfOnPost();
 
+
+// ===== Handle form submit =====
 $error = '';
 $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -14,9 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $sent = false;
         try {
+            // All usernames registered with this email
             $stmt = $pdo->prepare('SELECT username FROM users WHERE email = ? ORDER BY username');
             $stmt->execute([$email]);
             $usernames = array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'username');
+            // Only send when SMTP is enabled and fully configured
             $mailConfig = require __DIR__ . '/config/mail.php';
             if ($usernames && !empty($mailConfig['enabled']) && !empty($mailConfig['configured'])) {
                 $sent = sendLibraryEmail($email, 'WebShelf: Username reminder', buildUsernameRecoveryEmail($usernames), true);
@@ -25,15 +39,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } catch (Throwable $e) {
             error_log('WebShelf username recovery failed: ' . $e->getMessage());
         }
+        // Same message whether or not the email exists (prevents account enumeration)
         $success = 'If an account is registered with that email, a username reminder will be sent shortly.';
     }
 }
+
+
+// ===== Page setup =====
 $pageTitle = 'Forgot Username - WebShelf';
 include __DIR__ . '/includes/header.php';
 ?>
+<!-- ===== HTML output: forgot-username card ===== -->
 <div class="auth-wrapper"><div class="card">
     <h2>Forgot username?</h2>
     <div class="subtitle">Enter the email address connected to your library account.</div>
+    <!-- Email form (includes CSRF field) -->
     <form method="post">
         <?= csrf_field() ?>
         <label for="email">Email address</label>
@@ -44,4 +64,5 @@ include __DIR__ . '/includes/header.php';
     </form>
     <p class="footer-link"><a href="login.php">Back to login</a></p>
 </div></div>
+<!-- Shared page footer -->
 <?php include __DIR__ . '/includes/footer.php'; ?>

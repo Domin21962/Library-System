@@ -1,4 +1,9 @@
 <?php
+/*
+ * SMTP mailer and HTML email templates (receipts, codes, recovery, reset).
+ * Access: public include (no page output). Inputs: config/mail.php settings.
+ * Tables: none.
+ */
 /**
  * Minimal dependency-free SMTP client for sending real emails.
  * No Composer / PHPMailer install required - just fill in config/mail.php.
@@ -8,7 +13,13 @@
  * false instead of breaking the page that called it.
  */
 
+
+// ===== Public send wrapper =====
+
+
+/** Send one email if mail is enabled; never throws, returns false on any failure. */
 function sendLibraryEmail(string $to, string $subject, string $body, bool $isHtml = false): bool {
+    // Load SMTP settings from config/mail.php
     $config = require __DIR__ . '/../config/mail.php';
 
     if (empty($config['enabled'])) {
@@ -23,6 +34,11 @@ function sendLibraryEmail(string $to, string $subject, string $body, bool $isHtm
     }
 }
 
+
+// ===== SMTP transport =====
+
+
+/** Talk SMTP directly over a socket: connect (SSL/STARTTLS with cert checks), AUTH LOGIN, send message. */
 function smtpSend(array $config, string $to, string $subject, string $body, bool $isHtml = false): bool {
     $host = $config['host'];
     $port = (int)$config['port'];
@@ -32,6 +48,7 @@ function smtpSend(array $config, string $to, string $subject, string $body, bool
     $fromEmail = $config['from_email'];
     $fromName = $config['from_name'] ?? 'WebShelf';
 
+    // Open the connection; peer verification stays on so TLS certificates are checked
     $transport = ($encryption === 'ssl') ? 'ssl://' : '';
     $socket = @stream_socket_client(
         "$transport$host:$port",
@@ -45,6 +62,7 @@ function smtpSend(array $config, string $to, string $subject, string $body, bool
         return false;
     }
 
+    // Small helpers: read a full server reply, write a command, assert the reply code
     $read = function () use ($socket) {
         $data = '';
         while ($line = fgets($socket, 515)) {
@@ -65,6 +83,7 @@ function smtpSend(array $config, string $to, string $subject, string $body, bool
         }
     };
 
+    // Handshake: greeting, EHLO, optional STARTTLS upgrade
     $read(); // greeting
 
     $write("EHLO localhost");
@@ -81,6 +100,7 @@ function smtpSend(array $config, string $to, string $subject, string $body, bool
         $expect($read(), [250]);
     }
 
+    // Authenticate (credentials are base64 per AUTH LOGIN; they are never logged)
     $write("AUTH LOGIN");
     $expect($read(), [334]);
     $write(base64_encode($username));
@@ -88,6 +108,7 @@ function smtpSend(array $config, string $to, string $subject, string $body, bool
     $write(base64_encode($password));
     $expect($read(), [235]);
 
+    // Envelope: sender, recipient, start of message body
     $write("MAIL FROM:<$fromEmail>");
     $expect($read(), [250]);
     $write("RCPT TO:<$to>");
@@ -95,6 +116,7 @@ function smtpSend(array $config, string $to, string $subject, string $body, bool
     $write("DATA");
     $expect($read(), [354]);
 
+    // Message headers
     $headers = [
         "From: $fromName <$fromEmail>",
         "To: <$to>",
@@ -116,6 +138,10 @@ function smtpSend(array $config, string $to, string $subject, string $body, bool
     return true;
 }
 
+
+// ===== Email body builders =====
+
+
 /**
  * Builds a clean, receipt-styled HTML email for a borrow or return transaction.
  */
@@ -126,6 +152,7 @@ function buildReceiptEmail(string $type, array $data): string {
     $statusLabel = $isBorrow ? 'BORROWED' : 'RETURNED';
     $statusColor = $isBorrow ? '#2563eb' : '#059669';
 
+    // Receipt table rows (values are escaped in receiptRow)
     $rows = '';
     $rows .= receiptRow('Transaction ID', '#' . str_pad((string)$data['transaction_id'], 6, '0', STR_PAD_LEFT));
     $rows .= receiptRow('Book', $data['title']);
@@ -139,6 +166,7 @@ function buildReceiptEmail(string $type, array $data): string {
         $rows .= receiptRow('Returned On', $data['return_date']);
     }
 
+    // Email HTML template (inline styles for mail clients)
     $html = '
 <!DOCTYPE html>
 <html>
@@ -184,6 +212,8 @@ function buildReceiptEmail(string $type, array $data): string {
     return $html;
 }
 
+
+/** One label/value row of the receipt table, HTML-escaped. */
 function receiptRow(string $label, string $value): string {
     return '
     <tr>
@@ -192,7 +222,8 @@ function receiptRow(string $label, string $value): string {
     </tr>';
 }
 
-// Password-change confirmation code email
+
+/** Password-change confirmation code email (code and username are escaped). */
 function buildPasswordCodeEmail(string $username, string $code, int $expiresInMinutes): string {
     return '
 <!DOCTYPE html>
@@ -241,6 +272,7 @@ function buildPasswordCodeEmail(string $username, string $code, int $expiresInMi
 }
 
 
+/** Email carrying the one-time login confirmation code (single use, expires). */
 function buildLoginConfirmationEmail(string $username, string $code, int $expiresInMinutes): string {
     $safeUser = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
     $safeCode = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
@@ -248,6 +280,7 @@ function buildLoginConfirmationEmail(string $username, string $code, int $expire
 }
 
 
+/** Email listing the usernames linked to an address (forgot-username flow). */
 function buildUsernameRecoveryEmail(array $usernames): string {
     $items = '';
     foreach ($usernames as $username) {
@@ -256,6 +289,8 @@ function buildUsernameRecoveryEmail(array $usernames): string {
     return '<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f2f4f7;padding:24px;"><div style="max-width:420px;margin:auto;background:#fff;padding:24px;border-radius:10px;"><h2>WebShelf username reminder</h2><p>We received a request to find the username(s) connected to this email address.</p><ul>' . $items . '</ul><p>If you did not request this, you can ignore this email.</p></div></body></html>';
 }
 
+
+/** Email with the password-reset link (expiring, one-time token URL). */
 function buildPasswordResetEmail(string $username, string $resetUrl, int $expiresMinutes = 15): string {
     return '<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f2f4f7;padding:24px;"><div style="max-width:420px;margin:auto;background:#fff;padding:24px;border-radius:10px;"><h2>Reset your WebShelf password</h2><p>Hello <strong>' . htmlspecialchars($username, ENT_QUOTES, 'UTF-8') . '</strong>,</p><p>Click the button below to create a new password. This link expires in ' . (int)$expiresMinutes . ' minutes.</p><p><a href="' . htmlspecialchars($resetUrl, ENT_QUOTES, 'UTF-8') . '" style="display:inline-block;padding:12px 18px;background:#5b8cff;color:#fff;text-decoration:none;border-radius:8px;">Reset password</a></p><p>If you did not request this, ignore this email.</p></div></body></html>';
 }

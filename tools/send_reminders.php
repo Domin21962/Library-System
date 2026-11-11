@@ -1,4 +1,12 @@
 <?php
+/*
+ * Daily CLI job: emails borrowers whose books are due within 2 days or overdue.
+ * Access: command line / scheduler (not a web page). Inputs: config/mail.php settings.
+ * Tables: borrow_return, book, users (read only).
+ */
+
+// ===== Usage notes =====
+
 /**
  * send_reminders.php
  *
@@ -18,8 +26,14 @@
  *      Start in:  C:\laragon\www\php-library
  */
 
+
+// ===== Requires =====
+
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/mailer.php';
+
+
+// ===== Mail enabled check =====
 
 $mailConfig = require __DIR__ . '/../config/mail.php';
 if (empty($mailConfig['enabled'])) {
@@ -28,7 +42,10 @@ if (empty($mailConfig['enabled'])) {
     exit(0);
 }
 
-// Books due within 2 days, or already overdue, that haven't been returned yet
+
+// ===== Load due and overdue loans =====
+
+// Books due within 2 days, or already overdue, that haven't been returned yet (reads borrow_return, book, users)
 $sql = "SELECT br.id, br.username, u.email, br.due_date, b.title
         FROM borrow_return br
         JOIN book b ON br.book_id = b.book_id
@@ -44,6 +61,9 @@ if (!$rows) {
     exit(0);
 }
 
+
+// ===== Send one reminder per loan =====
+
 echo "Found " . count($rows) . " book(s) due soon or overdue.\n\n";
 
 $sent = 0;
@@ -53,6 +73,7 @@ foreach ($rows as $row) {
         continue;
     }
 
+    // Pick wording: overdue notice or due-soon reminder
     $dueTimestamp = strtotime($row['due_date']);
     $isOverdue = $dueTimestamp < time();
     $dueDateFormatted = date('F j, Y', $dueTimestamp);
@@ -70,9 +91,13 @@ foreach ($rows as $row) {
               . "- WebShelf";
     }
 
+    // Send via SMTP helper in includes/mailer.php
     $ok = sendLibraryEmail($row['email'], $subject, $body);
     echo "  - {$row['title']} -> {$row['email']}: " . ($ok ? "sent" : "FAILED") . "\n";
     if ($ok) $sent++;
 }
+
+
+// ===== Summary =====
 
 echo "\nDone. $sent reminder(s) sent.\n";

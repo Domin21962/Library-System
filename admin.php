@@ -1,20 +1,42 @@
 <?php
+// Admin dashboard: summary counters and links to the admin tools.
+// Who: Admin only.
+// Inputs: none (session user).
+// Tables: book, users, borrow_return (read only).
+
+// ===== Includes =====
 require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
+
+
+// ===== Access check =====
+// Only logged-in Admins may continue
 requireAdmin();
 
+
+// ===== Data loading =====
 $username = $_SESSION['username'];
 
+// Counters for the stat cards and dashboard links
 $totalBooks = (int)$pdo->query("SELECT COUNT(*) FROM book")->fetchColumn();
 $totalUsers = (int)$pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
+// Borrowed now = rows with no return date
 $borrowedNow = (int)$pdo->query("SELECT COUNT(*) FROM borrow_return WHERE return_date IS NULL")->fetchColumn();
+// Overdue = not returned and past due date
 $overdueNow = (int)$pdo->query("SELECT COUNT(*) FROM borrow_return WHERE return_date IS NULL AND due_date IS NOT NULL AND due_date < NOW()")->fetchColumn();
+// All logged transactions (ever)
 $recentCount = (int)$pdo->query("SELECT COUNT(*) FROM borrow_return")->fetchColumn();
 
+
+// ===== Page setup / header =====
 $pageTitle = "Admin Panel - WebShelf";
 include __DIR__ . '/includes/header.php';
 ?>
+
+
+<!-- ===== HTML output ===== -->
+<!-- Top bar: brand and admin nav -->
 <div class="topbar admin-topbar" data-admin-dashboard="1">
     <div class="brand">⚙️ WebShelf <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
     <nav>
@@ -25,9 +47,11 @@ include __DIR__ . '/includes/header.php';
     </nav>
 </div>
 
+<!-- Main content -->
 <div class="content wrap-1200">
     <h1 class="page-title">Dashboard</h1>
 
+    <!-- Stat cards (overdue card turns red when > 0) -->
     <div class="stats-row mb-28">
         <div class="stat-card admin-stat">
             <div class="stat-value"><?= $totalBooks ?></div>
@@ -47,6 +71,7 @@ include __DIR__ . '/includes/header.php';
         </div>
     </div>
 
+    <!-- Dashboard link cards -->
     <div class="dash-grid">
         <a href="admin_books.php" class="dash-card">
             <div class="dash-icon">📖</div>

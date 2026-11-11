@@ -1,18 +1,32 @@
 <?php
+/**
+ * Registration page: creates a new account with a hashed password.
+ * Who: public.
+ * Input: POST username, email, password, confirm_password, csrf token.
+ * Tables: users (read for duplicate check, insert), audit log via helper.
+ */
+
+
+// ===== Requires & CSRF check =====
 require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
+// Reject any POST with an invalid CSRF token
 enforceCsrfOnPost();
 
+
+// ===== Handle registration form submit =====
 $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Read submitted fields
     $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirmPassword = $_POST['confirm_password'] ?? '';
 
+    // Validate input in order: username, email, lengths, password match
     if (!isValidUsername($username)) {
         $error = "Username must be 3-100 characters and may contain letters, numbers, spaces, dots, underscores, or hyphens.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 190) {
@@ -24,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $confirmPassword) {
         $error = "Passwords do not match!";
     } else {
+        // Check the username is not already taken
         // Equivalent of RegisterController.userExists()
         $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
         $stmt->execute([$username]);
@@ -31,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->fetch()) {
             $error = "Username already exists!";
         } else {
+            // Create the account; password is stored hashed, never plaintext
             $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
             $stmt->execute([$username, $email, $passwordHash]);
@@ -40,10 +56,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+
+// ===== Page setup =====
 $pageTitle = "Register - WebShelf";
 include __DIR__ . '/includes/header.php';
 ?>
+<!-- ===== HTML output: registration page (illustration + form) ===== -->
 <div class="auth-split">
+    <!-- Left panel: brand, illustration, tagline -->
     <div class="auth-illustration-panel">
         <div class="auth-brand-lockup">
             <span class="logo-mark">📚</span> WebShelf
@@ -53,10 +73,12 @@ include __DIR__ . '/includes/header.php';
             Create an account to start browsing, borrowing, and keeping track of what you're reading.
         </div>
     </div>
+    <!-- Right panel: registration card -->
     <div class="auth-form-panel">
         <div class="card">
             <h2>Create an account</h2>
             <div class="subtitle">Choose any unique username. New accounts are registered as Student accounts. Account roles are assigned by an administrator.</div>
+            <!-- Registration form (includes CSRF field; entered values are re-shown escaped) -->
             <form method="post">
                 <?= csrf_field() ?>
                 <label>Username</label>
@@ -77,4 +99,5 @@ include __DIR__ . '/includes/header.php';
         </div>
     </div>
 </div>
+<!-- Shared page footer -->
 <?php include __DIR__ . '/includes/footer.php'; ?>
