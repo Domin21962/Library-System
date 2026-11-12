@@ -34,16 +34,16 @@ CREATE TABLE borrow_return (
     FOREIGN KEY (book_id) REFERENCES book(book_id)
 );
 
--- Sample accounts (username prefix decides role: AM. = Admin, TC. = Librarian, SD. = Student)
+-- Sample accounts (username prefix decides role: AM. = Admin, TC. = Librarian, SD. = User)
 INSERT INTO users (username, email, password) VALUES
 ('AM.Admin', 'admin@library.edu', 'admin123'),
 ('AM.Cruz', 'cruz.admin@library.edu', 'admin123'),
-('TC.Reyes', 'reyes.teacher@library.edu', 'teacher123'),
-('TC.Santos', 'santos.teacher@library.edu', 'teacher123'),
-('SD.Juan', 'juan.student@library.edu', 'student123'),
-('SD.Maria', 'maria.student@library.edu', 'student123'),
-('SD.Pedro', 'pedro.student@library.edu', 'student123'),
-('SD.Ana', 'ana.student@library.edu', 'student123');
+('TC.Reyes', 'reyes.librarian@library.edu', 'librarian123'),
+('TC.Santos', 'santos.librarian@library.edu', 'librarian123'),
+('SD.Juan', 'juan.user@library.edu', 'user123'),
+('SD.Maria', 'maria.user@library.edu', 'user123'),
+('SD.Pedro', 'pedro.user@library.edu', 'user123'),
+('SD.Ana', 'ana.user@library.edu', 'user123');
 
 -- Sample book catalog: popular, well-known books that are all in the PUBLIC DOMAIN
 -- (first published before ~1930, so copyright has expired and they're free to use/read/share).
