@@ -4,9 +4,9 @@
 // Tables: users, borrow_return (read only).
 
 // ===== Includes =====
-require_once __DIR__ . '/includes/security.php';
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 
 // ===== Access check =====
@@ -30,7 +30,7 @@ $students = $pdo->query(
 
 // ===== Page setup / header =====
 $pageTitle = "Monitor Students - WebShelf";
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 
@@ -39,9 +39,9 @@ include __DIR__ . '/includes/header.php';
 <div class="topbar">
     <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · Teacher</span></div>
     <nav>
-        <a href="qr_login.php">QR Login</a>
-        <a href="profile.php">Profile</a>
-        <a href="logout.php">Logout</a>
+        <a href="<?= url('qr_login.php') ?>">QR Login</a>
+        <a href="<?= url('user/profile.php') ?>">Profile</a>
+        <a href="<?= url('logout.php') ?>">Logout</a>
     </nav>
 </div>
 
@@ -74,4 +74,4 @@ include __DIR__ . '/includes/header.php';
         <?php endif; ?>
     </div>
 </div>
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

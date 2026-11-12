@@ -4,9 +4,9 @@
 // Tables: borrow_return, book (read only).
 
 // ===== Includes =====
-require_once __DIR__ . '/includes/security.php';
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 
 // ===== Access check =====
@@ -26,7 +26,7 @@ $activity = $pdo->query(
 
 // ===== Page setup / header =====
 $pageTitle = "Recent Activity - WebShelf";
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 
@@ -36,9 +36,9 @@ include __DIR__ . '/includes/header.php';
     <div class="brand">⚙️ WebShelf <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
     <nav>
         <a href="admin.php">← Dashboard</a>
-        <a href="main.php">📚 View Catalog</a>
-        <a href="profile.php">Profile</a>
-        <a href="logout.php">Logout</a>
+        <a href="<?= url('user/main.php') ?>">📚 View Catalog</a>
+        <a href="<?= url('user/profile.php') ?>">Profile</a>
+        <a href="<?= url('logout.php') ?>">Logout</a>
     </nav>
 </div>
 
@@ -74,4 +74,4 @@ include __DIR__ . '/includes/header.php';
         <?php endif; ?>
     </div>
 </div>
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

@@ -5,12 +5,12 @@
 // Tables: borrow_return (read/write), book and users (read only); also creates admin notifications and sends receipt emails.
 
 // ===== Includes and access check =====
-require_once __DIR__ . '/includes/security.php';
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/functions.php';
 // Reject POSTs without a valid CSRF token
 enforceCsrfOnPost();
-require_once __DIR__ . '/includes/mailer.php';
+require_once __DIR__ . '/../includes/mailer.php';
 // Must be logged in (any role)
 requireLogin();
 
@@ -155,7 +155,7 @@ if ($username !== '') {
 
 // ===== Page setup / header =====
 $pageTitle = "Borrow & Return";
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <!-- ===== HTML output ===== -->
@@ -164,9 +164,9 @@ include __DIR__ . '/includes/header.php';
     <div class="brand">📚 WebShelf</div>
     <nav>
         <a href="main.php">Main</a>
-        <a href="qr_login.php">QR Login</a>
+        <a href="<?= url('qr_login.php') ?>">QR Login</a>
         <a href="profile.php">Profile</a>
-        <a href="logout.php">Logout</a>
+        <a href="<?= url('logout.php') ?>">Logout</a>
     </nav>
 </div>
 
@@ -223,4 +223,4 @@ include __DIR__ . '/includes/header.php';
 
     <p class="footer-link"><a href="main.php">← Back to Main</a></p>
 </div>
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

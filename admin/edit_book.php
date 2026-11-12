@@ -4,9 +4,9 @@
 // Tables: book (read and update); writes an audit log entry.
 
 // ===== Includes =====
-require_once __DIR__ . '/includes/security.php';
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 
 // ===== Access check =====
@@ -23,7 +23,7 @@ $stmt = $pdo->prepare("SELECT book_id, title, author, year, genre, publisher, bo
 $stmt->execute([$bookId]);
 $book = $stmt->fetch(PDO::FETCH_ASSOC);
 // Unknown id: go back to the book list
-if (!$book) redirect('admin_books.php');
+if (!$book) redirect('admin/admin_books.php');
 
 
 // ===== POST handling (save changes) =====
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // ===== Page setup / header =====
 $pageTitle = "Edit Book";
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <!-- ===== HTML output ===== -->
@@ -94,4 +94,4 @@ include __DIR__ . '/includes/header.php';
         <p class="footer-link"><a href="admin_books.php">← Back to Manage Books</a></p>
     </div>
 </div>
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

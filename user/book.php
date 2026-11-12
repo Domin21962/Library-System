@@ -5,9 +5,9 @@
 // Tables: book and borrow_return (read only).
 
 // ===== Includes and access check =====
-require_once __DIR__ . '/includes/security.php';
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/functions.php';
 requireLogin();
 
 
@@ -18,7 +18,7 @@ $role = $_SESSION['role'];
 // Validate the id: digits only, otherwise back to the catalog
 $bookId = $_GET['id'] ?? '';
 if (!ctype_digit((string)$bookId)) {
-    redirect('main.php');
+    redirect('user/main.php');
 }
 
 
@@ -36,7 +36,7 @@ $book = $stmt->fetch(PDO::FETCH_ASSOC);
 // Unknown book id: back to the catalog
 
 if (!$book) {
-    redirect('main.php');
+    redirect('user/main.php');
 }
 
 
@@ -60,7 +60,7 @@ $gutenbergId = $book['gutenberg_id'] ?? null;
 
 // ===== Page setup / header =====
 $pageTitle = $book['title'];
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <!-- ===== HTML output ===== -->
@@ -71,7 +71,7 @@ include __DIR__ . '/includes/header.php';
         <a href="main.php">Catalog</a>
         <a href="borrow_return.php">Borrow &amp; Return</a>
         <a href="profile.php">Profile</a>
-        <a href="logout.php">Logout</a>
+        <a href="<?= url('logout.php') ?>">Logout</a>
     </nav>
 </div>
 
@@ -128,4 +128,4 @@ include __DIR__ . '/includes/header.php';
         </div>
     <?php endif; ?>
 </div>
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

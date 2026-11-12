@@ -4,9 +4,9 @@
 // Tables: security_audit_logs (read only).
 
 // ===== Includes =====
-require_once __DIR__ . '/includes/security.php';
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 
 // ===== Access check =====
@@ -37,7 +37,7 @@ $actions = $pdo->query("SELECT DISTINCT action FROM security_audit_logs ORDER BY
 
 // ===== Page setup / header =====
 $pageTitle = "Audit Logs - Doms Library";
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <!-- ===== HTML output ===== -->
@@ -46,9 +46,9 @@ include __DIR__ . '/includes/header.php';
     <div class="brand">⚙️ Doms Library <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
     <nav>
         <a href="admin.php">← Dashboard</a>
-        <a href="main.php">📚 View Catalog</a>
-        <a href="profile.php">Profile</a>
-        <a href="logout.php">Logout</a>
+        <a href="<?= url('user/main.php') ?>">📚 View Catalog</a>
+        <a href="<?= url('user/profile.php') ?>">Profile</a>
+        <a href="<?= url('logout.php') ?>">Logout</a>
     </nav>
 </div>
 
@@ -93,4 +93,4 @@ include __DIR__ . '/includes/header.php';
         <?php endif; ?>
     </div>
 </div>
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

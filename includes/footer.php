@@ -241,7 +241,7 @@
         /* Ask the server for events newer than lastId, then schedule the next check one second later */
         function poll() {
             if (stopped) return;
-            var url = 'admin_notifications_poll.php?since_id=' + encodeURIComponent(lastId) + '&_=' + Date.now();
+            var url = '<?= url('admin/admin_notifications_poll.php') ?>?since_id=' + encodeURIComponent(lastId) + '&_=' + Date.now();
             fetch(url, { cache: 'no-store', credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
                 .then(function (response) {
                     if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -262,7 +262,7 @@
 
         // Establish a starting point so old notifications don't appear as new.
         /* Fetch the newest existing id first, then start polling */
-        fetch('admin_notifications_poll.php?latest=1&_=' + Date.now(), {
+        fetch('<?= url('admin/admin_notifications_poll.php') ?>?latest=1&_=' + Date.now(), {
             cache: 'no-store', credentials: 'same-origin', headers: { 'Accept': 'application/json' }
         })
         .then(function (response) {

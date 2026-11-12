@@ -59,7 +59,7 @@ function defaultProfileInitials(string $username): string {
 
 /** Simple flash-message style redirect (keeps pages() thin, like the JOptionPane dialogs). */
 function redirect($url) {
-    header("Location: $url");
+    header('Location: ' . (preg_match('#^(https?:)?//#', $url) ? $url : url($url)));
     exit;
 }
 
@@ -86,7 +86,7 @@ function requireLogin() {
 function requireAdmin() {
     requireLogin();
     if (($_SESSION['role'] ?? '') !== 'Admin') {
-        redirect('main.php');
+        redirect('user/main.php');
     }
 }
 
@@ -95,7 +95,7 @@ function requireAdmin() {
 function requireTeacher() {
     requireLogin();
     if (($_SESSION['role'] ?? '') !== 'Teacher') {
-        redirect('main.php');
+        redirect('user/main.php');
     }
 }
 

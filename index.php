@@ -16,7 +16,7 @@ require_once __DIR__ . '/includes/functions.php';
 
 // ===== Redirect signed-in users =====
 if (!empty($_SESSION['username'])) {
-    redirect(($_SESSION['role'] ?? '') === 'Admin' ? 'admin.php' : 'main.php');
+    redirect(($_SESSION['role'] ?? '') === 'Admin' ? 'admin/admin.php' : 'user/main.php');
 }
 
 

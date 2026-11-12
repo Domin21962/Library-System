@@ -4,9 +4,9 @@
 // Tables: book (insert).
 
 // ===== Includes =====
-require_once __DIR__ . '/includes/security.php';
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 
 // ===== Access check =====
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // ===== Page setup / header =====
 $pageTitle = "Add Book";
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 
@@ -88,4 +88,4 @@ include __DIR__ . '/includes/header.php';
         <p class="footer-link"><a href="admin_books.php">← Back to Manage Books</a></p>
     </div>
 </div>
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

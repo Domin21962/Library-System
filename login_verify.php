@@ -95,9 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Record the successful, email-confirmed login
             auditLog($pdo, 'login_success', $username, ['email_confirmed' => true]);
             // Send each role to its home page
-            if ($_SESSION['role'] === 'Admin') redirect('admin.php');
-            if ($_SESSION['role'] === 'Teacher') redirect('teacher.php');
-            redirect('main.php');
+            if ($_SESSION['role'] === 'Admin') redirect('admin/admin.php');
+            if ($_SESSION['role'] === 'Teacher') redirect('teacher/teacher.php');
+            redirect('user/main.php');
         }
     }
 }
@@ -127,7 +127,7 @@ include __DIR__ . '/includes/header.php';
             <div class="login-confirm-profile" aria-label="Account confirmation details">
                 <div class="login-confirm-avatar">
                     <?php if ($profilePicture): ?>
-                        <img src="<?= htmlspecialchars($profilePicture, ENT_QUOTES, 'UTF-8') ?>" alt="Profile picture">
+                        <img src="<?= htmlspecialchars(url($profilePicture), ENT_QUOTES, 'UTF-8') ?>" alt="Profile picture">
                     <?php else: ?>
                         <?= htmlspecialchars($profileInitials, ENT_QUOTES, 'UTF-8') ?>
                     <?php endif; ?>

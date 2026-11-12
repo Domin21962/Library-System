@@ -100,11 +100,11 @@ if (isset($_GET['token']) && $error === '') {
                     // Send each role to its home page
                     $role = $_SESSION['role'];
                     if ($role === 'Admin') {
-                        redirect('admin.php');
+                        redirect('admin/admin.php');
                     } elseif ($role === 'Teacher') {
-                        redirect('teacher.php');
+                        redirect('teacher/teacher.php');
                     } else {
-                        redirect('main.php');
+                        redirect('user/main.php');
                     }
                 }
             }
@@ -161,8 +161,8 @@ include __DIR__ . '/includes/header.php';
     <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($_SESSION['username']) ?> · <?= htmlspecialchars($_SESSION['role'] ?? '') ?></span></div>
     <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="qrNav">☰</button>
     <nav id="qrNav">
-        <a href="main.php">Catalog</a>
-        <a href="profile.php">Profile</a>
+        <a href="<?= url('user/main.php') ?>">Catalog</a>
+        <a href="<?= url('user/profile.php') ?>">Profile</a>
         <a href="logout.php">Logout</a>
     </nav>
 </div>
@@ -204,7 +204,7 @@ include __DIR__ . '/includes/header.php';
                 <input type="hidden" name="form" value="generate">
                 <button class="w-full" type="submit"><?= $tokenUrl ? 'Generate New QR Code' : 'Generate QR Code' ?></button>
             </form>
-            <a class="btn secondary w-full text-center mt-10" href="main.php">Back to Catalog</a>
+            <a class="btn secondary w-full text-center mt-10" href="<?= url('user/main.php') ?>">Back to Catalog</a>
         <!-- Logged-out view: camera scanner and photo fallback -->
         <?php else: ?>
             <!-- Warning shown when the camera needs HTTPS or is blocked -->

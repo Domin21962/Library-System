@@ -5,13 +5,13 @@
 // Tables: users (read/update), password_reset_codes (read/write); uploads go to uploads/profiles.
 
 // ===== Includes and access check =====
-require_once __DIR__ . '/includes/security.php';
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/functions.php';
 ensureUserProfileColumn($pdo);
 // Reject POSTs without a valid CSRF token
 enforceCsrfOnPost();
-require_once __DIR__ . '/includes/mailer.php';
+require_once __DIR__ . '/../includes/mailer.php';
 // Must be logged in
 requireLogin();
 
@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$imageInfo || !isset($allowed[$mime])) $infoError = 'Upload a valid JPG, PNG, GIF, or WEBP image.';
             else {
                 // Create the upload folder if missing
-                $directory = __DIR__ . '/uploads/profiles';
+                $directory = __DIR__ . '/../uploads/profiles';
                 if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) $infoError = 'The profile image folder could not be created.';
                 else {
                     // Random file name, so users cannot overwrite or guess other files
@@ -222,7 +222,7 @@ $pendingCode = $requiresCodeConfirm ? getPendingCode($pdo, $username) : null;
 
 // ===== Page setup / header =====
 $pageTitle = "My Info";
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <!-- ===== HTML output ===== -->
@@ -232,9 +232,9 @@ include __DIR__ . '/includes/header.php';
     <nav>
         <a href="main.php">Catalog</a>
         <a href="borrow_return.php">Borrow &amp; Return</a>
-        <a href="qr_login.php">QR Login</a>
+        <a href="<?= url('qr_login.php') ?>">QR Login</a>
         <a href="profile.php">Profile</a>
-        <a href="logout.php">Logout</a>
+        <a href="<?= url('logout.php') ?>">Logout</a>
     </nav>
 </div>
 
@@ -252,7 +252,7 @@ include __DIR__ . '/includes/header.php';
         $initial = defaultProfileInitials((string)$username);
         ?>
         <!-- Avatar: uploaded picture or initials -->
-        <?php if ($requiresCodeConfirm && $picture): ?><img class="profile-avatar profile-avatar-image" src="<?= htmlspecialchars($picture) ?>" alt="Profile picture"><?php else: ?><div class="profile-avatar"><?= htmlspecialchars($initial) ?></div><?php endif; ?>
+        <?php if ($requiresCodeConfirm && $picture): ?><img class="profile-avatar profile-avatar-image" src="<?= htmlspecialchars(url($picture)) ?>" alt="Profile picture"><?php else: ?><div class="profile-avatar"><?= htmlspecialchars($initial) ?></div><?php endif; ?>
         <h3 class="m-0-0-4"><?= htmlspecialchars($username) ?></h3>
         <div class="subtitle mb-20"><?= htmlspecialchars($role) ?> account</div>
         <?php if ($requiresCodeConfirm): ?>
@@ -326,4 +326,4 @@ include __DIR__ . '/includes/header.php';
         </div>
     </div>
 </div>
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

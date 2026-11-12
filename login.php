@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['email'] = $emailRow['email'] ?? '';
                 clearFailedLogins($pdo, $username, $ip);
                 auditLog($pdo, 'login_success_admin_without_email_confirmation', $username);
-                redirect('admin.php');
+                redirect('admin/admin.php');
             }
 
             // Teachers and students must complete the email confirmation step.

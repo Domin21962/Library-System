@@ -32,5 +32,5 @@ session_destroy();
 
 // ===== Redirect =====
 // Back to the login page
-header('Location: login.php');
+header('Location: ' . url('login.php'));
 exit;

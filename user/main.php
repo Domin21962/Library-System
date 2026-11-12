@@ -5,9 +5,9 @@
 // Tables: book and borrow_return (read only).
 
 // ===== Includes and access check =====
-require_once __DIR__ . '/includes/security.php';
-require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/functions.php';
 requireLogin();
 
 
@@ -17,7 +17,7 @@ $role = $_SESSION['role'];
 
 // Teachers monitor students instead of browsing/searching the catalog
 if ($role === 'Teacher') {
-    redirect('teacher.php');
+    redirect('teacher/teacher.php');
 }
 
 
@@ -71,7 +71,7 @@ $genres = $pdo->query("SELECT DISTINCT genre FROM book ORDER BY genre")->fetchAl
 
 // ===== Page setup / header =====
 $pageTitle = "WebShelf - Main";
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <!-- ===== HTML output ===== -->
@@ -80,14 +80,14 @@ include __DIR__ . '/includes/header.php';
     <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars($role) ?></span></div>
     <nav>
         <?php if ($role === 'Admin'): ?>
-            <a href="admin.php">⚙️ Admin Panel</a>
+            <a href="<?= url('admin/admin.php') ?>">⚙️ Admin Panel</a>
         <?php elseif ($role === 'Teacher'): ?>
-            <a href="teacher.php">🧑‍🏫 Monitor Students</a>
+            <a href="<?= url('teacher/teacher.php') ?>">🧑‍🏫 Monitor Students</a>
         <?php endif; ?>
-        <a href="qr_login.php">QR Login</a>
+        <a href="<?= url('qr_login.php') ?>">QR Login</a>
         <a href="borrow_return.php">Borrow &amp; Return</a>
         <a href="profile.php">Profile</a>
-        <a href="logout.php">Logout</a>
+        <a href="<?= url('logout.php') ?>">Logout</a>
     </nav>
 </div>
 
@@ -169,4 +169,4 @@ include __DIR__ . '/includes/header.php';
     <?php endif; ?>
 </div>
 
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

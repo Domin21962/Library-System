@@ -11,9 +11,9 @@ require_once __DIR__ . '/security.php';
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= $pageTitle ?? 'WebShelf' ?></title>
 <!-- Styles: base layout, then the book color theme, then page-specific tweaks (later files override earlier ones) -->
-<link rel="stylesheet" href="assets/css/style.css">
-<link rel="stylesheet" href="assets/css/book-theme.css">
-<link rel="stylesheet" href="assets/css/pages.css">
+<link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/style.css">
+<link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/book-theme.css">
+<link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/pages.css">
 
 </head>
 <body>
