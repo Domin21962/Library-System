@@ -1,5 +1,5 @@
 <?php
-// Teacher only: table of student accounts with their borrow counts.
+// Librarian only: table of student accounts with their borrow counts.
 // Inputs: none.
 // Tables: users, borrow_return (read only).
 
@@ -10,8 +10,8 @@ require_once __DIR__ . '/../includes/functions.php';
 
 
 // ===== Access check =====
-// Only teacher sessions may view this page
-requireTeacher();
+// Only librarian sessions may view this page
+requireLibrarian();
 
 
 // ===== Data loading =====
@@ -35,9 +35,9 @@ include __DIR__ . '/../includes/header.php';
 
 
 <!-- ===== HTML output ===== -->
-<!-- Top bar: brand and teacher nav -->
+<!-- Top bar: brand and librarian nav -->
 <div class="topbar">
-    <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · Teacher</span></div>
+    <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · Librarian</span></div>
     <nav>
         <a href="<?= url('qr_login.php') ?>">QR Login</a>
         <a href="<?= url('user/profile.php') ?>">Profile</a>
@@ -67,7 +67,7 @@ include __DIR__ . '/../includes/header.php';
                 <td><?= (int)$s['total_borrows'] ?></td>
                 <td><?= (int)$s['active_borrows'] ?></td>
                 <!-- Link to that user's history; username is URL-encoded -->
-                <td><a href="teacher_student_history.php?username=<?= urlencode($s['username']) ?>" class="btn secondary btn-small">View History →</a></td>
+                <td><a href="librarian_user_history.php?username=<?= urlencode($s['username']) ?>" class="btn secondary btn-small">View History →</a></td>
             </tr>
             <?php endforeach; ?>
         </table>

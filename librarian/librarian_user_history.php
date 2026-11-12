@@ -1,5 +1,5 @@
 <?php
-// Teacher only: borrow history and stats for one student.
+// Librarian only: borrow history and stats for one student.
 // Inputs: GET username.
 // Tables: users, borrow_return, book (read only). Emails and passwords are never selected.
 
@@ -10,12 +10,12 @@ require_once __DIR__ . '/../includes/functions.php';
 
 
 // ===== Access check =====
-requireTeacher();
+requireLibrarian();
 
 
 // ===== Input =====
-// Teacher name for the top bar; target student from the query string
-$teacherUsername = $_SESSION['username'];
+// Librarian name for the top bar; target student from the query string
+$librarianUsername = $_SESSION['username'];
 $targetUsername = $_GET['username'] ?? '';
 
 
@@ -27,10 +27,10 @@ $targetUser = $userStmt->fetch(PDO::FETCH_ASSOC);
 
 // Unknown user or not a student: back to the list
 if (!$targetUser) {
-    redirect('teacher/teacher.php');
+    redirect('librarian/librarian.php');
 }
 
-// Note: email is deliberately NOT selected here - teachers see history only, not credentials
+// Note: email is deliberately NOT selected here - librarians see history only, not credentials
 // Transactions for this student, newest first
 $history = $pdo->prepare(
     "SELECT b.title, br.borrow_date, br.due_date, br.return_date
@@ -62,11 +62,11 @@ include __DIR__ . '/../includes/header.php';
 
 
 <!-- ===== HTML output ===== -->
-<!-- Top bar: brand and teacher nav -->
+<!-- Top bar: brand and librarian nav -->
 <div class="topbar">
-    <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($teacherUsername) ?> · Teacher</span></div>
+    <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($librarianUsername) ?> · Librarian</span></div>
     <nav>
-        <a href="teacher.php">← Monitor Users</a>
+        <a href="librarian.php">← Monitor Users</a>
         <a href="<?= url('user/profile.php') ?>">Profile</a>
         <a href="<?= url('logout.php') ?>">Logout</a>
     </nav>
@@ -76,7 +76,7 @@ include __DIR__ . '/../includes/header.php';
 <div class="content wrap-1000">
     <div class="page-header">
         <h1 class="page-title">📜 Borrow History: <?= htmlspecialchars($targetUser['username']) ?></h1>
-        <a href="teacher.php" class="btn secondary">← Back to Monitor Users</a>
+        <a href="librarian.php" class="btn secondary">← Back to Monitor Users</a>
     </div>
 
     <!-- Stat cards: total, currently borrowed, overdue -->

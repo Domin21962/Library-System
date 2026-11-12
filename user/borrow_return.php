@@ -1,6 +1,6 @@
 <?php
 // Borrow & Return page: a logged-in user borrows or returns a book by ID and sees their own history.
-// Access: any logged-in user (Admin/Teacher/User).
+// Access: any logged-in user (Admin/Librarian/User).
 // Inputs (POST): book_id, action = borrow or return, _csrf. No GET inputs.
 // Tables: borrow_return (read/write), book and users (read only); also creates admin notifications and sends receipt emails.
 

@@ -101,8 +101,8 @@ if (isset($_GET['token']) && $error === '') {
                     $role = $_SESSION['role'];
                     if ($role === 'Admin') {
                         redirect('admin/admin.php');
-                    } elseif ($role === 'Teacher') {
-                        redirect('teacher/teacher.php');
+                    } elseif ($role === 'Librarian') {
+                        redirect('librarian/librarian.php');
                     } else {
                         redirect('user/main.php');
                     }

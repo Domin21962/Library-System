@@ -1,6 +1,6 @@
 <?php
 // Book reader page: shows one book's details, availability and its full text.
-// Access: any logged-in user (Admin/Teacher/User).
+// Access: any logged-in user (Admin/Librarian/User).
 // Inputs (GET): id = numeric book id (anything else goes back to the catalog).
 // Tables: book and borrow_return (read only).
 

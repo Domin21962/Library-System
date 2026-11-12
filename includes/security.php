@@ -18,11 +18,11 @@ function isHttps(): bool {
 }
 
 
-// ===== App base URL (links work from the root and from the admin/, teacher/ and user/ folders) =====
+// ===== App base URL (links work from the root and from the admin/, librarian/ and user/ folders) =====
 
 
 /** URL path of the project root, for example "/php-library" (empty when the project is the web root). */
-define('APP_BASE', preg_replace('#/(admin|teacher|user)$#', '', rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/')));
+define('APP_BASE', preg_replace('#/(admin|librarian|user)$#', '', rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/')));
 
 
 /** Build a link from the project root: url('user/main.php') gives /php-library/user/main.php. */

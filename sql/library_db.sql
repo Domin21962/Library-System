@@ -34,7 +34,7 @@ CREATE TABLE borrow_return (
     FOREIGN KEY (book_id) REFERENCES book(book_id)
 );
 
--- Sample accounts (username prefix decides role: AM. = Admin, TC. = Teacher, SD. = Student)
+-- Sample accounts (username prefix decides role: AM. = Admin, TC. = Librarian, SD. = Student)
 INSERT INTO users (username, email, password) VALUES
 ('AM.Admin', 'admin@library.edu', 'admin123'),
 ('AM.Cruz', 'cruz.admin@library.edu', 'admin123'),

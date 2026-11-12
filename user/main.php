@@ -1,6 +1,6 @@
 <?php
 // Catalog page (home for Users and Admins): browse or search books, see availability stats and genre chips.
-// Access: any logged-in user; Teachers are redirected to teacher.php.
+// Access: any logged-in user; Librarians are redirected to librarian.php.
 // Inputs (GET): keyword = search text (title, author or genre); empty shows the whole catalog.
 // Tables: book and borrow_return (read only).
 
@@ -15,9 +15,9 @@ requireLogin();
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 
-// Teachers monitor students instead of browsing/searching the catalog
-if ($role === 'Teacher') {
-    redirect('teacher/teacher.php');
+// Librarians monitor students instead of browsing/searching the catalog
+if ($role === 'Librarian') {
+    redirect('librarian/librarian.php');
 }
 
 
@@ -81,8 +81,8 @@ include __DIR__ . '/../includes/header.php';
     <nav>
         <?php if ($role === 'Admin'): ?>
             <a href="<?= url('admin/admin.php') ?>">⚙️ Admin Panel</a>
-        <?php elseif ($role === 'Teacher'): ?>
-            <a href="<?= url('teacher/teacher.php') ?>">🧑‍🏫 Monitor Users</a>
+        <?php elseif ($role === 'Librarian'): ?>
+            <a href="<?= url('librarian/librarian.php') ?>">🧑‍🏫 Monitor Users</a>
         <?php endif; ?>
         <a href="<?= url('qr_login.php') ?>">QR Login</a>
         <a href="borrow_return.php">Borrow &amp; Return</a>

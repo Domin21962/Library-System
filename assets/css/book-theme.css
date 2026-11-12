@@ -103,7 +103,7 @@ button.danger { background: linear-gradient(135deg, #b9564a, #a8453a); }
 .badge-available { background: rgba(70, 112, 77, 0.13); }
 .badge-borrowed { background: rgba(168, 69, 58, 0.12); }
 .role-admin { background: rgba(63, 107, 107, 0.13); color: #2f5252; border-color: rgba(63, 107, 107, 0.35); }
-.role-teacher { background: rgba(184, 134, 60, 0.16); color: #8a5a1f; border-color: rgba(184, 134, 60, 0.4); }
+.role-librarian { background: rgba(184, 134, 60, 0.16); color: #8a5a1f; border-color: rgba(184, 134, 60, 0.4); }
 .role-user { background: rgba(70, 112, 77, 0.13); color: #3b6342; border-color: rgba(70, 112, 77, 0.35); }
  
 /* ---------- admin area: teal cloth cover instead of brown ---------- */

@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             auditLog($pdo, 'login_success', $username, ['email_confirmed' => true]);
             // Send each role to its home page
             if ($_SESSION['role'] === 'Admin') redirect('admin/admin.php');
-            if ($_SESSION['role'] === 'Teacher') redirect('teacher/teacher.php');
+            if ($_SESSION['role'] === 'Librarian') redirect('librarian/librarian.php');
             redirect('user/main.php');
         }
     }

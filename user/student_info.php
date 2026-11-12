@@ -1,6 +1,6 @@
 <?php
 // My Info page: view and edit the account email, profile picture and password.
-// Access: any logged-in user. Teachers and Users confirm password changes with an emailed code and may set a picture; Admins change immediately.
+// Access: any logged-in user. Librarians and Users confirm password changes with an emailed code and may set a picture; Admins change immediately.
 // Inputs (POST): form = upload_picture, remove_picture, update_info, change_password, confirm_code, resend_code or cancel_code, plus that form's fields and _csrf.
 // Tables: users (read/update), password_reset_codes (read/write); uploads go to uploads/profiles.
 
@@ -20,9 +20,9 @@ requireLogin();
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 
-// Only Teacher and User accounts go through the email-confirmation flow
+// Only Librarian and User accounts go through the email-confirmation flow
 // for password changes. (Admin keeps the old immediate-change behavior.)
-$requiresCodeConfirm = in_array($role, ['Teacher', 'User'], true);
+$requiresCodeConfirm = in_array($role, ['Librarian', 'User'], true);
 
 // Emailed codes last 10 minutes and allow 5 wrong guesses
 $CODE_EXPIRY_MINUTES = 10;
@@ -156,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (empty($user['email'])) {
             $pwError = "There's no email on file for this account, so a confirmation code can't be sent. Add an email above first.";
         } else {
-            // Teacher/User: email a code; the password only changes after the code is confirmed
+            // Librarian/User: email a code; the password only changes after the code is confirmed
             if ($requiresCodeConfirm) {
                 sendPasswordCode($pdo, $username, $user['email'], $newPassword, $CODE_EXPIRY_MINUTES);
                 $pwSuccess = "We sent a 6-digit code to {$user['email']}. Enter it below to confirm the change.";
@@ -256,7 +256,7 @@ include __DIR__ . '/../includes/header.php';
         <h3 class="m-0-0-4"><?= htmlspecialchars($username) ?></h3>
         <div class="subtitle mb-20"><?= htmlspecialchars($role) ?> account</div>
         <?php if ($requiresCodeConfirm): ?>
-        <!-- Picture upload form (Teacher/User only) -->
+        <!-- Picture upload form (Librarian/User only) -->
         <form class="text-left mb-12" method="post" enctype="multipart/form-data">
             <?= csrf_field() ?><input type="hidden" name="form" value="upload_picture">
             <label for="profile_picture">Profile picture</label><input id="profile_picture" type="file" name="profile_picture" accept="image/jpeg,image/png,image/gif,image/webp" required>

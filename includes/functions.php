@@ -19,13 +19,13 @@ function getUserRole($username, ?PDO $pdo = null) {
             $stmt = $pdo->prepare("SELECT role FROM users WHERE username = ? LIMIT 1");
             $stmt->execute([$username]);
             $role = $stmt->fetchColumn();
-            if (in_array($role, ['Admin', 'Teacher', 'User'], true)) return $role;
+            if (in_array($role, ['Admin', 'Librarian', 'User'], true)) return $role;
         } catch (Throwable $e) {
             // Older installations may not have the role column yet; use legacy prefixes below.
         }
     }
     // Fail closed: if the role column/migration is unavailable, users are treated as User.
-    // Never infer Admin or Teacher privileges from a username prefix.
+    // Never infer Admin or Librarian privileges from a username prefix.
     return "User";
 }
 
@@ -91,10 +91,10 @@ function requireAdmin() {
 }
 
 
-/** Allow Teacher only; others go back to main.php. */
-function requireTeacher() {
+/** Allow Librarian only; others go back to main.php. */
+function requireLibrarian() {
     requireLogin();
-    if (($_SESSION['role'] ?? '') !== 'Teacher') {
+    if (($_SESSION['role'] ?? '') !== 'Librarian') {
         redirect('user/main.php');
     }
 }
