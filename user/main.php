@@ -82,7 +82,7 @@ include __DIR__ . '/../includes/header.php';
         <?php if ($role === 'Admin'): ?>
             <a href="<?= url('admin/admin.php') ?>">⚙️ Admin Panel</a>
         <?php elseif ($role === 'Teacher'): ?>
-            <a href="<?= url('teacher/teacher.php') ?>">🧑‍🏫 Monitor Students</a>
+            <a href="<?= url('teacher/teacher.php') ?>">🧑‍🏫 Monitor Users</a>
         <?php endif; ?>
         <a href="<?= url('qr_login.php') ?>">QR Login</a>
         <a href="borrow_return.php">Borrow &amp; Return</a>

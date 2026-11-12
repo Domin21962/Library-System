@@ -77,7 +77,7 @@ include __DIR__ . '/includes/header.php';
     <div class="auth-form-panel">
         <div class="card">
             <h2>Create an account</h2>
-            <div class="subtitle">Choose any unique username. New accounts are registered as Student accounts. Account roles are assigned by an administrator.</div>
+            <div class="subtitle">Choose any unique username. New accounts are registered as User accounts. Account roles are assigned by an administrator.</div>
             <!-- Registration form (includes CSRF field; entered values are re-shown escaped) -->
             <form method="post">
                 <?= csrf_field() ?>

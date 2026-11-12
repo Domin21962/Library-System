@@ -66,7 +66,7 @@ include __DIR__ . '/../includes/header.php';
 <div class="topbar">
     <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($teacherUsername) ?> · Teacher</span></div>
     <nav>
-        <a href="teacher.php">← Monitor Students</a>
+        <a href="teacher.php">← Monitor Users</a>
         <a href="<?= url('user/profile.php') ?>">Profile</a>
         <a href="<?= url('logout.php') ?>">Logout</a>
     </nav>
@@ -76,7 +76,7 @@ include __DIR__ . '/../includes/header.php';
 <div class="content wrap-1000">
     <div class="page-header">
         <h1 class="page-title">📜 Borrow History: <?= htmlspecialchars($targetUser['username']) ?></h1>
-        <a href="teacher.php" class="btn secondary">← Back to Monitor Students</a>
+        <a href="teacher.php" class="btn secondary">← Back to Monitor Users</a>
     </div>
 
     <!-- Stat cards: total, currently borrowed, overdue -->
@@ -100,7 +100,7 @@ include __DIR__ . '/../includes/header.php';
         <div class="sub">Borrow activity only - account credentials aren't visible on this page.</div>
 
         <?php if (empty($records)): ?>
-            <div class="empty-state">This student hasn't borrowed anything yet.</div>
+            <div class="empty-state">This user hasn't borrowed anything yet.</div>
         <?php else: ?>
         <table>
             <tr><th>Book</th><th>Borrowed</th><th>Due</th><th>Returned</th></tr>

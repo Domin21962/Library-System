@@ -72,7 +72,7 @@ include __DIR__ . '/../includes/header.php';
     <?php if ($error): ?><div class="error mb-16"><?= htmlspecialchars($error) ?></div><?php endif; ?>
 
     <div class="admin-section">
-        <div class="sub">Everyone registered in WebShelf. Legacy prefixes are supported; new accounts default to Student.</div>
+        <div class="sub">Everyone registered in WebShelf. Legacy prefixes are supported; new accounts default to User.</div>
         <!-- Users table -->
         <table>
             <tr><th>User ID</th><th>Username</th><th>Email</th><th>Role</th><th></th></tr>

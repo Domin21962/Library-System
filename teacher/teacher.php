@@ -29,7 +29,7 @@ $students = $pdo->query(
 
 
 // ===== Page setup / header =====
-$pageTitle = "Monitor Students - WebShelf";
+$pageTitle = "Monitor Users - WebShelf";
 include __DIR__ . '/../includes/header.php';
 ?>
 
@@ -47,26 +47,26 @@ include __DIR__ . '/../includes/header.php';
 
 <!-- Main content -->
 <div class="content wrap-1000">
-    <h1 class="page-title">🧑‍🏫 Monitor Students</h1>
+    <h1 class="page-title">🧑‍🏫 Monitor Users</h1>
 
     <div class="admin-section">
         <div class="sub">
-            Reading activity for every student account. Click a name to see their borrow
+            Reading activity for every user account. Click a name to see their borrow
             history — account credentials aren't shown here.
         </div>
 
-        <!-- Students table (or empty-state message) -->
+        <!-- Users table (or empty-state message) -->
         <?php if (empty($students)): ?>
-            <div class="empty-state">No student accounts yet.</div>
+            <div class="empty-state">No user accounts yet.</div>
         <?php else: ?>
         <table>
-            <tr><th>Student</th><th>Total Borrows</th><th>Currently Borrowed</th><th></th></tr>
+            <tr><th>User</th><th>Total Borrows</th><th>Currently Borrowed</th><th></th></tr>
             <?php foreach ($students as $s): ?>
             <tr>
                 <td><?= htmlspecialchars($s['username']) ?></td>
                 <td><?= (int)$s['total_borrows'] ?></td>
                 <td><?= (int)$s['active_borrows'] ?></td>
-                <!-- Link to that student's history; username is URL-encoded -->
+                <!-- Link to that user's history; username is URL-encoded -->
                 <td><a href="teacher_student_history.php?username=<?= urlencode($s['username']) ?>" class="btn secondary btn-small">View History →</a></td>
             </tr>
             <?php endforeach; ?>

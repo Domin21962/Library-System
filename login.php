@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $error = "This account has no valid email address. Please contact an administrator.";
             } elseif (empty($mailConfig['enabled'])) {
-                $error = "Email confirmation is required for teachers and students. Enable SMTP in config/local.php by setting mail_enabled to true.";
+                $error = "Email confirmation is required for teachers and users. Enable SMTP in config/local.php by setting mail_enabled to true.";
                 auditLog($pdo, 'login_confirmation_blocked_mail_disabled', $username);
             } elseif (empty($mailConfig['configured'])) {
                 $error = "SMTP is enabled but incomplete. Check host, port, encryption, username, password, and from_email in config/local.php.";
