@@ -1,11 +1,9 @@
 -- Adds more free, public-domain books to the catalog.
--- Run AFTER library_db.sql and add_gutenberg_ids.sql, then run:  php tools/import_texts.php
+-- Run AFTER library_db.sql (the gutenberg_id and full_text columns must already exist; tools/import_texts.php creates them), then run:  php tools/import_texts.php
 -- Safe to re-run: a book is only inserted if its title is not already in the catalog.
 
 USE library_db;
 
-ALTER TABLE book ADD COLUMN IF NOT EXISTS gutenberg_id INT NULL;
-ALTER TABLE book ADD COLUMN IF NOT EXISTS full_text LONGTEXT NULL;
 
 INSERT INTO book (title, author, year, genre, publisher, book_content, gutenberg_id)
 SELECT * FROM (
