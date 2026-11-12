@@ -98,3 +98,6 @@
 .text-overdue { color: var(--danger) !important; font-weight: 600 !important; }
 .text-danger { color: var(--danger) !important; }
 .stat-danger { border-top-color: var(--danger) !important; }
+
+/* Book cover image on catalog cards and the book page */
+.book-cover { height: 130px; width: auto; max-width: 100%; margin: 6px 0 4px; border-radius: 3px; box-shadow: 0 2px 6px rgba(0,0,0,.25); }

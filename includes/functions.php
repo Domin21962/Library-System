@@ -128,6 +128,17 @@ function genreIcon($genre) {
 }
 
 
+/** Book cover for a catalog card: Project Gutenberg's cover image if the book has a Gutenberg ID, else the genre emoji. */
+function bookCover($book) {
+    $icon = genreIcon($book['genre']);
+    if (empty($book['gutenberg_id'])) return '<div class="genre-icon">' . $icon . '</div>';
+    $id = (int)$book['gutenberg_id'];
+    return '<img class="book-cover" loading="lazy" alt="" data-fallback="' . $icon . '"'
+         . ' src="https://www.gutenberg.org/cache/epub/' . $id . '/pg' . $id . '.cover.medium.jpg"'
+         . ' onerror="this.outerHTML=\'<div class=genre-icon>\'+this.dataset.fallback+\'</div>\'">';
+}
+
+
 /** Pick a stable accent color for a genre (same genre always gets the same color). */
 function genreColor($genre) {
     $palette = ['#5b8cff', '#7c6bff', '#34d399', '#f59e0b', '#f87171', '#22d3ee', '#e879f9', '#a3e635'];

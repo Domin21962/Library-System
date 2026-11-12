@@ -23,7 +23,7 @@ if ($role === 'Librarian') {
 
 // ===== Data loading =====
 // Every book query includes a live availability flag (currently borrowed = no return_date yet)
-$availabilitySelect = "b.book_id, b.title, b.author, b.year, b.genre, b.publisher, b.book_content,
+$availabilitySelect = "b.book_id, b.title, b.author, b.year, b.genre, b.publisher, b.book_content, b.gutenberg_id,
     (SELECT br.username FROM borrow_return br WHERE br.book_id = b.book_id AND br.return_date IS NULL LIMIT 1) AS borrowed_by";
 
 // Search text from the query string; blank means browse all
@@ -152,7 +152,7 @@ include __DIR__ . '/../includes/header.php';
                         <?= $available ? '● Available' : '● Borrowed' ?>
                     </span>
                 </div>
-                <div class="genre-icon"><?= genreIcon($book['genre']) ?></div>
+                <?= bookCover($book) ?>
                 <h3><?= htmlspecialchars($book['title']) ?></h3>
                 <div class="author">by <?= htmlspecialchars($book['author']) ?></div>
                 <div class="meta">

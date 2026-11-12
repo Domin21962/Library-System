@@ -87,7 +87,7 @@ include __DIR__ . '/../includes/header.php';
                 <?= $available ? '● Available' : '● Borrowed' ?>
             </span>
         </div>
-        <div class="genre-icon"><?= genreIcon($book['genre']) ?></div>
+        <?= bookCover($book) ?>
         <h1><?= htmlspecialchars($book['title']) ?></h1>
         <div class="author">by <?= htmlspecialchars($book['author']) ?></div>
         <div class="meta">
