@@ -77,7 +77,7 @@ include __DIR__ . '/../includes/header.php';
 <!-- ===== HTML output ===== -->
 <!-- Top bar: brand, user badge and role-aware nav -->
 <div class="topbar">
-    <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars($role) ?></span></div>
+    <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars(($role === 'User' ? userCode($username) : $role)) ?></span></div>
     <nav>
         <?php if ($role === 'Admin'): ?>
             <a href="<?= url('admin/admin.php') ?>">⚙️ Admin Panel</a>

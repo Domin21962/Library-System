@@ -158,7 +158,7 @@ include __DIR__ . '/includes/header.php';
 <!-- ===== HTML output ===== -->
 <!-- Top bar (logged-in users only) -->
 <div class="topbar">
-    <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($_SESSION['username']) ?> · <?= htmlspecialchars($_SESSION['role'] ?? '') ?></span></div>
+    <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($_SESSION['username']) ?> · <?= htmlspecialchars(($_SESSION['role'] ?? '') === 'User' ? userCode($_SESSION['username']) : ($_SESSION['role'] ?? '')) ?></span></div>
     <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="qrNav">☰</button>
     <nav id="qrNav">
         <a href="<?= url('user/main.php') ?>">Catalog</a>

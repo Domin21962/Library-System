@@ -10,6 +10,17 @@
 // ===== Roles and username validation =====
 
 
+/** Display code for an account, e.g. USR-00001 (users.id padded to 5 digits); '' if not found. */
+function userCode($username, ?PDO $pdo = null) {
+    $pdo = $pdo ?: ($GLOBALS['pdo'] ?? null);
+    if (!($pdo instanceof PDO)) return '';
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? LIMIT 1");
+    $stmt->execute([$username]);
+    $id = $stmt->fetchColumn();
+    return $id === false ? '' : 'USR-' . str_pad((string)$id, 5, '0', STR_PAD_LEFT);
+}
+
+
 /** Look up a user's role in the database. Username text never grants elevated privileges. */
 function getUserRole($username, ?PDO $pdo = null) {
     $pdo = $pdo ?: ($GLOBALS['pdo'] ?? null);
