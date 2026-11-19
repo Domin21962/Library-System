@@ -95,8 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($check->fetch()) {
                 // Close the loan by stamping return_date
-                $update = $pdo->prepare("UPDATE borrow_return SET return_date = NOW(), email = ? WHERE username = ? AND book_id = ? AND return_date IS NULL");
-                $update->execute([$email, $username, $bookId]);
+                $update = $pdo->prepare("UPDATE borrow_return SET return_date = NOW() WHERE username = ? AND book_id = ? AND return_date IS NULL");
+                $update->execute([$username, $bookId]);
 
                 // Fetch the just-closed loan to build the return receipt
                 $recordStmt = $pdo->prepare(
