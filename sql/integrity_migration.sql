@@ -1,5 +1,6 @@
 -- Doms Library: data integrity + 3NF migration. Run once in phpMyAdmin / HeidiSQL on library_db,
--- AFTER deploying the matching PHP files (they no longer write borrow_return.email).
+-- AFTER deploying the matching PHP files. If you use shelf_migration.sql, run this file FIRST (it needs borrow_return);
+-- if borrow_return is already gone, run only the password_reset_tokens foreign key part (fk_reset_user).
 
 USE library_db;
 

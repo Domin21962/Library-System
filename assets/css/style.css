@@ -370,7 +370,6 @@
     .stat-value { font-size: 26px; font-weight: 800; }
     .stat-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
     .stat-available .stat-value { color: var(--success); }
-    .stat-borrowed .stat-value { color: var(--danger); }
 
     /* Genre filter chips */
     .chip-row {
@@ -444,7 +443,6 @@
         border-radius: 999px;
     }
     .badge-available { color: var(--success); background: rgba(52,211,153,0.12); }
-    .badge-borrowed { color: var(--danger); background: rgba(248,113,113,0.12); }
     .genre-icon { font-size: 26px; margin: 6px 0 2px; }
     .book-card h3 {
         margin: 2px 0 2px;
@@ -480,13 +478,6 @@
         white-space: pre-wrap;
         color: var(--text);
     }
-    .borrowed-note {
-        margin-top: 10px;
-        font-size: 12px;
-        color: var(--danger);
-        font-style: italic;
-    }
-
     table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
     th { text-align: left; padding: 10px 8px; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border); }
     td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
@@ -778,7 +769,7 @@
 .admin-notify-item:last-child { border-bottom: 0; }
 .admin-notify-item .notify-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
 .admin-notify-item .notify-meta { color: var(--muted); font-size: 11px; line-height: 1.45; }
-.admin-notify-item.borrow .notify-title { color: var(--accent); }
+.admin-notify-item.shelf .notify-title { color: var(--accent); }
 .admin-notify-item.return .notify-title { color: var(--success); }
 .admin-notify-empty { padding: 28px 16px; text-align: center; color: var(--muted); font-size: 13px; }
 .admin-notify-enable {

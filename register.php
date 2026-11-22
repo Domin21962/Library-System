@@ -70,7 +70,7 @@ include __DIR__ . '/includes/header.php';
         </div>
         <?php include __DIR__ . '/includes/library_illustration.svg'; ?>
         <div class="auth-tagline">
-            Create an account to start browsing, borrowing, and keeping track of what you're reading.
+            Create an account to start browsing, saving books to your shelf, and picking up where you left off.
         </div>
     </div>
     <!-- Right panel: registration card -->

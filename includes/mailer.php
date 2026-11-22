@@ -1,6 +1,6 @@
 <?php
 /*
- * SMTP mailer and HTML email templates (receipts, codes, recovery, reset).
+ * SMTP mailer and HTML email templates (login and password codes, recovery, reset).
  * Access: public include (no page output). Inputs: config/mail.php settings.
  * Tables: none.
  */
@@ -140,87 +140,6 @@ function smtpSend(array $config, string $to, string $subject, string $body, bool
 
 
 // ===== Email body builders =====
-
-
-/**
- * Builds a clean, receipt-styled HTML email for a borrow or return transaction.
- */
-function buildReceiptEmail(string $type, array $data): string {
-    // $type is 'borrow' or 'return'
-    $isBorrow = $type === 'borrow';
-    $heading = $isBorrow ? 'Borrow Receipt' : 'Return Receipt';
-    $statusLabel = $isBorrow ? 'BORROWED' : 'RETURNED';
-    $statusColor = $isBorrow ? '#2563eb' : '#059669';
-
-    // Receipt table rows (values are escaped in receiptRow)
-    $rows = '';
-    $rows .= receiptRow('Transaction ID', '#' . str_pad((string)$data['transaction_id'], 6, '0', STR_PAD_LEFT));
-    $rows .= receiptRow('Book', $data['title']);
-    $rows .= receiptRow('Book ID', '#' . $data['book_id']);
-    $rows .= receiptRow('Borrower', $data['username']);
-    $rows .= receiptRow('Email', $data['email']);
-    $rows .= receiptRow('Borrowed On', $data['borrow_date']);
-    if ($isBorrow) {
-        $rows .= receiptRow('Due Date', $data['due_date']);
-    } else {
-        $rows .= receiptRow('Returned On', $data['return_date']);
-    }
-
-    // Email HTML template (inline styles for mail clients)
-    $html = '
-<!DOCTYPE html>
-<html>
-<body style="margin:0;padding:24px;background:#f2f4f7;font-family:Arial,Helvetica,sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-    <tr><td align="center">
-      <table role="presentation" width="420" cellpadding="0" cellspacing="0"
-             style="background:#ffffff;border:1px solid #e2e5ea;border-radius:10px;overflow:hidden;">
-        <tr>
-          <td style="background:#111827;color:#ffffff;padding:20px 24px;">
-            <div style="font-size:13px;letter-spacing:1px;opacity:0.7;">WebShelf</div>
-            <div style="font-size:20px;font-weight:bold;margin-top:4px;">' . htmlspecialchars($heading) . '</div>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:20px 24px 4px;">
-            <span style="display:inline-block;background:' . $statusColor . ';color:#fff;font-size:11px;
-                         font-weight:bold;letter-spacing:0.5px;padding:4px 10px;border-radius:999px;">
-              ' . $statusLabel . '
-            </span>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:12px 24px 20px;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-                   style="border-top:1px dashed #d7dbe2;margin-top:8px;">
-              ' . $rows . '
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:16px 24px;background:#f9fafb;border-top:1px dashed #d7dbe2;
-                     font-size:12px;color:#6b7280;text-align:center;">
-            This is an automated receipt from the WebShelf.<br>Please keep it for your records.
-          </td>
-        </tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>';
-
-    return $html;
-}
-
-
-/** One label/value row of the receipt table, HTML-escaped. */
-function receiptRow(string $label, string $value): string {
-    return '
-    <tr>
-      <td style="padding:8px 0;font-size:13px;color:#6b7280;border-bottom:1px dashed #eceef1;">' . htmlspecialchars($label) . '</td>
-      <td style="padding:8px 0;font-size:13px;color:#111827;font-weight:600;text-align:right;border-bottom:1px dashed #eceef1;">' . htmlspecialchars($value) . '</td>
-    </tr>';
-}
 
 
 /** Password-change confirmation code email (code and username are escaped). */

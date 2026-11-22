@@ -1,7 +1,7 @@
 <?php
-// Admin only: borrow history and stats for one non-admin user.
+// Admin only: shelf and reading progress for one non-admin user.
 // Inputs: GET username.
-// Tables: users, borrow_return, book (read only).
+// Tables: users, shelf, reading_progress, book (read only).
 
 // ===== Includes =====
 require_once __DIR__ . '/../includes/security.php';
@@ -37,29 +37,23 @@ if ($targetRole === 'Admin') {
     redirect('admin/admin_users.php');
 }
 
-// All transactions for this user, newest first (joins book title and user email)
+// Books this user saved or started reading, most recent activity first
+$userId = (int)$targetUser['id'];
 $history = $pdo->prepare(
-    "SELECT b.title, u.email, br.borrow_date, br.due_date, br.return_date
-     FROM borrow_return br JOIN book b ON br.book_id = b.book_id
-     JOIN users u ON u.username = br.username
-     WHERE br.username = ?
-     ORDER BY br.id DESC"
+    "SELECT b.title, s.added_at, COALESCE(rp.percent, 0) AS percent, rp.updated_at
+     FROM book b
+     LEFT JOIN shelf s ON s.book_id = b.book_id AND s.user_id = ?
+     LEFT JOIN reading_progress rp ON rp.book_id = b.book_id AND rp.user_id = ?
+     WHERE s.id IS NOT NULL OR rp.id IS NOT NULL
+     ORDER BY COALESCE(rp.updated_at, s.added_at) DESC"
 );
-$history->execute([$targetUsername]);
+$history->execute([$userId, $userId]);
 $records = $history->fetchAll(PDO::FETCH_ASSOC);
 
-
-// Count unreturned books, and how many of those are past due
-$currentlyBorrowed = 0;
-$overdueCount = 0;
-foreach ($records as $r) {
-    if (!$r['return_date']) {
-        $currentlyBorrowed++;
-        if (!empty($r['due_date']) && strtotime($r['due_date']) < time()) {
-            $overdueCount++;
-        }
-    }
-}
+// Counts for the stat cards
+$onShelf = count(array_filter($records, fn($r) => !empty($r['added_at'])));
+$inProgress = count(array_filter($records, fn($r) => $r['percent'] > 0 && $r['percent'] < 100));
+$finished = count(array_filter($records, fn($r) => $r['percent'] >= 100));
 
 
 // ===== Page setup / header =====
@@ -85,49 +79,44 @@ include __DIR__ . '/../includes/header.php';
     <div class="page-header">
         <!-- Page title with role pill and padded user ID -->
         <h1 class="page-title">
-            📜 Borrow History: <?= htmlspecialchars($targetUser['username']) ?>
+            📜 Shelf &amp; Reading: <?= htmlspecialchars($targetUser['username']) ?>
             <span class="role-pill role-<?= strtolower($targetRole) ?> ml-8-middle"><?= htmlspecialchars($targetRole) ?></span>
             <span class="mono-muted-inline">USR-<?= str_pad((string)$targetUser['id'], 5, '0', STR_PAD_LEFT) ?></span>
         </h1>
         <a href="admin_users.php" class="btn secondary">← Back to Manage Users</a>
     </div>
 
-    <!-- Stat cards: total, currently borrowed, overdue -->
+    <!-- Stat cards: shelf, in progress, finished -->
     <div class="stats-row mb-24">
         <div class="stat-card admin-stat">
-            <div class="stat-value"><?= count($records) ?></div>
-            <div class="stat-label">Total Transactions</div>
+            <div class="stat-value"><?= $onShelf ?></div>
+            <div class="stat-label">On Shelf</div>
         </div>
         <div class="stat-card admin-stat">
-            <div class="stat-value"><?= $currentlyBorrowed ?></div>
-            <div class="stat-label">Currently Borrowed</div>
+            <div class="stat-value"><?= $inProgress ?></div>
+            <div class="stat-label">In Progress</div>
         </div>
-        <div class="stat-card admin-stat <?= $overdueCount > 0 ? 'stat-danger' : '' ?>">
-            <div class="stat-value <?= $overdueCount > 0 ? 'text-danger' : '' ?>"><?= $overdueCount ?></div>
-            <div class="stat-label">Overdue</div>
+        <div class="stat-card admin-stat">
+            <div class="stat-value"><?= $finished ?></div>
+            <div class="stat-label">Finished</div>
         </div>
     </div>
 
-    <!-- History table (or empty-state message) -->
+    <!-- Shelf and reading table (or empty-state message) -->
     <div class="admin-section">
         <div class="sub">Email on file: <?= htmlspecialchars($targetUser['email']) ?></div>
 
         <?php if (empty($records)): ?>
-            <div class="empty-state">This account hasn't borrowed anything yet.</div>
+            <div class="empty-state">This account hasn't saved or started any book yet.</div>
         <?php else: ?>
         <table>
-            <tr><th>Book</th><th>Email Used</th><th>Borrowed</th><th>Due</th><th>Returned</th></tr>
+            <tr><th>Book</th><th>Saved to shelf</th><th>Progress</th><th>Last read</th></tr>
             <?php foreach ($records as $r): ?>
-            <!-- Overdue = unreturned and past its due date -->
-            <?php $overdue = !$r['return_date'] && !empty($r['due_date']) && strtotime($r['due_date']) < time(); ?>
             <tr>
                 <td><?= htmlspecialchars($r['title']) ?></td>
-                <td><?= htmlspecialchars($r['email'] ?? '') ?></td>
-                <td><?= htmlspecialchars($r['borrow_date']) ?></td>
-                <td class="<?= $overdue ? 'text-overdue' : '' ?>">
-                    <?= !empty($r['due_date']) ? htmlspecialchars($r['due_date']) : '—' ?><?= $overdue ? ' (overdue)' : '' ?>
-                </td>
-                <td><?= $r['return_date'] ? htmlspecialchars($r['return_date']) : '<span class="badge-status badge-borrowed">Not returned</span>' ?></td>
+                <td><?= !empty($r['added_at']) ? htmlspecialchars($r['added_at']) : '—' ?></td>
+                <td><?= $r['percent'] > 0 ? progressBar((int)$r['percent']) : '—' ?></td>
+                <td><?= !empty($r['updated_at']) ? htmlspecialchars($r['updated_at']) : '—' ?></td>
             </tr>
             <?php endforeach; ?>
         </table>

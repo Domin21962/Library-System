@@ -1,8 +1,8 @@
 <?php
-// Catalog page (home for Users and Admins): browse or search books, see availability stats and genre chips.
+// Catalog page (home for Users and Admins): browse or search books, see shelf stats, Continue Reading and genre chips.
 // Access: any logged-in user; Librarians are redirected to librarian.php.
 // Inputs (GET): keyword = search text (title, author or genre); empty shows the whole catalog.
-// Tables: book and borrow_return (read only).
+// Tables: book, shelf and reading_progress (read only).
 
 // ===== Includes and access check =====
 require_once __DIR__ . '/../includes/security.php';
@@ -22,9 +22,8 @@ if ($role === 'Librarian') {
 
 
 // ===== Data loading =====
-// Every book query includes a live availability flag (currently borrowed = no return_date yet)
-$availabilitySelect = "b.book_id, b.title, b.author, b.year, b.genre, b.publisher, b.book_content, b.gutenberg_id,
-    (SELECT br.username FROM borrow_return br WHERE br.book_id = b.book_id AND br.return_date IS NULL LIMIT 1) AS borrowed_by";
+// Columns every catalog card needs
+$availabilitySelect = "b.book_id, b.title, b.author, b.year, b.genre, b.publisher, b.book_content, b.gutenberg_id";
 
 // Search text from the query string; blank means browse all
 $keyword = trim($_GET['keyword'] ?? '');
@@ -63,8 +62,22 @@ if ($searched) {
 // Stats strip + genre quick-filter chips
 // Counts for the stats strip
 $totalBooks = $pdo->query("SELECT COUNT(*) FROM book")->fetchColumn();
-$borrowedNow = $pdo->query("SELECT COUNT(*) FROM borrow_return WHERE return_date IS NULL")->fetchColumn();
-$availableNow = $totalBooks - $borrowedNow;
+// This user's shelf (set of book ids) and reading progress (book id => percent)
+$userId = currentUserId($pdo);
+$stmt = $pdo->prepare("SELECT book_id FROM shelf WHERE user_id = ?");
+$stmt->execute([$userId]);
+$shelfIds = array_flip($stmt->fetchAll(PDO::FETCH_COLUMN));
+$stmt = $pdo->prepare("SELECT book_id, percent FROM reading_progress WHERE user_id = ?");
+$stmt->execute([$userId]);
+$progress = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+// Continue Reading strip: up to 3 started, unfinished books, newest first
+$stmt = $pdo->prepare(
+    "SELECT b.book_id, b.title, b.author, b.genre, b.gutenberg_id, rp.percent
+     FROM reading_progress rp JOIN book b ON b.book_id = rp.book_id
+     WHERE rp.user_id = ? AND rp.percent BETWEEN 1 AND 99 ORDER BY rp.updated_at DESC LIMIT 3"
+);
+$stmt->execute([$userId]);
+$continue = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Distinct genres for the chips
 $genres = $pdo->query("SELECT DISTINCT genre FROM book ORDER BY genre")->fetchAll(PDO::FETCH_COLUMN);
 
@@ -85,7 +98,7 @@ include __DIR__ . '/../includes/header.php';
             <a href="<?= url('librarian/librarian.php') ?>">🧑‍🏫 Monitor Users</a>
         <?php endif; ?>
         <a href="<?= url('qr_login.php') ?>">QR Login</a>
-        <a href="borrow_return.php">Borrow &amp; Return</a>
+        <a href="shelf.php">My Shelf</a>
         <a href="profile.php">Profile</a>
         <a href="<?= url('logout.php') ?>">Logout</a>
     </nav>
@@ -95,21 +108,37 @@ include __DIR__ . '/../includes/header.php';
 <div class="content wrap-1200">
     <h1 class="page-title">Find a book</h1>
 
-    <!-- Stats cards: total, available, borrowed -->
+    <!-- Stats cards: catalog size, this user's shelf and books in progress -->
     <div class="stats-row">
         <div class="stat-card">
             <div class="stat-value"><?= (int)$totalBooks ?></div>
             <div class="stat-label">Total Books</div>
         </div>
         <div class="stat-card stat-available">
-            <div class="stat-value"><?= (int)$availableNow ?></div>
-            <div class="stat-label">Available</div>
+            <div class="stat-value"><?= count($shelfIds) ?></div>
+            <div class="stat-label">On My Shelf</div>
         </div>
-        <div class="stat-card stat-borrowed">
-            <div class="stat-value"><?= (int)$borrowedNow ?></div>
-            <div class="stat-label">Borrowed</div>
+        <div class="stat-card">
+            <div class="stat-value"><?= count($continue) ?></div>
+            <div class="stat-label">Continue Reading</div>
         </div>
     </div>
+
+    <!-- Continue Reading: books the user stopped in the middle of -->
+    <?php if (!empty($continue)): ?>
+        <h2 class="section-heading">Continue Reading</h2>
+        <div class="book-grid">
+            <?php foreach ($continue as $c): ?>
+                <a class="book-card" href="book.php?id=<?= (int)$c['book_id'] ?>" style="border-top: 3px solid <?= genreColor($c['genre']) ?>;">
+                    <?= bookCover($c) ?>
+                    <h3><?= htmlspecialchars($c['title']) ?></h3>
+                    <div class="author">by <?= htmlspecialchars($c['author']) ?></div>
+                    <?= progressBar((int)$c['percent']) ?>
+                    <div class="read-cta">▶ Resume</div>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 
     <!-- Search form (GET) -->
     <form method="get" class="search-bar">
@@ -143,14 +172,13 @@ include __DIR__ . '/../includes/header.php';
         <!-- Grid of book cards; each card links to the reader page -->
         <div class="book-grid">
         <?php foreach ($books as $book): ?>
-            <!-- A book is available when no one has an open loan -->
-            <?php $available = empty($book['borrowed_by']); ?>
+            <?php $onShelf = isset($shelfIds[$book['book_id']]); ?>
             <a class="book-card" href="book.php?id=<?= (int)$book['book_id'] ?>" style="border-top: 3px solid <?= genreColor($book['genre']) ?>;">
                 <div class="book-card-top">
                     <div class="book-id">Book #<?= (int)$book['book_id'] ?></div>
-                    <span class="badge-status <?= $available ? 'badge-available' : 'badge-borrowed' ?>">
-                        <?= $available ? '● Available' : '● Borrowed' ?>
-                    </span>
+                    <?php if ($onShelf): ?>
+                        <span class="badge-status badge-available">● On my shelf</span>
+                    <?php endif; ?>
                 </div>
                 <?= bookCover($book) ?>
                 <h3><?= htmlspecialchars($book['title']) ?></h3>
@@ -160,9 +188,7 @@ include __DIR__ . '/../includes/header.php';
                     <span class="tag"><?= (int)$book['year'] ?></span>
                 </div>
                 <div class="read-cta">📖 Click to read</div>
-                <?php if (!$available): ?>
-                    <div class="borrowed-note">Currently with <?= htmlspecialchars($book['borrowed_by']) ?></div>
-                <?php endif; ?>
+                <?= progressBar((int)($progress[$book['book_id']] ?? 0)) ?>
             </a>
         <?php endforeach; ?>
         </div>

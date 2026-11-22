@@ -8,6 +8,8 @@ CREATE DATABASE IF NOT EXISTS library_db;
 USE library_db;
 
 -- Drop children first so foreign keys do not block the drops
+DROP TABLE IF EXISTS reading_progress;
+DROP TABLE IF EXISTS shelf;
 DROP TABLE IF EXISTS borrow_return;
 DROP TABLE IF EXISTS password_reset_tokens;
 DROP TABLE IF EXISTS password_reset_codes;
@@ -41,17 +43,27 @@ CREATE TABLE book (
     full_text LONGTEXT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Loans. The borrower's email is NOT stored here (3NF): it is read from users via the username.
-CREATE TABLE borrow_return (
+-- My Shelf: the books a user saved to read later (replaces borrowing). One row per user and book.
+CREATE TABLE shelf (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
+    user_id INT NOT NULL,
     book_id INT NOT NULL,
-    borrow_date DATETIME NOT NULL,
-    due_date DATETIME NULL,
-    return_date DATETIME NULL,
-    CONSTRAINT fk_borrow_book FOREIGN KEY (book_id) REFERENCES book(book_id),
-    CONSTRAINT fk_borrow_user FOREIGN KEY (username) REFERENCES users(username)
-        ON DELETE CASCADE ON UPDATE CASCADE
+    added_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_shelf_user_book (user_id, book_id),
+    CONSTRAINT fk_shelf_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_shelf_book FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Reading progress: how far (0-100 %) a user has read in a book; powers "Continue Reading".
+CREATE TABLE reading_progress (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    book_id INT NOT NULL,
+    percent TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_progress_user_book (user_id, book_id),
+    CONSTRAINT fk_progress_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_progress_book FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ===== Account recovery and sign-in =====
@@ -131,7 +143,7 @@ CREATE TABLE security_audit_logs (
 
 CREATE TABLE admin_notifications (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    event_type VARCHAR(20) NOT NULL DEFAULT 'borrow',
+    event_type VARCHAR(20) NOT NULL DEFAULT 'shelf',
     username VARCHAR(100) NOT NULL,
     book_id INT NOT NULL DEFAULT 0,
     book_title VARCHAR(255) NOT NULL DEFAULT '',

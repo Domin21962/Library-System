@@ -78,7 +78,7 @@
         });
     });
 
-    // Real-time admin borrow/return notifications.
+    // Real-time admin notifications (a user saved a book to their shelf).
     // Uses lightweight 1-second polling because it is reliable with Laragon/Apache
     // even when PHP output buffering prevents SSE from flushing immediately.
     /* The notification bell below is only sent to logged-in Admins */
@@ -127,7 +127,7 @@
                 return;
             }
             list.innerHTML = notifyItems.map(function (item) {
-                var action = item.event_type === 'return' ? '↩ Book returned' : '📚 Book borrowed';
+                var action = '📚 Added to shelf';
                 return '<div class="admin-notify-item ' + esc(item.event_type) + '">' +
                     '<div class="notify-title">' + action + '</div>' +
                     '<div class="notify-meta">' + esc(item.username) + ' · ' + esc(item.book_title) + '<br>' + esc(relativeTime(item.created_at)) + '</div>' +
@@ -146,7 +146,7 @@
             if (old) old.remove();
             var toast = document.createElement('div');
             toast.className = 'admin-activity-toast';
-            toast.innerHTML = '<strong>' + (item.event_type === 'return' ? '↩ Book returned' : '📚 Book borrowed') + '</strong>' +
+            toast.innerHTML = '<strong>' + '📚 Added to shelf' + '</strong>' +
                 '<span>' + esc(item.username) + ' · ' + esc(item.book_title) + '</span>';
             document.body.appendChild(toast);
             setTimeout(function () { if (toast.parentNode) toast.remove(); }, 6000);
@@ -156,7 +156,7 @@
         function maybeSystemNotification(item) {
             if (!('Notification' in window) || Notification.permission !== 'granted') return;
             try {
-                new Notification(item.event_type === 'return' ? 'WebShelf — Book Returned' : 'WebShelf — Book Borrowed', {
+                new Notification('WebShelf — Added to shelf', {
                     body: item.username + ' · ' + item.book_title,
                     tag: 'doms-library-' + item.id
                 });
@@ -249,7 +249,7 @@
                 })
                 .then(function (data) {
                     if (!data || !data.ok) throw new Error('Invalid notification response');
-                    setStatus('Live borrow/return updates');
+                    setStatus('Live shelf updates');
                     (data.items || []).forEach(receive);
                 })
                 .catch(function (error) {
@@ -272,7 +272,7 @@
         .then(function (data) {
             if (!data || !data.ok) throw new Error('Invalid notification response');
             lastId = Number(data.latest_id || 0);
-            setStatus('Live borrow/return updates');
+            setStatus('Live shelf updates');
             poll();
         })
         .catch(function () {

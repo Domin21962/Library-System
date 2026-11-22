@@ -1,7 +1,7 @@
 <?php
-// Admin only: table of the 50 most recent borrow/return transactions.
+// Admin only: the latest shelf saves and reading progress.
 // Inputs: none.
-// Tables: borrow_return, book (read only).
+// Tables: shelf, reading_progress, users, book (read only).
 
 // ===== Includes =====
 require_once __DIR__ . '/../includes/security.php';
@@ -16,11 +16,16 @@ requireAdmin();
 // ===== Data loading =====
 $username = $_SESSION['username'];
 
-// Latest 50 transactions across all users, newest first
-$activity = $pdo->query(
-    "SELECT br.username, b.title, br.borrow_date, br.due_date, br.return_date
-     FROM borrow_return br JOIN book b ON br.book_id = b.book_id
-     ORDER BY br.id DESC LIMIT 50"
+// Latest 25 shelf saves and 25 reading updates across all users, newest first
+$saved = $pdo->query(
+    "SELECT u.username, b.title, s.added_at
+     FROM shelf s JOIN users u ON u.id = s.user_id JOIN book b ON b.book_id = s.book_id
+     ORDER BY s.added_at DESC, s.id DESC LIMIT 25"
+)->fetchAll(PDO::FETCH_ASSOC);
+$reads = $pdo->query(
+    "SELECT u.username, b.title, rp.percent, rp.updated_at
+     FROM reading_progress rp JOIN users u ON u.id = rp.user_id JOIN book b ON b.book_id = rp.book_id
+     ORDER BY rp.updated_at DESC, rp.id DESC LIMIT 25"
 )->fetchAll(PDO::FETCH_ASSOC);
 
 
@@ -49,29 +54,44 @@ include __DIR__ . '/../includes/header.php';
         <a href="admin.php" class="btn secondary">← Back to Dashboard</a>
     </div>
 
+    <!-- Recently saved to a shelf -->
     <div class="admin-section">
-        <div class="sub">The latest borrow and return transactions, across every user (most recent 50).</div>
-        <!-- Activity table (or empty-state message) -->
-        <?php if (empty($activity)): ?>
-            <div class="empty-state">No activity yet.</div>
+        <div class="sub">Recently saved to a shelf (latest 25).</div>
+        <?php if (empty($saved)): ?>
+            <div class="empty-state">Nothing saved yet.</div>
         <?php else: ?>
         <table>
-            <tr><th>User</th><th>Book</th><th>Borrowed</th><th>Due</th><th>Returned</th></tr>
-            <?php foreach ($activity as $a): ?>
-            <!-- Row is overdue when unreturned and past its due date -->
-            <?php $overdue = !$a['return_date'] && !empty($a['due_date']) && strtotime($a['due_date']) < time(); ?>
+            <tr><th>User</th><th>Book</th><th>Saved</th></tr>
+            <?php foreach ($saved as $a): ?>
             <tr>
                 <td><?= htmlspecialchars($a['username']) ?></td>
                 <td><?= htmlspecialchars($a['title']) ?></td>
-                <td><?= htmlspecialchars($a['borrow_date']) ?></td>
-                <td class="<?= $overdue ? 'text-overdue' : '' ?>">
-                    <?= !empty($a['due_date']) ? htmlspecialchars($a['due_date']) : '—' ?><?= $overdue ? ' (overdue)' : '' ?>
-                </td>
-                <td><?= $a['return_date'] ? htmlspecialchars($a['return_date']) : '—' ?></td>
+                <td><?= htmlspecialchars($a['added_at']) ?></td>
+            </tr>
+            <?php endforeach; ?>
+        </table>
+        <?php endif; ?>
+    </div>
+
+    <!-- Recent reading progress -->
+    <div class="admin-section">
+        <div class="sub">Recent reading progress (latest 25).</div>
+        <?php if (empty($reads)): ?>
+            <div class="empty-state">Nobody has started reading yet.</div>
+        <?php else: ?>
+        <table>
+            <tr><th>User</th><th>Book</th><th>Progress</th><th>Last read</th></tr>
+            <?php foreach ($reads as $a): ?>
+            <tr>
+                <td><?= htmlspecialchars($a['username']) ?></td>
+                <td><?= htmlspecialchars($a['title']) ?></td>
+                <td><?= progressBar((int)$a['percent']) ?: '—' ?></td>
+                <td><?= htmlspecialchars($a['updated_at']) ?></td>
             </tr>
             <?php endforeach; ?>
         </table>
         <?php endif; ?>
     </div>
 </div>
+
 <?php include __DIR__ . '/../includes/footer.php'; ?>

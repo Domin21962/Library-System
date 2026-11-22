@@ -1,7 +1,7 @@
 <?php
 // Admin only: list of all accounts with role, link to history, and delete button.
 // Inputs: POST action=delete_user, target_username, _csrf.
-// Tables: users (delete, read), borrow_return (via admin_user_history link only).
+// Tables: users (delete, read), shelf and reading_progress (via admin_user_history link only).
 
 // ===== Includes =====
 require_once __DIR__ . '/../includes/security.php';
@@ -83,7 +83,7 @@ include __DIR__ . '/../includes/header.php';
             <tr>
                 <td class="mono-muted">USR-<?= str_pad((string)$u['id'], 5, '0', STR_PAD_LEFT) ?></td>
                 <td>
-                    <!-- Username links to borrow history (not for admins) -->
+                    <!-- Username links to shelf and reading history (not for admins) -->
                     <?php if ($r !== 'Admin'): ?>
                         <a href="admin_user_history.php?username=<?= urlencode($u['username']) ?>"><?= htmlspecialchars($u['username']) ?></a>
                     <?php else: ?>

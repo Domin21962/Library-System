@@ -2,7 +2,7 @@
 // Admin dashboard: summary counters and links to the admin tools.
 // Who: Admin only.
 // Inputs: none (session user).
-// Tables: book, users, borrow_return (read only).
+// Tables: book, users, shelf, reading_progress (read only).
 
 // ===== Includes =====
 require_once __DIR__ . '/../includes/security.php';
@@ -21,12 +21,9 @@ $username = $_SESSION['username'];
 // Counters for the stat cards and dashboard links
 $totalBooks = (int)$pdo->query("SELECT COUNT(*) FROM book")->fetchColumn();
 $totalUsers = (int)$pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
-// Borrowed now = rows with no return date
-$borrowedNow = (int)$pdo->query("SELECT COUNT(*) FROM borrow_return WHERE return_date IS NULL")->fetchColumn();
-// Overdue = not returned and past due date
-$overdueNow = (int)$pdo->query("SELECT COUNT(*) FROM borrow_return WHERE return_date IS NULL AND due_date IS NOT NULL AND due_date < NOW()")->fetchColumn();
-// All logged transactions (ever)
-$recentCount = (int)$pdo->query("SELECT COUNT(*) FROM borrow_return")->fetchColumn();
+// Books saved to shelves (all users) and books currently being read (started, not finished)
+$shelved = (int)$pdo->query("SELECT COUNT(*) FROM shelf")->fetchColumn();
+$reading = (int)$pdo->query("SELECT COUNT(*) FROM reading_progress WHERE percent BETWEEN 1 AND 99")->fetchColumn();
 
 
 // ===== Page setup / header =====
@@ -51,7 +48,7 @@ include __DIR__ . '/../includes/header.php';
 <div class="content wrap-1200">
     <h1 class="page-title">Dashboard</h1>
 
-    <!-- Stat cards (overdue card turns red when > 0) -->
+    <!-- Stat cards -->
     <div class="stats-row mb-28">
         <div class="stat-card admin-stat">
             <div class="stat-value"><?= $totalBooks ?></div>
@@ -62,12 +59,12 @@ include __DIR__ . '/../includes/header.php';
             <div class="stat-label">Registered Users</div>
         </div>
         <div class="stat-card admin-stat">
-            <div class="stat-value"><?= $borrowedNow ?></div>
-            <div class="stat-label">Currently Borrowed</div>
+            <div class="stat-value"><?= $shelved ?></div>
+            <div class="stat-label">Books on Shelves</div>
         </div>
-        <div class="stat-card admin-stat <?= $overdueNow > 0 ? 'stat-danger' : '' ?>">
-            <div class="stat-value <?= $overdueNow > 0 ? 'text-danger' : '' ?>"><?= $overdueNow ?></div>
-            <div class="stat-label">Overdue</div>
+        <div class="stat-card admin-stat">
+            <div class="stat-value"><?= $reading ?></div>
+            <div class="stat-label">Being Read</div>
         </div>
     </div>
 
@@ -97,10 +94,8 @@ include __DIR__ . '/../includes/header.php';
         <a href="admin_activity.php" class="dash-card">
             <div class="dash-icon">🕒</div>
             <h3>Recent Activity</h3>
-            <div class="dash-sub">The latest borrow and return transactions, across every user.</div>
-            <div class="dash-count <?= $overdueNow > 0 ? 'danger' : '' ?>">
-                <?= $recentCount ?> transaction<?= $recentCount === 1 ? '' : 's' ?> logged<?= $overdueNow > 0 ? " · $overdueNow overdue" : '' ?> →
-            </div>
+            <div class="dash-sub">The latest shelf saves and reading progress, across every user.</div>
+            <div class="dash-count"><?= $shelved ?> saved · <?= $reading ?> being read →</div>
         </a>
     </div>
 </div>

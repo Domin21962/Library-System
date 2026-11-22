@@ -231,7 +231,7 @@ include __DIR__ . '/../includes/header.php';
     <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars(($role === 'User' ? userCode($username) : $role)) ?></span></div>
     <nav>
         <a href="main.php">Catalog</a>
-        <a href="borrow_return.php">Borrow &amp; Return</a>
+        <a href="shelf.php">My Shelf</a>
         <a href="<?= url('qr_login.php') ?>">QR Login</a>
         <a href="profile.php">Profile</a>
         <a href="<?= url('logout.php') ?>">Logout</a>

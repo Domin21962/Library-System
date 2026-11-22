@@ -2,7 +2,7 @@ USE library_db;
 
 CREATE TABLE IF NOT EXISTS admin_notifications (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    event_type VARCHAR(20) NOT NULL DEFAULT 'borrow',
+    event_type VARCHAR(20) NOT NULL DEFAULT 'shelf',
     username VARCHAR(100) NOT NULL,
     book_id INT NOT NULL DEFAULT 0,
     book_title VARCHAR(255) NOT NULL DEFAULT '',

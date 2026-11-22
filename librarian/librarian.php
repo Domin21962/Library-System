@@ -1,7 +1,7 @@
 <?php
-// Librarian only: table of student accounts with their borrow counts.
+// Librarian only: table of user accounts with their shelf and reading counts.
 // Inputs: none.
-// Tables: users, borrow_return (read only).
+// Tables: users, shelf, reading_progress (read only).
 
 // ===== Includes =====
 require_once __DIR__ . '/../includes/security.php';
@@ -18,12 +18,12 @@ requireLibrarian();
 $username = $_SESSION['username'];
 
 // Students only - no credentials selected at all, just enough to identify the account
-// total_borrows = every transaction; active_borrows = not yet returned.
+// on_shelf = books saved to the shelf; in_progress = started but not finished.
 // User accounts are those with role = 'User' (same rule as the history page)
 $students = $pdo->query(
     "SELECT username,
-     (SELECT COUNT(*) FROM borrow_return br WHERE br.username = users.username) AS total_borrows,
-     (SELECT COUNT(*) FROM borrow_return br WHERE br.username = users.username AND br.return_date IS NULL) AS active_borrows
+     (SELECT COUNT(*) FROM shelf s WHERE s.user_id = users.id) AS on_shelf,
+     (SELECT COUNT(*) FROM reading_progress rp WHERE rp.user_id = users.id AND rp.percent BETWEEN 1 AND 99) AS in_progress
      FROM users WHERE role = 'User' ORDER BY username"
 )->fetchAll(PDO::FETCH_ASSOC);
 
@@ -51,8 +51,8 @@ include __DIR__ . '/../includes/header.php';
 
     <div class="admin-section">
         <div class="sub">
-            Reading activity for every user account. Click a name to see their borrow
-            history — account credentials aren't shown here.
+            Reading activity for every user account. Click a name to see their shelf
+            and reading progress — account credentials aren't shown here.
         </div>
 
         <!-- Users table (or empty-state message) -->
@@ -60,12 +60,12 @@ include __DIR__ . '/../includes/header.php';
             <div class="empty-state">No user accounts yet.</div>
         <?php else: ?>
         <table>
-            <tr><th>User</th><th>Total Borrows</th><th>Currently Borrowed</th><th></th></tr>
+            <tr><th>User</th><th>Books on Shelf</th><th>In Progress</th><th></th></tr>
             <?php foreach ($students as $s): ?>
             <tr>
                 <td><?= htmlspecialchars($s['username']) ?></td>
-                <td><?= (int)$s['total_borrows'] ?></td>
-                <td><?= (int)$s['active_borrows'] ?></td>
+                <td><?= (int)$s['on_shelf'] ?></td>
+                <td><?= (int)$s['in_progress'] ?></td>
                 <!-- Link to that user's history; username is URL-encoded -->
                 <td><a href="librarian_user_history.php?username=<?= urlencode($s['username']) ?>" class="btn secondary btn-small">View History →</a></td>
             </tr>

@@ -10,6 +10,23 @@
 // ===== Roles and username validation =====
 
 
+/** Thin reading-progress bar with a label ("40% read"); empty string when the book was not started. */
+function progressBar(int $percent): string {
+    if ($percent < 1) return '';
+    $percent = min(100, $percent);
+    return '<div class="progress"><div class="progress-fill" style="width:' . $percent . '%"></div></div>'
+         . '<div class="progress-label">' . ($percent >= 100 ? 'Finished' : $percent . '% read') . '</div>';
+}
+
+
+/** Numeric users.id of the logged-in user (0 if the account no longer exists). */
+function currentUserId(PDO $pdo): int {
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? LIMIT 1");
+    $stmt->execute([$_SESSION['username'] ?? '']);
+    return (int)$stmt->fetchColumn();
+}
+
+
 /** Display code for an account, e.g. USR-00001 (users.id padded to 5 digits); '' if not found. */
 function userCode($username, ?PDO $pdo = null) {
     $pdo = $pdo ?: ($GLOBALS['pdo'] ?? null);
@@ -186,7 +203,7 @@ function removeProfilePictureFile(?string $path): void {
 }
 
 
-// ===== Admin notifications (borrow/return events) =====
+// ===== Admin notifications (shelf events) =====
 
 
 /** Ensure the real-time admin notification table exists and upgrade legacy schemas. */
@@ -196,7 +213,7 @@ function ensureAdminNotificationsTable(PDO $pdo): bool {
     try {
         $pdo->exec("CREATE TABLE IF NOT EXISTS admin_notifications (
             id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            event_type VARCHAR(20) NOT NULL DEFAULT 'borrow',
+            event_type VARCHAR(20) NOT NULL DEFAULT 'shelf',
             username VARCHAR(100) NOT NULL,
             book_id INT NOT NULL DEFAULT 0,
             book_title VARCHAR(255) NOT NULL DEFAULT '',
@@ -210,11 +227,11 @@ function ensureAdminNotificationsTable(PDO $pdo): bool {
         // Upgrade older schemas: rename legacy TYPE column, then add any missing columns
         $columns = $pdo->query("SHOW COLUMNS FROM admin_notifications")->fetchAll(PDO::FETCH_COLUMN);
         if (in_array('TYPE', $columns, true) && !in_array('event_type', $columns, true)) {
-            $pdo->exec("ALTER TABLE admin_notifications CHANGE COLUMN `TYPE` event_type VARCHAR(20) NOT NULL DEFAULT 'borrow'");
+            $pdo->exec("ALTER TABLE admin_notifications CHANGE COLUMN `TYPE` event_type VARCHAR(20) NOT NULL DEFAULT 'shelf'");
             $columns = $pdo->query("SHOW COLUMNS FROM admin_notifications")->fetchAll(PDO::FETCH_COLUMN);
         }
         $required = [
-            'event_type' => "ALTER TABLE admin_notifications ADD COLUMN event_type VARCHAR(20) NOT NULL DEFAULT 'borrow' AFTER id",
+            'event_type' => "ALTER TABLE admin_notifications ADD COLUMN event_type VARCHAR(20) NOT NULL DEFAULT 'shelf' AFTER id",
             'username' => "ALTER TABLE admin_notifications ADD COLUMN username VARCHAR(100) NOT NULL DEFAULT '' AFTER event_type",
             'book_id' => "ALTER TABLE admin_notifications ADD COLUMN book_id INT NOT NULL DEFAULT 0 AFTER username",
             'book_title' => "ALTER TABLE admin_notifications ADD COLUMN book_title VARCHAR(255) NOT NULL DEFAULT '' AFTER book_id",
@@ -237,10 +254,10 @@ function ensureAdminNotificationsTable(PDO $pdo): bool {
 }
 
 
-/** Save a borrow/return notice for admins and write an audit entry. */
+/** Save a "user added a book to their shelf" notice for admins and write an audit entry. */
 function createAdminNotification(PDO $pdo, string $eventType, string $username, int $bookId, string $bookTitle): bool {
-    if (!ensureAdminNotificationsTable($pdo) || !in_array($eventType, ['borrow', 'return'], true)) return false;
-    $message = $eventType === 'borrow' ? "$username borrowed \"$bookTitle\"." : "$username returned \"$bookTitle\".";
+    if (!ensureAdminNotificationsTable($pdo) || $eventType !== 'shelf') return false;
+    $message = "$username added \"$bookTitle\" to their shelf.";
     try {
         // Write the notification row
         $stmt = $pdo->prepare("INSERT INTO admin_notifications (event_type, username, book_id, book_title, message, created_at) VALUES (?, ?, ?, ?, ?, NOW())");

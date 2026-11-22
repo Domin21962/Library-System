@@ -1,7 +1,7 @@
 <?php
-// Admin only: catalog management table with borrowed/available status, delete and edit links.
+// Admin only: catalog management table with how many users saved each book, delete and edit links.
 // Inputs: POST action=delete_book, book_id, _csrf.
-// Tables: book (delete), borrow_return (read only).
+// Tables: book (delete), shelf (read only; its rows are removed automatically with the book).
 
 // ===== Includes =====
 require_once __DIR__ . '/../includes/security.php';
@@ -26,23 +26,18 @@ $notice = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete_book') {
     // Cast to int so only a number reaches the query
     $bookId = (int)($_POST['book_id'] ?? 0);
-    try {
-        $stmt = $pdo->prepare("DELETE FROM book WHERE book_id = ?");
-        $stmt->execute([$bookId]);
-        // rowCount() is 0 when no such book existed
-        $notice = $stmt->rowCount() > 0 ? "Book #$bookId removed." : "Book not found.";
-    } catch (PDOException $e) {
-        // Foreign key: a book that has loan history cannot be deleted
-        $notice = $e->getCode() === '23000' ? "Book #$bookId has borrow history and cannot be deleted." : "Could not delete the book.";
-    }
+    $stmt = $pdo->prepare("DELETE FROM book WHERE book_id = ?");
+    $stmt->execute([$bookId]);
+    // rowCount() is 0 when no such book existed
+    $notice = $stmt->rowCount() > 0 ? "Book #$bookId removed." : "Book not found.";
 }
 
 
 // ===== Data loading =====
-// All books A-Z; borrowed_by is the user holding an unreturned copy (NULL = available)
+// All books A-Z; saved_by = how many users have the book on their shelf
 $books = $pdo->query(
     "SELECT b.book_id, b.title, b.author, b.genre, b.year,
-     (SELECT br.username FROM borrow_return br WHERE br.book_id = b.book_id AND br.return_date IS NULL LIMIT 1) AS borrowed_by
+     (SELECT COUNT(*) FROM shelf s WHERE s.book_id = b.book_id) AS saved_by
      FROM book b ORDER BY b.title"
 )->fetchAll(PDO::FETCH_ASSOC);
 
@@ -89,12 +84,8 @@ include __DIR__ . '/../includes/header.php';
                 <td><?= htmlspecialchars($b['author']) ?></td>
                 <td><?= htmlspecialchars($b['genre']) ?></td>
                 <td>
-                    <!-- Status badge: borrowed (with who) or available -->
-                    <?php if ($b['borrowed_by']): ?>
-                        <span class="badge-status badge-borrowed">Borrowed by <?= htmlspecialchars($b['borrowed_by']) ?></span>
-                    <?php else: ?>
-                        <span class="badge-status badge-available">Available</span>
-                    <?php endif; ?>
+                    <!-- How many users have this book on their shelf -->
+                    <span class="badge-status badge-available">Saved by <?= (int)$b['saved_by'] ?></span>
                 </td>
                 <td>
                     <!-- Delete form: data-message is the confirmation prompt shown before submitting; includes CSRF token -->

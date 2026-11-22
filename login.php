@@ -131,7 +131,7 @@ include __DIR__ . '/includes/header.php';
         </div>
         <?php include __DIR__ . '/includes/library_illustration.svg'; ?>
         <div class="auth-tagline">
-            Borrow, read, and return books all in one place — your shelf, wherever you are.
+            Save books to your shelf and pick up reading right where you stopped.
         </div>
     </div>
     <!-- Right panel: login card -->
