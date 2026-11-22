@@ -84,6 +84,7 @@ include __DIR__ . '/../includes/header.php';
 </div>
 
 <div class="content wrap-1200">
+    <p class="m-0-0-16"><a href="main.php">← Back to catalog</a></p>
     <h1 class="page-title">My Shelf</h1>
 
     <!-- Continue Reading: books with saved progress -->
