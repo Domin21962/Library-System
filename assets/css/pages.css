@@ -109,3 +109,7 @@
 .shelf-remove { margin-top: 6px; text-align: right; }
 .shelf-remove button, .shelf-btn { padding: 6px 14px; font-size: 13px; cursor: pointer; }
 .shelf-actions { margin-top: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+/* Site logo: top bar and login/register lockup */
+.brand-logo { width: 34px; height: 34px; vertical-align: middle; margin-right: 4px; }
+.auth-brand-lockup img.logo-mark { width: 56px; height: 56px; border-radius: 0; background: none; box-shadow: none; }

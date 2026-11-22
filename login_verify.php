@@ -113,7 +113,7 @@ include __DIR__ . '/includes/header.php';
 <div class="auth-split">
     <!-- Brand, illustration and tagline -->
     <div class="auth-illustration-panel">
-        <div class="auth-brand-lockup"><span class="logo-mark">📚</span> WebShelf</div>
+        <div class="auth-brand-lockup"><img class="logo-mark" src="<?= APP_BASE ?>/assets/img/logo.png" alt=""> WebShelf</div>
         <?php include __DIR__ . '/includes/library_illustration.svg'; ?>
         <div class="auth-tagline">One more step to protect your library account.</div>
     </div>

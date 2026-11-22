@@ -37,7 +37,7 @@ include __DIR__ . '/../includes/header.php';
 <!-- ===== HTML output ===== -->
 <!-- Top bar: brand and librarian nav -->
 <div class="topbar">
-    <div class="brand">📚 WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · Librarian</span></div>
+    <div class="brand"><img class="brand-logo" src="<?= APP_BASE ?>/assets/img/logo.png" alt="WebShelf logo"> WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · Librarian</span></div>
     <nav>
         <a href="<?= url('qr_login.php') ?>">QR Login</a>
         <a href="<?= url('user/profile.php') ?>">Profile</a>

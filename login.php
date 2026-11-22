@@ -127,7 +127,7 @@ include __DIR__ . '/includes/header.php';
     <!-- Left panel: brand, illustration, tagline -->
     <div class="auth-illustration-panel">
         <div class="auth-brand-lockup">
-            <span class="logo-mark">📚</span> WebShelf
+            <img class="logo-mark" src="<?= APP_BASE ?>/assets/img/logo.png" alt=""> WebShelf
         </div>
         <?php include __DIR__ . '/includes/library_illustration.svg'; ?>
         <div class="auth-tagline">

@@ -52,7 +52,7 @@ include __DIR__ . '/../includes/header.php';
 <!-- ===== HTML output ===== -->
 <!-- Top bar: brand and admin nav -->
 <div class="topbar admin-topbar">
-    <div class="brand">⚙️ WebShelf <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
+    <div class="brand"><img class="brand-logo" src="<?= APP_BASE ?>/assets/img/logo.png" alt="WebShelf logo"> WebShelf <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
     <nav>
         <a href="admin.php">← Dashboard</a>
         <a href="<?= url('user/main.php') ?>">📚 View Catalog</a>
