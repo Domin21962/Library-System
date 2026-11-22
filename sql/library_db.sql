@@ -1,19 +1,33 @@
--- Library System database schema
--- Import this in Laragon's HeidiSQL / phpMyAdmin (SQL tab), or run: mysql -u root < library_db.sql
+-- Doms Library (WebShelf) database: COMPLETE schema for a fresh install (matches the ERD).
+-- Import in Laragon's HeidiSQL / phpMyAdmin (SQL tab), or run: mysql -u root < library_db.sql
+-- WARNING: this drops and recreates every app table. For an EXISTING database use the
+-- migration files in this folder instead (integrity_migration.sql, rename_teacher_to_librarian.sql, ...).
+-- Afterwards run sql/add_gutenberg_ids.sql (sets the Gutenberg IDs), then:  php tools/import_texts.php
 
 CREATE DATABASE IF NOT EXISTS library_db;
 USE library_db;
 
+-- Drop children first so foreign keys do not block the drops
 DROP TABLE IF EXISTS borrow_return;
+DROP TABLE IF EXISTS password_reset_tokens;
+DROP TABLE IF EXISTS password_reset_codes;
+DROP TABLE IF EXISTS qr_login_tokens;
+DROP TABLE IF EXISTS login_confirmations;
+DROP TABLE IF EXISTS login_attempts;
+DROP TABLE IF EXISTS security_audit_logs;
+DROP TABLE IF EXISTS admin_notifications;
 DROP TABLE IF EXISTS book;
 DROP TABLE IF EXISTS users;
 
+-- ===== Core entities =====
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100),
+    role ENUM('Admin','Librarian','User') NOT NULL DEFAULT 'User',
+    profile_picture VARCHAR(255) NULL,
     password VARCHAR(100) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE book (
     book_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -22,28 +36,123 @@ CREATE TABLE book (
     year INT,
     genre VARCHAR(100),
     publisher VARCHAR(255),
-    book_content TEXT
-);
+    book_content TEXT,
+    gutenberg_id INT NULL,
+    full_text LONGTEXT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Loans. The borrower's email is NOT stored here (3NF): it is read from users via the username.
 CREATE TABLE borrow_return (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     book_id INT NOT NULL,
     borrow_date DATETIME NOT NULL,
+    due_date DATETIME NULL,
     return_date DATETIME NULL,
-    FOREIGN KEY (book_id) REFERENCES book(book_id)
-);
+    CONSTRAINT fk_borrow_book FOREIGN KEY (book_id) REFERENCES book(book_id),
+    CONSTRAINT fk_borrow_user FOREIGN KEY (username) REFERENCES users(username)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Sample accounts (username prefix decides role: AM. = Admin, TC. = Librarian, SD. = User)
-INSERT INTO users (username, email, password) VALUES
-('AM.Admin', 'admin@library.edu', 'admin123'),
-('AM.Cruz', 'cruz.admin@library.edu', 'admin123'),
-('TC.Reyes', 'reyes.librarian@library.edu', 'librarian123'),
-('TC.Santos', 'santos.librarian@library.edu', 'librarian123'),
-('SD.Juan', 'juan.user@library.edu', 'user123'),
-('SD.Maria', 'maria.user@library.edu', 'user123'),
-('SD.Pedro', 'pedro.user@library.edu', 'user123'),
-('SD.Ana', 'ana.user@library.edu', 'user123');
+-- ===== Account recovery and sign-in =====
+CREATE TABLE password_reset_tokens (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token_hash CHAR(64) NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    used_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_password_reset_user (user_id),
+    INDEX idx_password_reset_expiry (expires_at),
+    CONSTRAINT fk_reset_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Pending password change, confirmed with an emailed code (stores the already-hashed new password)
+CREATE TABLE password_reset_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    code VARCHAR(6) NOT NULL,
+    new_password VARCHAR(100) NOT NULL,
+    attempts INT NOT NULL DEFAULT 0,
+    used TINYINT(1) NOT NULL DEFAULT 0,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE qr_login_tokens (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    token VARCHAR(128) NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    used TINYINT(1) NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_qr_username (username),
+    INDEX idx_qr_expiry (expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE login_confirmations (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    email VARCHAR(190) NOT NULL,
+    code_hash VARCHAR(255) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    attempts TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    ip_address VARCHAR(45) NULL,
+    user_agent VARCHAR(255) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    used_at DATETIME NULL,
+    INDEX idx_login_confirmations_username (username),
+    INDEX idx_login_confirmations_expires (expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ===== Security and monitoring =====
+CREATE TABLE login_attempts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    failed_attempts INT UNSIGNED NOT NULL DEFAULT 0,
+    locked_until DATETIME NULL,
+    last_attempt_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_login_attempt (username, ip_address)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE security_audit_logs (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NULL,
+    action VARCHAR(100) NOT NULL,
+    ip_address VARCHAR(45) NULL,
+    user_agent VARCHAR(255) NULL,
+    metadata JSON NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_security_audit_created (created_at),
+    INDEX idx_security_audit_username (username),
+    INDEX idx_security_audit_action (action)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE admin_notifications (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    event_type VARCHAR(20) NOT NULL DEFAULT 'borrow',
+    username VARCHAR(100) NOT NULL,
+    book_id INT NOT NULL DEFAULT 0,
+    book_title VARCHAR(255) NOT NULL DEFAULT '',
+    message VARCHAR(500) NOT NULL DEFAULT '',
+    is_read TINYINT(1) NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_admin_notifications_id (id),
+    INDEX idx_admin_notifications_created (created_at),
+    INDEX idx_admin_notifications_type (event_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Sample accounts (role is stored in users.role; the AM./TC./SD. prefix is only a naming habit)
+INSERT INTO users (username, email, role, password) VALUES
+('AM.Admin', 'admin@library.edu', 'Admin', 'admin123'),
+('AM.Cruz', 'cruz.admin@library.edu', 'Admin', 'admin123'),
+('TC.Reyes', 'reyes.librarian@library.edu', 'Librarian', 'librarian123'),
+('TC.Santos', 'santos.librarian@library.edu', 'Librarian', 'librarian123'),
+('SD.Juan', 'juan.user@library.edu', 'User', 'user123'),
+('SD.Maria', 'maria.user@library.edu', 'User', 'user123'),
+('SD.Pedro', 'pedro.user@library.edu', 'User', 'user123'),
+('SD.Ana', 'ana.user@library.edu', 'User', 'user123');
 
 -- Sample book catalog: popular, well-known books that are all in the PUBLIC DOMAIN
 -- (first published before ~1930, so copyright has expired and they're free to use/read/share).

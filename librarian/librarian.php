@@ -19,12 +19,12 @@ $username = $_SESSION['username'];
 
 // Students only - no credentials selected at all, just enough to identify the account
 // total_borrows = every transaction; active_borrows = not yet returned.
-// Student accounts are those whose username starts with 'SD.'
+// User accounts are those with role = 'User' (same rule as the history page)
 $students = $pdo->query(
     "SELECT username,
      (SELECT COUNT(*) FROM borrow_return br WHERE br.username = users.username) AS total_borrows,
      (SELECT COUNT(*) FROM borrow_return br WHERE br.username = users.username AND br.return_date IS NULL) AS active_borrows
-     FROM users WHERE username LIKE 'SD.%' ORDER BY username"
+     FROM users WHERE role = 'User' ORDER BY username"
 )->fetchAll(PDO::FETCH_ASSOC);
 
 

@@ -30,7 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
         $error = "You can't delete your own account while logged in.";
     } else {
         // Prepared delete by username
-        $stmt = $pdo->prepare("DELETE FROM users WHERE username = ?");
+        // Admin accounts can never be deleted from this page
+        $stmt = $pdo->prepare("DELETE FROM users WHERE username = ? AND role <> 'Admin'");
         $stmt->execute([$targetUser]);
         $notice = $stmt->rowCount() > 0 ? "Account \"$targetUser\" removed." : "Account not found.";
     }
@@ -39,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
 
 // ===== Data loading =====
 // Admin accounts are excluded from this list entirely
-$users = $pdo->query("SELECT id, username, email FROM users ORDER BY username")->fetchAll(PDO::FETCH_ASSOC);
+$users = $pdo->query("SELECT id, username, email FROM users WHERE role <> 'Admin' ORDER BY username")->fetchAll(PDO::FETCH_ASSOC);
 
 
 // ===== Page setup / header =====

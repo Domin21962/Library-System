@@ -26,10 +26,15 @@ $notice = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete_book') {
     // Cast to int so only a number reaches the query
     $bookId = (int)($_POST['book_id'] ?? 0);
-    $stmt = $pdo->prepare("DELETE FROM book WHERE book_id = ?");
-    $stmt->execute([$bookId]);
-    // rowCount() is 0 when no such book existed
-    $notice = $stmt->rowCount() > 0 ? "Book #$bookId removed." : "Book not found.";
+    try {
+        $stmt = $pdo->prepare("DELETE FROM book WHERE book_id = ?");
+        $stmt->execute([$bookId]);
+        // rowCount() is 0 when no such book existed
+        $notice = $stmt->rowCount() > 0 ? "Book #$bookId removed." : "Book not found.";
+    } catch (PDOException $e) {
+        // Foreign key: a book that has loan history cannot be deleted
+        $notice = $e->getCode() === '23000' ? "Book #$bookId has borrow history and cannot be deleted." : "Could not delete the book.";
+    }
 }
 
 

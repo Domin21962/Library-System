@@ -1,14 +1,12 @@
 -- Adds full-text support to the catalog.
 --
--- Run this AFTER library_db.sql, then run:  php tools/import_texts.php
+-- Run this AFTER library_db.sql (it already has the gutenberg_id and full_text columns), then run:  php tools/import_texts.php
 --
 -- Every book here is public domain (first published before ~1930), so the complete
 -- texts are free to download and store. The IDs below are Project Gutenberg ebook IDs.
 
 USE library_db;
 
-ALTER TABLE book ADD COLUMN IF NOT EXISTS gutenberg_id INT NULL;
-ALTER TABLE book ADD COLUMN IF NOT EXISTS full_text LONGTEXT NULL;
 
 UPDATE book SET gutenberg_id = 1342  WHERE title = 'Pride and Prejudice';
 UPDATE book SET gutenberg_id = 161   WHERE title = 'Sense and Sensibility';
