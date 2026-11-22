@@ -115,7 +115,15 @@ include __DIR__ . '/../includes/header.php';
 
     <!-- Full text, or a hint on how to import it -->
     <?php if ($fullText !== ''): ?>
-        <div class="reader-body"><?= htmlspecialchars($fullText) ?></div>
+        <!-- Page-by-page reader: the text is split into pages in the browser (see script below) -->
+        <div class="pager-resume" id="pg-resume" hidden></div>
+        <div class="reader-body reader-paged" id="pager-text" aria-live="polite"></div>
+        <div class="pager" id="pager">
+            <button type="button" id="pg-prev">← Previous</button>
+            <span class="pager-info">Page <input type="number" id="pg-input" min="1" value="1" aria-label="Go to page"> of <span id="pg-total">…</span></span>
+            <button type="button" id="pg-next">Next →</button>
+        </div>
+        <noscript><div class="reader-note">Turn on JavaScript to read the book page by page.</div></noscript>
     <?php else: ?>
         <div class="reader-note">
             <strong>Full text not imported yet.</strong><br><br>
@@ -137,37 +145,156 @@ include __DIR__ . '/../includes/header.php';
     <?php endif; ?>
 </div>
 <?php if ($fullText !== ''): ?>
+<!-- The book text, safely encoded for the page-by-page reader -->
+<script type="application/json" id="book-text"><?= json_encode($fullText, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE) ?></script>
 <script>
-// Reading progress: restore the saved position, then save how far the user has read (debounced).
+// Page-by-page reader: splits the text into pages, turns them with buttons / arrow keys / swipes,
+// and saves the reading position (as a percentage) so the user can continue where they left off.
 (function () {
-    var body = document.querySelector('.reader-body');
-    if (!body) return;
+    var box = document.getElementById('pager-text');
+    if (!box) return;
     var bookId = <?= (int)$book['book_id'] ?>;
     var token = <?= json_encode(csrfToken()) ?>;
-    var saved = <?= (int)$savedPercent ?>;
-    var last = saved, timer = null;
-    // Position = fraction of the text above the bottom edge of the screen
-    function top() { return body.getBoundingClientRect().top + window.scrollY; }
-    function percent() {
-        var p = (window.scrollY + window.innerHeight - top()) / body.offsetHeight * 100;
-        return Math.max(0, Math.min(100, Math.round(p)));
+    var saved = <?= (int)$savedPercent ?>;           // last saved position, 0-100
+    var text = JSON.parse(document.getElementById('book-text').textContent);
+
+    // ----- Split the text into pages (about 230 words each, never breaking a paragraph unless it is huge) -----
+    var TARGET = 230, MAX = 330;
+    function words(t) { return t.split(/\s+/).length; }
+
+    // Turn the raw text into paragraphs. Hard-wrapped prose lines are joined; poems and headings keep their line breaks.
+    function paragraphs(raw) {
+        var out = [];
+        raw.replace(/\r\n?/g, '\n').split(/\n[ \t]*\n+/).forEach(function (chunk) {
+            var t = chunk.replace(/^\n+/, '').replace(/\s+$/, '');
+            if (!t.trim()) return;
+            var lines = t.split('\n');
+            if (lines.length > 1 && t.length / lines.length <= 40) {
+                out.push({ t: t, keep: true });                       // short lines: poem, list, heading block
+            } else {
+                out.push({ t: t.replace(/\s*\n\s*/g, ' '), keep: false });
+            }
+        });
+        return out;
     }
+
+    // A paragraph longer than MAX words is cut into pieces near TARGET words (by line or by sentence).
+    function splitBig(it) {
+        // Sentences are found by marking the whitespace after . ! ? and splitting there, so no text can be lost
+        var units = it.keep ? it.t.split('\n') : it.t.replace(/([.!?]["”’')\]]*)\s+/g, '$1\u0001').split('\u0001');
+        var parts = [], cur = [], n = 0;
+        units.forEach(function (u) {
+            var w = words(u);
+            if (w > MAX) {                                            // one giant sentence: cut by words
+                if (cur.length) { parts.push(cur.join(it.keep ? '\n' : ' ')); cur = []; n = 0; }
+                var ws = u.split(/\s+/);
+                for (var i = 0; i < ws.length; i += TARGET) parts.push(ws.slice(i, i + TARGET).join(' '));
+                return;
+            }
+            if (n > 0 && n + w > TARGET) { parts.push(cur.join(it.keep ? '\n' : ' ')); cur = []; n = 0; }
+            cur.push(u); n += w;
+        });
+        if (cur.length) parts.push(cur.join(it.keep ? '\n' : ' '));
+        return parts.map(function (t) { return { t: t.replace(/\s+$/, ''), keep: it.keep }; });
+    }
+
+    var pages = [], cur = [], count = 0;
+    function flush() { if (cur.length) pages.push(cur); cur = []; count = 0; }
+    paragraphs(text).forEach(function (it) {
+        var w = words(it.t);
+        (w > MAX ? splitBig(it) : [it]).forEach(function (piece) {
+            var pw = words(piece.t);
+            if (count > 0 && count + pw > TARGET + 60) flush();
+            cur.push(piece); count += pw;
+            if (count >= TARGET) flush();
+        });
+    });
+    flush();
+    var total = pages.length;
+    if (!total) return;
+
+    // ----- Where to start: the saved position, otherwise page 1 -----
+    var key = 'webshelf_page_' + bookId;
+    function pageFromPercent(p) { return Math.max(1, Math.min(total, Math.round(p * total / 100))); }
+    var page = 1;
+    if (saved > 0 && saved < 100) {
+        page = pageFromPercent(saved);
+        // Same device: use the exact page that was open (the saved percentage is only approximate)
+        try {
+            var mem = JSON.parse(localStorage.getItem(key) || 'null');
+            if (mem && mem.pct === saved && mem.n === total && mem.p >= 1 && mem.p <= total) page = mem.p;
+        } catch (e) {}
+    }
+    var resumed = page > 1;
+    var last = saved, timer = null;
+
+    // ----- Draw one page -----
+    var info = document.getElementById('pg-input'), totalEl = document.getElementById('pg-total');
+    var prev = document.getElementById('pg-prev'), next = document.getElementById('pg-next');
+    totalEl.textContent = total; info.max = total;
+    function render() {
+        box.textContent = '';
+        pages[page - 1].forEach(function (it) {
+            var p = document.createElement('p');
+            if (it.keep) p.className = 'keep-lines';
+            p.textContent = it.t;                                     // textContent: book text is never treated as HTML
+            box.appendChild(p);
+        });
+        info.value = page;
+        prev.disabled = page <= 1;
+        next.disabled = page >= total;
+    }
+
+    // ----- Save the position (percentage in the database, exact page on this device) -----
+    function percent() { return Math.min(100, Math.max(1, Math.ceil(page * 100 / total))); }
     function save() {
-        var p = percent();
-        if (p < 1 || p === last) return;
-        last = p;
+        var pct = percent();
+        if (pct === last) return;
+        last = pct;
+        try { localStorage.setItem(key, JSON.stringify({ p: page, pct: pct, n: total })); } catch (e) {}
         var data = new FormData();
-        data.append('_csrf', token); data.append('book_id', bookId); data.append('percent', p);
+        data.append('_csrf', token); data.append('book_id', bookId); data.append('percent', pct);
         // sendBeacon survives page close; fetch is the fallback
         if (!(navigator.sendBeacon && navigator.sendBeacon('progress.php', data))) {
             fetch('progress.php', { method: 'POST', body: data, credentials: 'same-origin', keepalive: true });
         }
     }
-    if (saved > 0 && saved < 100) {
-        window.scrollTo(0, Math.max(0, top() + body.offsetHeight * saved / 100 - window.innerHeight));
+
+    // ----- Turning pages -----
+    function go(n) {
+        n = Math.max(1, Math.min(total, parseInt(n, 10) || page));
+        if (n === page) { info.value = page; return; }
+        page = n;
+        render();
+        var top = box.getBoundingClientRect().top;
+        if (top < 0) window.scrollTo(0, top + window.scrollY - 12);   // bring the new page into view
+        clearTimeout(timer); timer = setTimeout(save, 600);
     }
-    window.addEventListener('scroll', function () { clearTimeout(timer); timer = setTimeout(save, 800); });
+    prev.addEventListener('click', function () { go(page - 1); });
+    next.addEventListener('click', function () { go(page + 1); });
+    info.addEventListener('change', function () { go(info.value); });
+    document.addEventListener('keydown', function (e) {
+        var tag = (e.target && e.target.tagName) || '';
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || e.ctrlKey || e.metaKey || e.altKey) return;
+        if (e.key === 'ArrowRight') go(page + 1);
+        else if (e.key === 'ArrowLeft') go(page - 1);
+    });
+    // Swipe left / right on touch screens
+    var sx = 0, sy = 0;
+    box.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+    box.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+        if (Math.abs(dx) > 60 && Math.abs(dy) < 45) go(page + (dx < 0 ? 1 : -1));
+    }, { passive: true });
     window.addEventListener('pagehide', save);
+
+    render();
+    if (resumed) {
+        var note = document.getElementById('pg-resume');
+        note.textContent = 'Continuing from page ' + page + ' of ' + total + ' where you left off.';
+        note.hidden = false;
+        window.scrollTo(0, Math.max(0, box.getBoundingClientRect().top + window.scrollY - 70));
+    }
 })();
 </script>
 <?php endif; ?>

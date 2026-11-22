@@ -113,3 +113,15 @@
 /* Site logo: top bar and login/register lockup */
 .brand-logo { width: 34px; height: 34px; vertical-align: middle; margin-right: 4px; }
 .auth-brand-lockup img.logo-mark { width: 56px; height: 56px; border-radius: 0; background: none; box-shadow: none; }
+
+/* Page-by-page reader: one page of text at a time with Previous / Next controls */
+.reader-body.reader-paged { max-height: none; overflow: visible; white-space: normal; min-height: 50vh; font-size: 17px; }
+.reader-paged p { margin: 0 0 1em; }
+.reader-paged p.keep-lines { white-space: pre-line; }
+.pager { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+.pager button { padding: 8px 16px; cursor: pointer; }
+.pager button:disabled { opacity: .45; cursor: default; }
+.pager-info { color: var(--muted); font-size: 14px; }
+.pager-info input { width: 70px; padding: 5px 8px; text-align: center; }
+.pager-resume { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+@media (max-width: 600px) { .reader-body.reader-paged { font-size: 16px; } .pager { flex-wrap: nowrap; gap: 8px; } .pager button { padding: 8px 12px; font-size: 13px; white-space: nowrap; } .pager-info { font-size: 13px; white-space: nowrap; } .pager-info input { width: 54px; } }

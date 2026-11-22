@@ -78,6 +78,10 @@ $stmt = $pdo->prepare(
 );
 $stmt->execute([$userId]);
 $continue = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Real number of started, unfinished books (the strip above is limited to 3)
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM reading_progress WHERE user_id = ? AND percent BETWEEN 1 AND 99");
+$stmt->execute([$userId]);
+$inProgressCount = (int)$stmt->fetchColumn();
 // Distinct genres for the chips
 $genres = $pdo->query("SELECT DISTINCT genre FROM book ORDER BY genre")->fetchAll(PDO::FETCH_COLUMN);
 
@@ -119,7 +123,7 @@ include __DIR__ . '/../includes/header.php';
             <div class="stat-label">On My Shelf</div>
         </div>
         <div class="stat-card">
-            <div class="stat-value"><?= count($continue) ?></div>
+            <div class="stat-value"><?= $inProgressCount ?></div>
             <div class="stat-label">Continue Reading</div>
         </div>
     </div>
@@ -142,7 +146,6 @@ include __DIR__ . '/../includes/header.php';
 
     <!-- Search form (GET) -->
     <form method="get" class="search-bar">
-                <?= csrf_field() ?>
         <input type="text" name="keyword" placeholder="Search by title, author, or genre..." value="<?= htmlspecialchars($keyword) ?>">
         <button type="submit">Search</button>
     </form>
