@@ -158,7 +158,7 @@ include __DIR__ . '/includes/header.php';
 <!-- ===== HTML output ===== -->
 <!-- Top bar (logged-in users only) -->
 <div class="topbar">
-    <div class="brand"><img class="brand-logo" src="<?= APP_BASE ?>/assets/img/logo.png" alt="WebShelf logo"> WebShelf <span class="badge"><?= htmlspecialchars($_SESSION['username']) ?> · <?= htmlspecialchars(($_SESSION['role'] ?? '') === 'User' ? userCode($_SESSION['username']) : ($_SESSION['role'] ?? '')) ?></span></div>
+    <div class="brand"><img class="brand-logo" width="34" height="34" src="<?= APP_BASE ?>/assets/img/logo.png" alt="WebShelf logo"> WebShelf <span class="badge"><?= htmlspecialchars($_SESSION['username']) ?> · <?= htmlspecialchars(($_SESSION['role'] ?? '') === 'User' ? userCode($_SESSION['username']) : ($_SESSION['role'] ?? '')) ?></span></div>
     <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="qrNav">☰</button>
     <nav id="qrNav">
         <a href="<?= url('user/main.php') ?>">Catalog</a>

@@ -35,7 +35,7 @@ include __DIR__ . '/../includes/header.php';
 <!-- ===== HTML output ===== -->
 <!-- Top bar: brand and admin nav -->
 <div class="topbar admin-topbar" data-admin-dashboard="1">
-    <div class="brand"><img class="brand-logo" src="<?= APP_BASE ?>/assets/img/logo.png" alt="WebShelf logo"> WebShelf <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
+    <div class="brand"><img class="brand-logo" width="34" height="34" src="<?= APP_BASE ?>/assets/img/logo.png" alt="WebShelf logo"> WebShelf <span class="badge">Admin · <?= htmlspecialchars($username) ?></span></div>
     <nav>
         <a href="<?= url('user/main.php') ?>">📚 View Catalog</a>
         <a href="<?= url('qr_login.php') ?>">QR Login</a>

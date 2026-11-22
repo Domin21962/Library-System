@@ -66,7 +66,7 @@ include __DIR__ . '/includes/header.php';
     <!-- Left panel: brand, illustration, tagline -->
     <div class="auth-illustration-panel">
         <div class="auth-brand-lockup">
-            <img class="logo-mark" src="<?= APP_BASE ?>/assets/img/logo.png" alt=""> WebShelf
+            <img class="logo-mark" width="56" height="56" src="<?= APP_BASE ?>/assets/img/logo.png" alt=""> WebShelf
         </div>
         <?php include __DIR__ . '/includes/library_illustration.svg'; ?>
         <div class="auth-tagline">

@@ -90,7 +90,7 @@ include __DIR__ . '/../includes/header.php';
 <!-- ===== HTML output ===== -->
 <!-- Top bar: brand, user badge and role-aware nav -->
 <div class="topbar">
-    <div class="brand"><img class="brand-logo" src="<?= APP_BASE ?>/assets/img/logo.png" alt="WebShelf logo"> WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars(($role === 'User' ? userCode($username) : $role)) ?></span></div>
+    <div class="brand"><img class="brand-logo" width="34" height="34" src="<?= APP_BASE ?>/assets/img/logo.png" alt="WebShelf logo"> WebShelf <span class="badge"><?= htmlspecialchars($username) ?> · <?= htmlspecialchars(($role === 'User' ? userCode($username) : $role)) ?></span></div>
     <nav>
         <?php if ($role === 'Admin'): ?>
             <a href="<?= url('admin/admin.php') ?>">⚙️ Admin Panel</a>

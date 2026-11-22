@@ -65,7 +65,7 @@ include __DIR__ . '/../includes/header.php';
 <!-- ===== HTML output ===== -->
 <!-- Top bar: brand and admin nav -->
 <div class="topbar admin-topbar">
-    <div class="brand"><img class="brand-logo" src="<?= APP_BASE ?>/assets/img/logo.png" alt="WebShelf logo"> WebShelf <span class="badge">Admin · <?= htmlspecialchars($adminUsername) ?></span></div>
+    <div class="brand"><img class="brand-logo" width="34" height="34" src="<?= APP_BASE ?>/assets/img/logo.png" alt="WebShelf logo"> WebShelf <span class="badge">Admin · <?= htmlspecialchars($adminUsername) ?></span></div>
     <nav>
         <a href="admin_users.php">← Manage Users</a>
         <a href="admin.php">Dashboard</a>

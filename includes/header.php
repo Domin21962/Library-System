@@ -12,9 +12,9 @@ require_once __DIR__ . '/security.php';
 <title><?= $pageTitle ?? 'WebShelf' ?></title>
 <link rel="icon" type="image/png" href="<?= APP_BASE ?>/assets/img/favicon.png">
 <!-- Styles: base layout, then the book color theme, then page-specific tweaks (later files override earlier ones) -->
-<link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/style.css">
-<link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/book-theme.css">
-<link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/pages.css">
+<link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/style.css?v=<?= @filemtime(__DIR__ . "/../assets/css/style.css") ?: 1 ?>">
+<link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/book-theme.css?v=<?= @filemtime(__DIR__ . "/../assets/css/book-theme.css") ?: 1 ?>">
+<link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/pages.css?v=<?= @filemtime(__DIR__ . "/../assets/css/pages.css") ?: 1 ?>">
 
 </head>
 <body>
