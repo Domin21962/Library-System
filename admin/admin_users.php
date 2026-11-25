@@ -122,7 +122,7 @@ include __DIR__ . '/../includes/header.php';
     <!-- Create an account -->
     <div class="admin-section">
         <h2 class="section-heading">Add account</h2>
-        <form method="post" class="d-flex gap-8 flex-wrap">
+        <form method="post" class="add-account-form">
             <?= csrf_field() ?>
             <input type="hidden" name="action" value="add_account">
             <input type="text" name="username" placeholder="Username" required maxlength="100">

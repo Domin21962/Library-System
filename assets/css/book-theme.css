@@ -79,7 +79,7 @@ textarea { cursor: text; }
 .menu-toggle { color: var(--text); background: var(--panel-2); }
  
 /* ---------- form controls ---------- */
-input[type=text], input[type=password], input[type=number], textarea, select {
+input[type=text], input[type=password], input[type=email], input[type=number], textarea, select {
     background: #fffdf8;
     transition: border-color 0.15s, box-shadow 0.15s;
 }

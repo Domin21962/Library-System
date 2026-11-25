@@ -128,3 +128,5 @@
 .d-flex { display:flex; }
 .gap-8 { gap:8px; }
 .flex-wrap { flex-wrap:wrap; }
+.add-account-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; align-items: center; }
+.add-account-form button { justify-self: start; margin: 0; }
