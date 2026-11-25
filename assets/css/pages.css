@@ -125,3 +125,6 @@
 .pager-info input { width: 70px; padding: 5px 8px; text-align: center; }
 .pager-resume { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
 @media (max-width: 600px) { .reader-body.reader-paged { font-size: 16px; } .pager { flex-wrap: nowrap; gap: 8px; } .pager button { padding: 8px 12px; font-size: 13px; white-space: nowrap; } .pager-info { font-size: 13px; white-space: nowrap; } .pager-info input { width: 54px; } }
+.d-flex { display:flex; }
+.gap-8 { gap:8px; }
+.flex-wrap { flex-wrap:wrap; }

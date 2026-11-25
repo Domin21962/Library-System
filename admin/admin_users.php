@@ -1,7 +1,7 @@
 <?php
 // Admin only: list of all accounts with role, link to history, and delete button.
-// Inputs: POST action=delete_user, target_username, _csrf.
-// Tables: users (delete, read), shelf and reading_progress (via admin_user_history link only).
+// Inputs: POST action=delete_user | set_role | add_account, target_username, role, username, email, password, _csrf.
+// Tables: users (delete, update role, insert, read), shelf and reading_progress (via admin_user_history link only).
 
 // ===== Includes =====
 require_once __DIR__ . '/../includes/security.php';
@@ -34,6 +34,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
         $stmt = $pdo->prepare("DELETE FROM users WHERE username = ? AND role <> 'Admin'");
         $stmt->execute([$targetUser]);
         $notice = $stmt->rowCount() > 0 ? "Account \"$targetUser\" removed." : "Account not found.";
+    }
+}
+
+
+// ===== POST handling: change a role (User <-> Librarian) =====
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'set_role') {
+    $targetUser = $_POST['target_username'] ?? '';
+    $newRole = $_POST['role'] ?? '';
+    if ($targetUser === $username) {
+        $error = "You can't change your own role.";
+    } elseif (!in_array($newRole, ['User', 'Librarian'], true)) {
+        $error = "Invalid role.";
+    } else {
+        // Admin accounts are never touched from this page
+        $stmt = $pdo->prepare("UPDATE users SET role = ? WHERE username = ? AND role <> 'Admin'");
+        $stmt->execute([$newRole, $targetUser]);
+        $notice = "\"$targetUser\" is now a $newRole.";
+        auditLog($pdo, 'role_changed', $username, ['target' => $targetUser, 'role' => $newRole]);
+    }
+}
+
+
+// ===== POST handling: create an account (User or Librarian) =====
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'add_account') {
+    $newName = trim($_POST['username'] ?? '');
+    $newEmail = trim($_POST['email'] ?? '');
+    $newPass = $_POST['password'] ?? '';
+    $newRole = $_POST['role'] ?? 'User';
+    if (!isValidUsername($newName)) {
+        $error = "Username must be 3-100 characters and may contain letters, numbers, spaces, dots, underscores, or hyphens.";
+    } elseif (!filter_var($newEmail, FILTER_VALIDATE_EMAIL) || strlen($newEmail) > 190) {
+        $error = "Please enter a valid email address.";
+    } elseif ($newPass === '' || strlen($newPass) > 255) {
+        $error = "Password is required (max 255 characters).";
+    } elseif (!in_array($newRole, ['User', 'Librarian'], true)) {
+        $error = "Invalid role.";
+    } else {
+        $stmt = $pdo->prepare("SELECT 1 FROM users WHERE username = ?");
+        $stmt->execute([$newName]);
+        if ($stmt->fetch()) {
+            $error = "Username already exists!";
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$newName, $newEmail, password_hash($newPass, PASSWORD_DEFAULT), $newRole]);
+            auditLog($pdo, 'account_created_by_admin', $username, ['target' => $newName, 'role' => $newRole]);
+            $notice = "$newRole account \"$newName\" created.";
+        }
     }
 }
 
@@ -72,8 +119,22 @@ include __DIR__ . '/../includes/header.php';
     <?php if ($notice): ?><div class="success mb-16"><?= htmlspecialchars($notice) ?></div><?php endif; ?>
     <?php if ($error): ?><div class="error mb-16"><?= htmlspecialchars($error) ?></div><?php endif; ?>
 
+    <!-- Create an account -->
     <div class="admin-section">
-        <div class="sub">Everyone registered in WebShelf. Legacy prefixes are supported; new accounts default to User.</div>
+        <h2 class="section-heading">Add account</h2>
+        <form method="post" class="d-flex gap-8 flex-wrap">
+            <?= csrf_field() ?>
+            <input type="hidden" name="action" value="add_account">
+            <input type="text" name="username" placeholder="Username" required maxlength="100">
+            <input type="email" name="email" placeholder="Email" required maxlength="190">
+            <input type="password" name="password" placeholder="Password" required maxlength="255" autocomplete="new-password">
+            <select name="role"><option>User</option><option>Librarian</option></select>
+            <button type="submit">Create</button>
+        </form>
+    </div>
+
+    <div class="admin-section">
+        <div class="sub">Everyone registered in WebShelf. Change a role with the dropdown; self-registered accounts start as User.</div>
         <!-- Users table -->
         <table>
             <tr><th>User ID</th><th>Username</th><th>Email</th><th>Role</th><th></th></tr>
@@ -91,7 +152,22 @@ include __DIR__ . '/../includes/header.php';
                     <?php endif; ?>
                 </td>
                 <td><?= htmlspecialchars($u['email']) ?></td>
-                <td><span class="role-pill role-<?= strtolower($r) ?>"><?= htmlspecialchars($r) ?></span></td>
+                <td>
+                    <?php if ($u['username'] !== $username): ?>
+                    <form method="post" class="d-inline">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="action" value="set_role">
+                        <input type="hidden" name="target_username" value="<?= htmlspecialchars($u['username']) ?>">
+                        <select name="role" onchange="this.form.submit()">
+                            <?php foreach (['User', 'Librarian'] as $opt): ?>
+                            <option<?= $r === $opt ? ' selected' : '' ?>><?= $opt ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </form>
+                    <?php else: ?>
+                    <span class="role-pill role-<?= strtolower($r) ?>"><?= htmlspecialchars($r) ?></span>
+                    <?php endif; ?>
+                </td>
                 <td>
                     <!-- Delete form with confirmation prompt and CSRF token; hidden for your own row -->
                     <?php if ($u['username'] !== $username): ?>
