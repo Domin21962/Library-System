@@ -35,8 +35,25 @@ $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $actions = $pdo->query("SELECT DISTINCT action FROM security_audit_logs ORDER BY action")->fetchAll(PDO::FETCH_COLUMN);
 
 
+// ===== Readable "Details" column =====
+// Turns the stored JSON into short text; book ids become titles, empty entries show a dash.
+$bookTitles = $pdo->query("SELECT book_id, title FROM book")->fetchAll(PDO::FETCH_KEY_PAIR);
+function auditDetails($json, array $bookTitles): string {
+    $m = json_decode((string)$json, true);
+    if (!is_array($m) || !$m) return '—';
+    $labels = ['email_confirmed' => 'Email confirmed', 'target' => 'Account', 'role' => 'New role', 'event_type' => 'Type'];
+    $parts = [];
+    foreach ($m as $k => $v) {
+        if ($k === 'book_id') { $parts[] = 'Book: ' . ($bookTitles[$v] ?? "#$v"); continue; }
+        if (is_bool($v)) { $parts[] = $labels[$k] ?? $k; continue; }
+        $parts[] = ($labels[$k] ?? $k) . ': ' . (is_scalar($v) ? $v : json_encode($v));
+    }
+    return implode(' · ', $parts);
+}
+
+
 // ===== Page setup / header =====
-$pageTitle = "Audit Logs - Doms Library";
+$pageTitle = "Audit Logs - WebShelf";
 include __DIR__ . '/../includes/header.php';
 ?>
 
@@ -86,7 +103,7 @@ include __DIR__ . '/../includes/header.php';
                 <td><?= htmlspecialchars((string)$l['username']) ?></td>
                 <td><?= htmlspecialchars($l['action']) ?></td>
                 <td><?= htmlspecialchars((string)$l['ip_address']) ?></td>
-                <td><?= htmlspecialchars((string)$l['metadata']) ?></td>
+                <td><?= htmlspecialchars(auditDetails($l['metadata'], $bookTitles)) ?></td>
             </tr>
             <?php endforeach; ?>
         </table>
