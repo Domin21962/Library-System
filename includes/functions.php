@@ -148,6 +148,12 @@ function genreIcon($genre) {
 /** Book cover for a catalog card: Project Gutenberg's cover image if the book has a Gutenberg ID, else the genre emoji. */
 function bookCover($book) {
     $icon = genreIcon($book['genre']);
+    // Your own image wins: assets/covers/<book id>.jpg (or .jpeg/.png/.webp)
+    foreach (['jpg', 'jpeg', 'png', 'webp'] as $ext) {
+        if (is_file(__DIR__ . '/../assets/covers/' . (int)$book['id'] . '.' . $ext)) {
+            return '<img class="book-cover" loading="lazy" alt="" src="' . APP_BASE . '/assets/covers/' . (int)$book['id'] . '.' . $ext . '">';
+        }
+    }
     if (empty($book['gutenberg_id'])) return '<div class="genre-icon">' . $icon . '</div>';
     $id = (int)$book['gutenberg_id'];
     return '<img class="book-cover" loading="lazy" alt="" data-fallback="' . $icon . '"'
