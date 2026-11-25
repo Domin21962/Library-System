@@ -52,6 +52,34 @@ function auditDetails($json, array $bookTitles): string {
 }
 
 
+// Friendly names for action codes (unknown codes fall back to the code with spaces)
+function auditActionLabel(string $a): string {
+    static $names = [
+        'login_success' => 'Logged in',
+        'login_success_admin_without_email_confirmation' => 'Admin logged in (no email check)',
+        'login_failed' => 'Failed login',
+        'login_confirmation_sent' => 'Login confirmation emailed',
+        'login_confirmation_failed' => 'Login confirmation failed',
+        'login_confirmation_email_failed' => 'Confirmation email failed to send',
+        'login_confirmation_blocked_mail_disabled' => 'Confirmation blocked (email disabled)',
+        'login_confirmation_blocked_mail_incomplete' => 'Confirmation blocked (email not set up)',
+        'logout' => 'Logged out',
+        'qr_login_success' => 'Logged in with QR',
+        'account_registered' => 'Account registered',
+        'account_created_by_admin' => 'Account created by admin',
+        'role_changed' => 'Role changed',
+        'book_updated' => 'Book updated',
+        'notification_created' => 'Shelf notification',
+        'password_recovery_requested' => 'Password recovery requested',
+        'password_reset_completed' => 'Password reset',
+        'username_recovery_email_sent' => 'Username recovery emailed',
+        'legacy_password_migrated' => 'Old password upgraded',
+        'unauthorized_access' => 'Unauthorized access blocked',
+    ];
+    return $names[$a] ?? ucfirst(str_replace('_', ' ', $a));
+}
+
+
 // ===== Page setup / header =====
 $pageTitle = "Audit Logs - WebShelf";
 include __DIR__ . '/../includes/header.php';
@@ -84,7 +112,7 @@ include __DIR__ . '/../includes/header.php';
             <select name="action">
                 <option value="">All actions</option>
                 <?php foreach ($actions as $a): ?>
-                <option value="<?= htmlspecialchars($a) ?>" <?= $a === $actionFilter ? 'selected' : '' ?>><?= htmlspecialchars($a) ?></option>
+                <option value="<?= htmlspecialchars($a) ?>" <?= $a === $actionFilter ? 'selected' : '' ?>><?= htmlspecialchars(auditActionLabel($a)) ?></option>
                 <?php endforeach; ?>
             </select>
             <button type="submit">Filter</button>
@@ -101,7 +129,7 @@ include __DIR__ . '/../includes/header.php';
             <tr>
                 <td><?= htmlspecialchars($l['created_at']) ?></td>
                 <td><?= htmlspecialchars((string)$l['username']) ?></td>
-                <td><?= htmlspecialchars($l['action']) ?></td>
+                <td title="<?= htmlspecialchars($l['action']) ?>"><?= htmlspecialchars(auditActionLabel($l['action'])) ?></td>
                 <td><?= htmlspecialchars((string)$l['ip_address']) ?></td>
                 <td><?= htmlspecialchars(auditDetails($l['metadata'], $bookTitles)) ?></td>
             </tr>
