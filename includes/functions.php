@@ -145,20 +145,26 @@ function genreIcon($genre) {
 }
 
 
-/** Book cover for a catalog card: Project Gutenberg's cover image if the book has a Gutenberg ID, else the genre emoji. */
+/** URL of the genre picture (assets/img/genres/<genre>.png), or the default stack of books when the genre has none. */
+function genreImage($genre) {
+    $slug = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($genre)), '-');
+    if (!is_file(__DIR__ . '/../assets/img/genres/' . $slug . '.png')) $slug = 'default';
+    return APP_BASE . '/assets/img/genres/' . $slug . '.png';
+}
+
+/** Book cover: own image in assets/covers/<book id>.*, else the Project Gutenberg cover, else the genre picture. */
 function bookCover($book) {
-    $icon = genreIcon($book['genre']);
-    // Your own image wins: assets/covers/<book id>.jpg (or .jpeg/.png/.webp)
+    $fallback = genreImage($book['genre']);
     foreach (['jpg', 'jpeg', 'png', 'webp'] as $ext) {
-        if (is_file(__DIR__ . '/../assets/covers/' . (int)$book['id'] . '.' . $ext)) {
-            return '<img class="book-cover" loading="lazy" alt="" src="' . APP_BASE . '/assets/covers/' . (int)$book['id'] . '.' . $ext . '">';
+        if (is_file(__DIR__ . '/../assets/covers/' . (int)$book['book_id'] . '.' . $ext)) {
+            return '<img class="book-cover" loading="lazy" alt="" src="' . APP_BASE . '/assets/covers/' . (int)$book['book_id'] . '.' . $ext . '">';
         }
     }
-    if (empty($book['gutenberg_id'])) return '<div class="genre-icon">' . $icon . '</div>';
+    if (empty($book['gutenberg_id'])) return '<img class="book-cover" loading="lazy" alt="" src="' . $fallback . '">';
     $id = (int)$book['gutenberg_id'];
-    return '<img class="book-cover" loading="lazy" alt="" data-fallback="' . $icon . '"'
+    return '<img class="book-cover" loading="lazy" alt="" data-fallback="' . $fallback . '"'
          . ' src="https://www.gutenberg.org/cache/epub/' . $id . '/pg' . $id . '.cover.medium.jpg"'
-         . ' onerror="this.outerHTML=\'<div class=genre-icon>\'+this.dataset.fallback+\'</div>\'">';
+         . ' onerror="this.onerror=null;this.src=this.dataset.fallback">';
 }
 
 
