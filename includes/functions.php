@@ -152,19 +152,26 @@ function genreImage($genre) {
     return APP_BASE . '/assets/img/genres/' . $slug . '.png';
 }
 
-/** Book cover: own image in assets/covers/<book id>.*, else the Project Gutenberg cover, else the genre picture. */
+/** Generated cover (title + author on a genre-colored background) for books without a cover image. */
+function textCover($book) {
+    $hue = crc32(strtolower(trim($book['genre'] ?? ''))) % 360;
+    return '<div class="book-cover text-cover" style="--c1:hsl(' . $hue . ' 38% 30%);--c2:hsl(' . (($hue + 30) % 360) . ' 42% 20%)">'
+         . '<span class="tc-title">' . htmlspecialchars($book['title'] ?? '') . '</span>'
+         . '<span class="tc-author">' . htmlspecialchars($book['author'] ?? '') . '</span></div>';
+}
+
+/** Book cover: own image in assets/covers/<book id>.*, else the Project Gutenberg cover, else a generated title cover. */
 function bookCover($book) {
-    $fallback = genreImage($book['genre']);
     foreach (['jpg', 'jpeg', 'png', 'webp'] as $ext) {
         if (is_file(__DIR__ . '/../assets/covers/' . (int)$book['book_id'] . '.' . $ext)) {
             return '<img class="book-cover" loading="lazy" alt="" src="' . APP_BASE . '/assets/covers/' . (int)$book['book_id'] . '.' . $ext . '">';
         }
     }
-    if (empty($book['gutenberg_id'])) return '<img class="book-cover" loading="lazy" alt="" src="' . $fallback . '">';
+    if (empty($book['gutenberg_id'])) return textCover($book);
     $id = (int)$book['gutenberg_id'];
-    return '<img class="book-cover" loading="lazy" alt="" data-fallback="' . $fallback . '"'
+    return '<img class="book-cover" loading="lazy" alt="" data-fallback="' . htmlspecialchars(textCover($book)) . '"'
          . ' src="https://www.gutenberg.org/cache/epub/' . $id . '/pg' . $id . '.cover.medium.jpg"'
-         . ' onerror="this.onerror=null;this.src=this.dataset.fallback">';
+         . ' onerror="this.outerHTML=this.dataset.fallback">';
 }
 
 

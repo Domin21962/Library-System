@@ -156,7 +156,7 @@ include __DIR__ . '/../includes/header.php';
         <a href="main.php" class="chip <?= !$searched ? 'chip-active' : '' ?>">All</a>
         <?php foreach ($genres as $g): ?>
             <a href="main.php?keyword=<?= urlencode($g) ?>" class="chip <?= (strcasecmp($keyword, $g) === 0) ? 'chip-active' : '' ?>">
-                <?= genreIcon($g) ?> <?= htmlspecialchars($g) ?>
+                <img class="chip-img" src="<?= genreImage($g) ?>" alt=""> <?= htmlspecialchars($g) ?>
             </a>
         <?php endforeach; ?>
     </div>
