@@ -4,3 +4,5 @@ config/local.php
 
 /uploads/profiles/*
 !/uploads/profiles/.htaccess
+
+/assets/covers/gutenberg/

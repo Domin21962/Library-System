@@ -170,7 +170,7 @@ function bookCover($book) {
     if (empty($book['gutenberg_id'])) return textCover($book);
     $id = (int)$book['gutenberg_id'];
     return '<img class="book-cover" loading="lazy" alt="" data-fallback="' . htmlspecialchars(textCover($book)) . '"'
-         . ' src="https://www.gutenberg.org/cache/epub/' . $id . '/pg' . $id . '.cover.medium.jpg"'
+         . ' src="' . APP_BASE . '/user/cover.php?id=' . $id . '"'
          . ' onerror="this.outerHTML=this.dataset.fallback">';
 }
 
