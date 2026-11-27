@@ -160,17 +160,16 @@ function textCover($book) {
          . '<span class="tc-author">' . htmlspecialchars($book['author'] ?? '') . '</span></div>';
 }
 
-/** Book cover: own image in assets/covers/<book id>.*, else the Project Gutenberg cover, else a generated title cover. */
+/** Book cover: own image in assets/covers/<book id>.*, else a real cover (Open Library, then Project Gutenberg), else a generated title cover. */
 function bookCover($book) {
     foreach (['jpg', 'jpeg', 'png', 'webp'] as $ext) {
         if (is_file(__DIR__ . '/../assets/covers/' . (int)$book['book_id'] . '.' . $ext)) {
             return '<img class="book-cover" loading="lazy" alt="" src="' . APP_BASE . '/assets/covers/' . (int)$book['book_id'] . '.' . $ext . '">';
         }
     }
-    if (empty($book['gutenberg_id'])) return textCover($book);
-    $id = (int)$book['gutenberg_id'];
+    // Real cover from Open Library / Project Gutenberg (cached by user/cover.php); falls back to the title cover if none is found
     return '<img class="book-cover" loading="lazy" alt="" data-fallback="' . htmlspecialchars(textCover($book)) . '"'
-         . ' src="' . APP_BASE . '/user/cover.php?id=' . $id . '"'
+         . ' src="' . APP_BASE . '/user/cover.php?book=' . (int)$book['book_id'] . '"'
          . ' onerror="this.outerHTML=this.dataset.fallback">';
 }
 

@@ -110,7 +110,26 @@ include __DIR__ . '/../includes/header.php';
 
 <!-- Main content -->
 <div class="content wrap-1200">
-    <h1 class="page-title">Find a book</h1>
+    <!-- Heading row: title with the search bar beside it, genre chips underneath -->
+    <div class="find-head">
+        <h1 class="page-title">Find a book</h1>
+        <!-- Search form (GET) -->
+        <form method="get" class="search-bar">
+            <input type="text" name="keyword" placeholder="Search by title, author, or genre..." value="<?= htmlspecialchars($keyword) ?>">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+    <!-- Genre quick-filter chips (links that search by genre) -->
+    <?php if (!empty($genres)): ?>
+    <div class="chip-row">
+        <a href="main.php" class="chip <?= !$searched ? 'chip-active' : '' ?>">All</a>
+        <?php foreach ($genres as $g): ?>
+            <a href="main.php?keyword=<?= urlencode($g) ?>" class="chip <?= (strcasecmp($keyword, $g) === 0) ? 'chip-active' : '' ?>">
+                <img class="chip-img" src="<?= genreImage($g) ?>" alt=""> <?= htmlspecialchars($g) ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
 
     <!-- Stats cards: catalog size, this user's shelf and books in progress -->
     <div class="stats-row">
@@ -130,8 +149,8 @@ include __DIR__ . '/../includes/header.php';
 
     <!-- Continue Reading: books the user stopped in the middle of -->
     <?php if (!empty($continue)): ?>
-        <h2 class="section-heading">Continue Reading</h2>
-        <div class="book-grid">
+        <h2 class="section-heading continue-heading">Continue Reading</h2>
+        <div class="book-grid continue-strip">
             <?php foreach ($continue as $c): ?>
                 <a class="book-card" href="book.php?id=<?= (int)$c['book_id'] ?>" style="border-top: 3px solid <?= genreColor($c['genre']) ?>;">
                     <?= bookCover($c) ?>
@@ -142,24 +161,6 @@ include __DIR__ . '/../includes/header.php';
                 </a>
             <?php endforeach; ?>
         </div>
-    <?php endif; ?>
-
-    <!-- Search form (GET) -->
-    <form method="get" class="search-bar">
-        <input type="text" name="keyword" placeholder="Search by title, author, or genre..." value="<?= htmlspecialchars($keyword) ?>">
-        <button type="submit">Search</button>
-    </form>
-
-    <!-- Genre quick-filter chips (links that search by genre) -->
-    <?php if (!empty($genres)): ?>
-    <div class="chip-row">
-        <a href="main.php" class="chip <?= !$searched ? 'chip-active' : '' ?>">All</a>
-        <?php foreach ($genres as $g): ?>
-            <a href="main.php?keyword=<?= urlencode($g) ?>" class="chip <?= (strcasecmp($keyword, $g) === 0) ? 'chip-active' : '' ?>">
-                <img class="chip-img" src="<?= genreImage($g) ?>" alt=""> <?= htmlspecialchars($g) ?>
-            </a>
-        <?php endforeach; ?>
-    </div>
     <?php endif; ?>
 
     <!-- Book cards, or an empty-state message -->

@@ -1,1 +1,1 @@
-Optional: put your own cover images here, named by book_id (book_id 5 -> 5.jpg). Otherwise Gutenberg covers, then genre pictures are used.
+Optional: put your own cover images here, named by book_id (book_id 5 -> 5.jpg). Otherwise real covers (Open Library, then Gutenberg) are downloaded automatically into assets/covers/auto/, with a generated title cover as the last fallback. Delete a file in auto/ (or its .miss file) to force a re-download.

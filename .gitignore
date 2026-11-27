@@ -6,3 +6,4 @@ config/local.php
 !/uploads/profiles/.htaccess
 
 /assets/covers/gutenberg/
+/assets/covers/auto/
