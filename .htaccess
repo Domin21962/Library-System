@@ -1,4 +1,4 @@
-DirectoryIndex login.php
+DirectoryIndex index.php login.php
 Options -Indexes
 <FilesMatch "^(\.env|.*\.log)$">
     Require all denied

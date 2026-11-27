@@ -15,6 +15,9 @@ require_once __DIR__ . '/security.php';
 <link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/style.css?v=<?= @filemtime(__DIR__ . "/../assets/css/style.css") ?: 1 ?>">
 <link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/book-theme.css?v=<?= @filemtime(__DIR__ . "/../assets/css/book-theme.css") ?: 1 ?>">
 <link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/pages.css?v=<?= @filemtime(__DIR__ . "/../assets/css/pages.css") ?: 1 ?>">
+<?php foreach (($extraCss ?? []) as $css): /* optional page-only stylesheet, e.g. landing.css */ ?>
+<link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/<?= htmlspecialchars($css) ?>?v=<?= @filemtime(__DIR__ . "/../assets/css/" . $css) ?: 1 ?>">
+<?php endforeach; ?>
 
 </head>
 <body>
