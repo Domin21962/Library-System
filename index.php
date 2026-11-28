@@ -1,6 +1,6 @@
 <?php
 /**
- * Landing page: public front door of WebShelf (what it is, with Log in and Register buttons).
+ * Landing page: public front door of WebShelf (what it is; Log in and Register sit in the top bar, one Create an account button in the hero).
  * Who: public. Logged-in users are sent straight to their own home page.
  * Input: none. Tables: book (read only, for the catalog count; the page works without it).
  */
@@ -53,7 +53,6 @@ include __DIR__ . '/includes/header.php';
             </p>
             <div class="lp-actions">
                 <a class="btn" href="<?= url('register.php') ?>">Create an account</a>
-                <a class="btn secondary" href="<?= url('login.php') ?>">Log in</a>
             </div>
             <?php if ($bookCount > 0): ?>
                 <p class="lp-count"><?= number_format($bookCount) ?> book<?= $bookCount === 1 ? '' : 's' ?> in the catalog right now.</p>
@@ -95,15 +94,6 @@ include __DIR__ . '/includes/header.php';
                 <p>Log in with a username and password, or scan a QR code. Each login is confirmed by email.</p>
             </li>
         </ul>
-    </section>
-
-    <!-- ===== Closing call to action ===== -->
-    <section class="lp-final">
-        <h2>Ready to start your shelf?</h2>
-        <div class="lp-actions">
-            <a class="btn" href="<?= url('register.php') ?>">Create an account</a>
-            <a class="btn secondary" href="<?= url('login.php') ?>">I already have one</a>
-        </div>
     </section>
 </main>
 
