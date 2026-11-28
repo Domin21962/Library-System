@@ -82,7 +82,7 @@ include __DIR__ . '/../includes/header.php';
             <label>Genre</label>
             <input type="text" name="genre" required value="<?= htmlspecialchars($book['genre']) ?>">
             <label>Publisher</label>
-            <input type="text" name="publisher" required value="<?= htmlspecialchars($book['publisher']) ?>">
+            <input type="text" name="publisher" required value="<?= htmlspecialchars((string)$book['publisher']) ?>">
             <label>Content</label>
             <textarea name="content"><?= htmlspecialchars((string)$book['book_content']) ?></textarea>
             <!-- Validation error / success message -->

@@ -189,7 +189,7 @@ include __DIR__ . '/../includes/header.php';
                 <div class="author">by <?= htmlspecialchars($book['author']) ?></div>
                 <div class="meta">
                     <span class="tag"><?= htmlspecialchars($book['genre']) ?></span>
-                    <span class="tag"><?= (int)$book['year'] ?></span>
+                    <?php if ((int)$book['year'] > 0): ?><span class="tag"><?= (int)$book['year'] ?></span><?php endif; ?>
                 </div>
                 <div class="read-cta">📖 Click to read</div>
                 <?= progressBar((int)($progress[$book['book_id']] ?? 0)) ?>

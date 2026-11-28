@@ -93,8 +93,8 @@ include __DIR__ . '/../includes/header.php';
         <div class="author">by <?= htmlspecialchars($book['author']) ?></div>
         <div class="meta">
             <span class="tag"><?= htmlspecialchars($book['genre']) ?></span>
-            <span class="tag"><?= (int)$book['year'] ?></span>
-            <span class="tag"><?= htmlspecialchars($book['publisher']) ?></span>
+            <?php if ((int)$book['year'] > 0): ?><span class="tag"><?= (int)$book['year'] ?></span><?php endif; ?>
+            <?php if (!empty($book['publisher'])): ?><span class="tag"><?= htmlspecialchars($book['publisher']) ?></span><?php endif; ?>
         </div>
         <!-- Short synopsis (if any) -->
         <?php if (!empty($book['book_content'])): ?>
